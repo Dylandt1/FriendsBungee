@@ -5,6 +5,7 @@ import api.data.manager.redis.RedisAccess;
 import api.data.manager.sql.DBAccess;
 import api.data.manager.sql.DBManager;
 import api.files.Files;
+import fr.patapom.commons.friends.FriendsManager;
 import fr.patapom.fbg.FriendsBG;
 import fr.patapom.fbg.utils.exceptions.FManagerNotFoundException;
 import org.redisson.api.RBucket;
@@ -139,6 +140,7 @@ public class FriendsProvider
     {
         PreparedStatement ps1;
         PreparedStatement ps2;
+        PreparedStatement ps3;
         try
         {
             Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
@@ -155,14 +157,19 @@ public class FriendsProvider
             ps1.executeUpdate();
             ps1.close();
 
+            ps2 = connection.prepareStatement("DELETE * FROM "+prefixTables+tableName+" WHERE player_uuid = ?");
+            ps2.setString(1, uuid.toString());
+            ps2.executeUpdate();
+            ps2.close();
+
             for(String s : fManager.getFriendsMap().keySet())
             {
-                ps2 = connection.prepareStatement("INSERT INTO "+prefixTables+tableName+" (player_uuid, friend_uuid, friend_name) VALUES (?, ?, ?)");
-                ps2.setString(1, uuid.toString());
-                ps2.setString(2, fManager.getFriendsMap().get(s).toString());
-                ps2.setString(3, s);
-                ps2.executeUpdate();
-                ps2.close();
+                ps3 = connection.prepareStatement("INSERT INTO "+prefixTables+tableName+" (player_uuid, friend_uuid, friend_name) VALUES (?, ?, ?)");
+                ps3.setString(1, uuid.toString());
+                ps3.setString(2, fManager.getFriendsMap().get(s).toString());
+                ps3.setString(3, s);
+                ps3.executeUpdate();
+                ps3.close();
             }
 
             connection.close();
