@@ -44,7 +44,7 @@ public class FriendsProvider
     private final UUID uuid;
 
     private static final String prefixTables = DBAccess.getPrefixTables();
-    private static final String tableName = "friends";
+    private static final String tableName = DBAccess.getTableName();
     private static final String tableAllow = "fbg_allow";
 
     private final boolean redisEnable = FriendsBG.getInstance().redisEnable;

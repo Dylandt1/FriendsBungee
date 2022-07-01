@@ -24,7 +24,7 @@ import java.sql.SQLException;
 public class SqlManager
 {
     private static final String prefixTables = DBAccess.getPrefixTables();
-    private final static String friendsTable = "friends";
+    private final static String friendsTable = DBAccess.getTableName();
     private final static String tableAllow = "fbg_allow";
 
     // Functions part :
