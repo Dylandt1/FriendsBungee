@@ -157,7 +157,7 @@ public class FriendsProvider
             ps1.executeUpdate();
             ps1.close();
 
-            ps2 = connection.prepareStatement("DELETE * FROM "+prefixTables+tableName+" WHERE player_uuid = ?");
+            ps2 = connection.prepareStatement("DELETE FROM "+prefixTables+tableName+" WHERE player_uuid = ?");
             ps2.setString(1, uuid.toString());
             ps2.executeUpdate();
             ps2.close();
