@@ -1,18 +1,21 @@
 package fr.patapom.fbg;
 
-import api.config.ConfigsManager;
-import api.data.manager.json.SerializationManager;
-import api.data.manager.redis.RedisAccess;
-import api.data.manager.sql.DBManager;
-import api.data.manager.sql.SqlManager;
-//import api.utils.PluginUpdateChecker;
+import fr.patapom.commons.friends.FriendsManager;
+import fr.patapom.fbg.data.manager.redis.RedisAccess;
+//import fr.patapom.tmapi.data.manager.UpdateChecker;
+import fr.patapom.commons.party.PartyManager;
 import fr.patapom.fbg.cmd.*;
+import fr.patapom.fbg.data.manager.sql.DBManager;
+import fr.patapom.fbg.data.manager.sql.SqlManager;
 import fr.patapom.fbg.listeners.PlayerListener;
+import fr.patapom.tmapi.bungee.config.ConfigsManager;
+import fr.patapom.tmapi.data.manager.Json.SerializationManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
-
+//import org.bstats.bungeecord.Metrics;
 import java.util.*;
 
 /**
@@ -34,16 +37,23 @@ import java.util.*;
 
 public class FriendsBG extends Plugin
 {
+    private final int pluginId = 17971;
+    //private static Metrics metrics;
+
     private static FriendsBG INSTANCE;
+    private static PluginManager pm;
+
     private Configuration config;
     private SerializationManager serManager;
-    //private String newVersion;
 
     private String prefix;
     private String suffix;
+
     public boolean redisEnable;
     public boolean sqlEnable;
 
+    public static Map<UUID, FriendsManager> fManagers = new HashMap<>();
+    public static Map<UUID, PartyManager> parties = new HashMap<>();
     public static Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
 
     @Override
@@ -56,6 +66,7 @@ public class FriendsBG extends Plugin
         this.suffix = config.getString("suffix").replace("&", "§");
         this.redisEnable = config.getBoolean("redis.use");
         this.sqlEnable = config.getBoolean("mysql.use");
+
         /**
          * if(config.getBoolean("updates.enable"))
          * {
@@ -73,18 +84,24 @@ public class FriendsBG extends Plugin
     public void onEnable()
     {
         INSTANCE = this;
+        pm = ProxyServer.getInstance().getPluginManager();
 
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CmdFriends());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CmdParty());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CmdMsg());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CmdResend());
+        //metrics = new Metrics(INSTANCE, pluginId);
 
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new PlayerListener());
+        // Optional: Add custom charts
+        //metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
+
+        pm.registerCommand(this, new CmdFriends());
+        pm.registerCommand(this, new CmdParty());
+        pm.registerCommand(this, new CmdMsg());
+        pm.registerCommand(this, new CmdResend());
+
+        pm.registerListener(this, new PlayerListener());
 
         if(sqlEnable)
         {
             DBManager.init();
-            SqlManager.createTable();
+            new SqlManager().createTables();
         }
         if(redisEnable)
         {
@@ -93,6 +110,8 @@ public class FriendsBG extends Plugin
     }
 
     public static FriendsBG getInstance() { return INSTANCE; }
+
+    //public static Metrics getMetrics() { return metrics; }
     public Configuration getConfig() {return config;}
     public SerializationManager getSerializationManager() {return serManager;}
 
@@ -107,6 +126,6 @@ public class FriendsBG extends Plugin
         {
             RedisAccess.getInstance().getRedisCli().shutdown();
         }
-        System.out.println(prefix+" "+suffix+" "+"§lGoodbye §c!");
+        System.out.println("[FriendsBungee] -> Goodbye !");
     }
 }

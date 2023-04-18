@@ -1,6 +1,10 @@
 package fr.patapom.fbg.cmd;
 
+import fr.patapom.commons.friends.FriendsManager;
+import fr.patapom.commons.friends.FriendsProvider;
 import fr.patapom.fbg.FriendsBG;
+import fr.patapom.fbg.cmd.utils.Help;
+import fr.patapom.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -31,6 +35,8 @@ import java.util.List;
 
 public class CmdMsg extends Command implements TabExecutor
 {
+    private final Help H = new Help();
+
     private final Configuration config;
     private final String sPrefix;
     private final String sdPrefix;
@@ -43,9 +49,14 @@ public class CmdMsg extends Command implements TabExecutor
     private final String tooLong;
     private final String playerNotFound;
     private final String cmdNotUsable;
-    private final String suffixH;
-    private final String cmdMsg;
-    private final String cmdR;
+    private final String msgEnabled;
+    private final String msgDisabled;
+    private final String msgAlreadyEnabled;
+    private final String msgAlreadyDisabled;
+    private final String msgSenderDisabled;
+    private final String msgTargetDisabled;
+    private final String errorMsg;
+    private final String reportCmd;
 
     public CmdMsg()
     {
@@ -62,26 +73,31 @@ public class CmdMsg extends Command implements TabExecutor
         this.tooLong = config.getString("msg.tooLong").replace("&", "§");
         this.playerNotFound = config.getString("msg.playerNotFound").replace("&", "§");
         this.cmdNotUsable = config.getString("msg.cmdNotUsable").replace("&", "§");
-        this.suffixH = config.getString("msg.sHelp").replace("&", "§");
-        this.cmdMsg = config.getString("msg.cmdMsg").replace("&", "§");
-        this.cmdR = config.getString("msg.cmdR").replace("&", "§");
+        this.msgEnabled = config.getString("msg.msgEnabled").replace("&", "§");
+        this.msgDisabled = config.getString("msg.msgDisabled").replace("&", "§");
+        this.msgAlreadyEnabled = config.getString("msg.msgAlreadyEnabled").replace("&", "§");
+        this.msgAlreadyDisabled = config.getString("msg.msgAlreadyDisabled").replace("&", "§");
+        this.msgSenderDisabled = config.getString("msg.msgSenderDisabled").replace("&", "§");
+        this.msgTargetDisabled = config.getString("msg.msgTargetDisabled").replace("&", "§");
+        this.errorMsg = config.getString("msg.errorMsg").replace("&", "§");
+        this.reportCmd = config.getString("msg.reportCmd").replace("&", "§");
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args)
     {
-        if(sender instanceof ProxiedPlayer)
+        if(!(sender instanceof ProxiedPlayer)) {return null;}
+
+        List<String> list = new ArrayList<>();
+        if(args.length == 1)
         {
-            ProxiedPlayer p = (ProxiedPlayer) sender;
-            List<String> list = new ArrayList<>();
-            if(args.length == 1)
+            list.add("enable");
+            list.add("disable");
+            for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
             {
-                for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
-                {
-                    list.add(player.getName());
-                }
-                return list;
+                list.add(player.getName());
             }
+            return list;
         }
         return new ArrayList<>();
     }
@@ -89,69 +105,83 @@ public class CmdMsg extends Command implements TabExecutor
     @Override
     public void execute(CommandSender sender, String[] args)
     {
-        if(sender instanceof ProxiedPlayer)
-        {
-            ProxiedPlayer p = (ProxiedPlayer) sender;
+        if(!(sender instanceof ProxiedPlayer)) {sendDeniedUsage(sender);return;}
 
-            if(args.length == 0)
-            {
-                helpMsg(p);
-            }else if(args.length > 1)
-            {
-                String targetName = args[0];
-                if(ProxyServer.getInstance().getPlayer(targetName) != null)
-                {
-                    ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
-
-                    if(targetPl == p)
-                    {
-                        sendMessage(p, sendToSender);
-                    }else {
-                        StringBuilder msg = new StringBuilder();
-                        if(args.length > msg.capacity())
-                        {
-                            sendMessage(p, tooLong);
-                        }else {
-                            for(int i = 1; i != args.length; i++)
-                            {
-                                msg.append(args[i].replace("&", "§")).append(" ");
-                            }
-
-                            final String part1 = sPrefix+" "+sSuffix+" ";
-                            final String part2 = sdPrefix.replace("%targetPlayer%", targetName)+" "+sdSuffix+" ";
-                            p.sendMessage(new TextComponent(part1+part2+msgColor+msg));
-                            targetPl.sendMessage(new TextComponent(
-                                    tPrefix.replace("%player%", p.getName())+" "+tSuffix+" "+msgColor+msg));
-
-                            FriendsBG.messages.remove(p);
-                            FriendsBG.messages.remove(targetPl);
-                            FriendsBG.messages.put(p, targetPl);
-                            FriendsBG.messages.put(targetPl, p);
-                        }
-                    }
-                }else {
-                    sendMessage(p, playerNotFound);
-                }
-            }else {
-                helpMsg(p);
-            }
-        }else {
-            sendDeniedUsage(sender);
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        FriendsProvider fProvider = new FriendsProvider(p.getUniqueId());
+        FriendsManager fManager;
+        try {
+            fManager = fProvider.getFManager();
+        } catch (ManagerNotFoundException e) {
+            throw new RuntimeException(e);
         }
-    }
 
-    private void helpMsg(ProxiedPlayer p)
-    {
-        sendMessage(p, " ");
-        sendMessage(p, "§6#§f-------------------- [§3Friends§f-§6BG§f] -------------------§6#");
-        sendMessage(p, " ");
-        sendMessage(p, " §6§l? §7§nHelp§f : ");
-        sendMessage(p, " ");
-        sendMessage(p, "§f/§bmsg §7<§6player§7> §7<§fmessage§7> "+suffixH+" "+cmdMsg);
-        sendMessage(p, " ");
-        sendMessage(p, "§f/§br §7<§fmessage§7> "+suffixH+" "+cmdR);
-        sendMessage(p, " ");
-        sendMessage(p, "§6#§f----------------------- §2FREE §f-----------------------§6#");
+        if(fManager == null) {sendMessage(p, errorMsg.replace("%cmd%", reportCmd));return;}
+
+        if(args.length == 0)
+        {
+            H.helpMsg(p);
+        }else if(args.length == 1)
+        {
+            if(args[0].equalsIgnoreCase("enable"))
+            {
+                if(fManager.msgAllow()) {sendMessage(p, msgAlreadyEnabled);return;}
+
+                fManager.setMsgAllow(true);
+                fProvider.save(fManager);
+                sendMessage(p, msgEnabled);
+            }else if(args[0].equalsIgnoreCase("disable"))
+            {
+                if(!fManager.msgAllow()) {sendMessage(p, msgAlreadyDisabled);return;}
+
+                fManager.setMsgAllow(false);
+                fProvider.save(fManager);
+                sendMessage(p, msgDisabled);
+            }
+        }else
+        {
+            if(!fManager.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/msg enable"));return;}
+
+            String targetName = args[0];
+            if(ProxyServer.getInstance().getPlayer(targetName) == null) {sendMessage(p, playerNotFound);return;}
+
+            ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
+            FriendsProvider targetFProvider = new FriendsProvider(targetPl.getUniqueId());
+            FriendsManager targetFManager;
+            try {
+                targetFManager = targetFProvider.getFManager();
+            } catch (ManagerNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            if(targetFManager == null) {sendMessage(p, errorMsg);return;}
+
+            if(targetPl == p)
+            {
+                sendMessage(p, sendToSender);
+            }else {
+                if(!targetFManager.msgAllow()) {sendMessage(p, msgTargetDisabled.replace("%targetPlayer%", targetPl.getDisplayName()));return;}
+
+                StringBuilder msg = new StringBuilder();
+
+                if(args.length > msg.capacity()) {sendMessage(p, tooLong);return;}
+
+                for(int i = 1; i != args.length; i++)
+                {
+                    msg.append(args[i].replace("&", "§")).append(" ");
+                }
+
+                final String part1 = sPrefix+" "+sSuffix+" ";
+                final String part2 = sdPrefix.replace("%targetPlayer%", targetName)+" "+sdSuffix+" ";
+                p.sendMessage(new TextComponent(part1+part2+msgColor+msg));
+                targetPl.sendMessage(new TextComponent(tPrefix.replace("%player%", p.getName())+" "+tSuffix+" "+msgColor+msg));
+
+                FriendsBG.messages.remove(p);
+                FriendsBG.messages.remove(targetPl);
+                FriendsBG.messages.put(p, targetPl);
+                FriendsBG.messages.put(targetPl, p);
+            }
+        }
     }
 
     private void sendMessage(ProxiedPlayer p, String s) {

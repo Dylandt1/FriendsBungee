@@ -1,6 +1,10 @@
 package fr.patapom.fbg.cmd;
 
+import fr.patapom.commons.friends.FriendsManager;
+import fr.patapom.commons.friends.FriendsProvider;
 import fr.patapom.fbg.FriendsBG;
+import fr.patapom.fbg.cmd.utils.Help;
+import fr.patapom.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -8,6 +12,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.event.EventPriority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +36,8 @@ import java.util.List;
 
 public class CmdResend extends Command implements TabExecutor
 {
+    private final Help H = new Help();
+
     private final Configuration config;
     private final String playerOffline;
     private final String cmdNotUsable;
@@ -46,6 +53,12 @@ public class CmdResend extends Command implements TabExecutor
     private final String suffixH;
     private final String cmdMsg;
     private final String cmdR;
+    private final String cmdEnable;
+    private final String cmdDisable;
+    private final String msgSenderDisabled;
+    private final String msgTargetDisabled;
+    private final String errorMsg;
+    private final String reportCmd;
 
     public CmdResend()
     {
@@ -65,24 +78,28 @@ public class CmdResend extends Command implements TabExecutor
         this.suffixH = config.getString("msg.sHelp").replace("&", "§");
         this.cmdMsg = config.getString("msg.cmdMsg").replace("&", "§");
         this.cmdR = config.getString("msg.cmdR").replace("&", "§");
+        this.cmdEnable = config.getString("msg.cmdEnable").replace("&", "§");
+        this.cmdDisable = config.getString("msg.cmdDisable").replace("&", "§");
+        this.msgSenderDisabled = config.getString("msg.msgSenderDisabled").replace("&", "§");
+        this.msgTargetDisabled = config.getString("msg.msgTargetDisabled").replace("&", "§");
+        this.errorMsg = config.getString("msg.errorMsg").replace("&", "§");
+        this.reportCmd = config.getString("msg.reportCmd").replace("&", "§");
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args)
     {
-        if(sender instanceof ProxiedPlayer)
-        {
-            ProxiedPlayer p = (ProxiedPlayer) sender;
-            List<String> list = new ArrayList<>();
-            if(args.length == 1)
-            {
+        if(!(sender instanceof ProxiedPlayer)) {return null;}
 
-                for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
-                {
-                    list.add(player.getName());
-                }
-                return list;
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        List<String> list = new ArrayList<>();
+        if(args.length == 1)
+        {
+            for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
+            {
+                list.add(player.getName());
             }
+            return list;
         }
         return new ArrayList<>();
     }
@@ -90,72 +107,62 @@ public class CmdResend extends Command implements TabExecutor
     @Override
     public void execute(CommandSender sender, String[] args)
     {
-        if(sender instanceof ProxiedPlayer)
+        if(!(sender instanceof ProxiedPlayer)) {sendDeniedUsage(sender);return;}
+
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        FriendsProvider provider = new FriendsProvider(p.getUniqueId());
+        FriendsManager profile;
+        try {
+            profile = provider.getFManager();
+        } catch (ManagerNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(profile == null) {sendMessage(p, errorMsg.replace("%cmd%", reportCmd));return;}
+
+        if(args.length == 0)
         {
-            ProxiedPlayer p = (ProxiedPlayer) sender;
+            H.helpMsg(p);
+        }else
+        {
+            if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/msg enable"));return;}
+            if(!FriendsBG.messages.containsKey(p)) {sendMessage(p, noMessage);return;}
+            if(!FriendsBG.messages.get(p).isConnected()) {sendMessage(p, playerOffline);return;}
 
-            if(args.length == 0)
-            {
-                helpMsg(p);
-            }else {
-                if(FriendsBG.messages.containsKey(p))
-                {
-                    if(FriendsBG.messages.get(p).isConnected())
-                    {
-                        ProxiedPlayer targetPl = FriendsBG.messages.get(p);
-                        StringBuilder msg = new StringBuilder();
-
-                        if(args.length > msg.capacity())
-                        {
-                            sendMessage(p, tooLong);
-                        }else {
-                            for(int i = 0; i != args.length; i++)
-                            {
-                                msg.append(args[i].replace("&", "§")).append(" ");
-                            }
-
-                            final String part1 = sPrefix+" "+sSuffix+" ";
-                            final String part2 = sdPrefix.replace("%targetPlayer%", targetPl.getName())+" "+sdSuffix+" ";
-                            p.sendMessage(new TextComponent(part1+part2+msgColor+msg));
-                            targetPl.sendMessage(new TextComponent(
-                                    tPrefix.replace("%player%", p.getName())+" "+tSuffix+" "+msgColor+msg));
-
-                            FriendsBG.messages.remove(p);
-                            FriendsBG.messages.remove(targetPl);
-                            FriendsBG.messages.put(p, targetPl);
-                            FriendsBG.messages.put(targetPl, p);
-                        }
-                    }else {
-                        sendMessage(p, playerOffline);
-                    }
-                }else {
-                    sendMessage(p, noMessage);
-                }
+            ProxiedPlayer targetPl = FriendsBG.messages.get(p);
+            FriendsProvider targetProvider = new FriendsProvider(targetPl.getUniqueId());
+            FriendsManager targetProfile;
+            try {
+                targetProfile = targetProvider.getFManager();
+            } catch (ManagerNotFoundException e) {
+                throw new RuntimeException(e);
             }
-        }else {
-            sendDeniedUsage(sender);
+
+            if(targetProfile == null) {sendMessage(p, errorMsg);return;}
+            if(!targetProfile.msgAllow()) {sendMessage(p, msgTargetDisabled.replace("%targetPlayer%", targetPl.getName()));return;}
+
+            StringBuilder msg = new StringBuilder();
+
+            if(args.length > msg.capacity()) {sendMessage(p, tooLong);return;}
+
+            for(int i = 0; i != args.length; i++)
+            {
+                msg.append(args[i].replace("&", "§")).append(" ");
+            }
+
+            final String part1 = sPrefix+" "+sSuffix+" ";
+            final String part2 = sdPrefix.replace("%targetPlayer%", targetPl.getName())+" "+sdSuffix+" ";
+            p.sendMessage(new TextComponent(part1+part2+msgColor+msg));
+            targetPl.sendMessage(new TextComponent(tPrefix.replace("%player%", p.getName())+" "+tSuffix+" "+msgColor+msg));
+
+            FriendsBG.messages.remove(p);
+            FriendsBG.messages.remove(targetPl);
+            FriendsBG.messages.put(p, targetPl);
+            FriendsBG.messages.put(targetPl, p);
         }
     }
 
-    private void helpMsg(ProxiedPlayer p)
-    {
-        sendMessage(p, " ");
-        sendMessage(p, "§6#§f-------------------- [§3Friends§f-§6BG§f] -------------------§6#");
-        sendMessage(p, " ");
-        sendMessage(p, " §6§l? §7§nHelp§f : ");
-        sendMessage(p, " ");
-        sendMessage(p, "§f/§bmsg §7<§6player§7> §7<§fmessage§7> "+suffixH+" "+cmdMsg);
-        sendMessage(p, " ");
-        sendMessage(p, "§f/§br §7<§fmessage§7> "+suffixH+" "+cmdR);
-        sendMessage(p, " ");
-        sendMessage(p, "§6#§f----------------------- §2FREE §f-----------------------§6#");
-    }
+    private void sendMessage(ProxiedPlayer p, String s) {p.sendMessage(new TextComponent(s));}
 
-    private void sendMessage(ProxiedPlayer p, String s) {
-        p.sendMessage(new TextComponent(s));
-    }
-
-    private void sendDeniedUsage(CommandSender sender) {
-        sender.sendMessage(new TextComponent(cmdNotUsable));
-    }
+    private void sendDeniedUsage(CommandSender sender) {sender.sendMessage(new TextComponent(cmdNotUsable));}
 }

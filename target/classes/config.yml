@@ -27,7 +27,7 @@
 
 # Prefix and suffix of plugin's messages :
 prefix : "&f[&3Friends&f-&6Bungee&f]"
-suffix: "&f&l➾&f"
+suffix: "&f&l->&f"
 
 # Message unable to create configuration file :
 fileNotCreate : "&cUnable to create configuration file !"
@@ -59,7 +59,7 @@ friends :                                                                       
 
   # Prefix and suffix of all friends messages
   prefix : "&f[&6Friends&f]"
-  suffix: "&f&l➾&f"
+  suffix: "&f&l->&f"
 
   # Message for using commands in the console :
   cmdNotUsable: "&cThis command is only available in game !"
@@ -139,17 +139,9 @@ friends :                                                                       
   # Message refuse friend request for target :
   refuseFriendTarget : "&b%player% &crefused your friend request !"
 
-  # Suffix of all entries of the Help command. Default : &f&l->
-  sHelp : "&f&l->"
-
-  # Entries of the help command, after suffix :
-  enable : "&fTo enable friend requests&c;"
-  disable : "&fTo disable friends requests&c;"
-  accept : "&fTo accept friend request in progress&c;"
-  refuse : "&fTo refuse friend request in progress&c;"
-  add: "&fTo send friend request to target player&c;"
-  remove: "&fTo remove target player of your friends list&c;"
-  list : "&fTo see your friends list&c."
+  #
+  friendConnected: "&aYour friend &b%player% &ais now connected &c!"
+  friendDisconnected: "&6Your friend &b%player% &6is now disconnected &c!"
 
 
 # ##################################################################################### #
@@ -169,16 +161,30 @@ friends :                                                                       
 groups :                                                                                #
 # ------------------------------------------------------------------------------------- #
 
-  # Prefix and suffix of all group messages :
+  # Prefix and suffix for plugin messages :
   prefix : "&f[&2Groups&f]"
-  suffix : "&f&l->"
+  suffix : "&f&l->&f"
 
   # Timing to teleport players in group list :
   timingTP : 1000 # in milliseconds
 
+  # Groups members ranks labels, just for group private chat :
+  ranks:
+    default:
+      # Rank name
+      name: "&1Member"
+      # Rank label shown in game
+      label: "&f[&2%groupLabel%&f] (%rankName%&f) "
+      # Color of player name for this rank
+      color: "&f"
+    chief:
+      name: "&cChief"
+      label: "&f[&2%groupLabel%&f] (%rankName%&f) "
+      color: "&b"
+
   # Level groups length (permissions : fgb.group.lv1 to fbg.group.lv5) :
-  levels:
-    default: 10
+  lengths:
+    default: 10 #Default group members length
     lv1: 15
     lv2: 20
     lv3: 30
@@ -270,20 +276,19 @@ groups :                                                                        
   quitGroupPlayers:  "%player% &chas left the group !"
 
   # Message when owner quit the server :
-  ownerOffline: "&cThe group owner has left the server, the group is dissolved !"
+  ownerOffline: "&cGroup owner has left the game, your group is dissolved !"
 
-  # Suffix of all entries of the Help command. Default : &f&l->
-  sHelp: "&f&l->"
+  # Message when tp is enabled :
+  tpEnabled: "&aAuto-tp is now enabled &c!"
 
-  # Entries of the help command, after suffix :
-  create: "&fTo create new group&c;"
-  delete: "&fTo remove your group&c;"
-  accept : "&fTo accept group request in progress&c;"
-  refuse : "&fTo refuse group request in progress&c;"
-  add : "&fTo send group request to target player&c;"
-  remove : "&fTo remove target player of your group list&c;"
-  owner : "&fTo change the group leader&c;"
-  list : "&fTo see the list of players in the group&c."
+  # Message when tp is disabled :
+  tpDisabled: "&cAuto-tp is now disabled !"
+
+  # Message when tp is already enabled :
+  tpAlreadyEnabled: "&6Auto-tp is already enabled &c!"
+
+  # Message when tp is already disabled :
+  tpAlreadyDisabled: "&6Auto-tp is already disabled &c!"
 
 
 # ##################################################################################### #
@@ -297,6 +302,7 @@ groups :                                                                        
 #                                                                                       #
 #   - %player% : sender                                                                 #
 #   - %targetPlayer% : target                                                           #
+#   - %cmd% : command label                                                             #
 #                                                                                       #
 msg:                                                                                    #
 # ##################################################################################### #
@@ -310,7 +316,7 @@ msg:                                                                            
 
     # Message suffix. suffix is after prefix and 2ndSuffix is after 2ndPrefix.
     # If 2ndPrefix = "", for good rendering, you can make 2ndSuffix = "" :
-    suffix : "&f&l->"
+    suffix : "&f&l->&f"
     2ndSuffix: "&f:"
 
   # Target part :
@@ -320,7 +326,7 @@ msg:                                                                            
     prefix: "&7[&c%player%&7]"
 
     # Message suffix :
-    suffix: "&f&l->"
+    suffix: "&f&l->&f"
 
   # Private messages color :
   messageColor: "&a"
@@ -343,12 +349,96 @@ msg:                                                                            
   # Message for using command in console :
   cmdNotUsable: "&cThis command is only available in game !"
 
-  # Suffix of all entries of the Help command. Default : &f&l->
-  sHelp: "&f&l->"
+  # Message when player disable private messages :
+  msgEnabled: "&6Private messages &aenabled &c!"
 
-  # Entries of the help command, after suffix :
-  cmdMsg: "&fTo send a private message to target player&c;"
-  cmdR: "&fTo reply to the last private message&c."
+  # Message when player disable private messages :
+  msgDisabled: "&6Private messages &cdisabled !"
+
+  # Message if private message option is already enabled :
+  msgAlreadyEnabled: "&cPrivate messages already enabled !"
+
+  # Message if private message option is already disabled :
+  msgAlreadyDisabled: "&cPrivate messages already disabled !"
+
+  # Message when player send message with private messages disabled option :
+  msgSenderDisabled: "&cPlease enable private messages with &6%cmd% &ccommand, to send your messages !"
+
+  # Message if target have disabled private messages option :
+  msgTargetDisabled: "&b%targetPlayer% &cdoes not accept private messages !"
+
+  # Message when an error occurs :
+  errorMsg: "An error has occurred, please report this error with the %cmd% command and specify the conditions to reproduce this error !"
+
+
+# ##################################################################################### #
+#                                     ╦ ╦╔═╗╦  ╔═╗                                      #
+#                                     ╠═╣║╣ ║  ╠═╝                                      #
+#                                     ╩ ╩╚═╝╩═╝╩                                        #
+#                                                                                       #
+# This part allows you to configure the framing and help messages of FriendsBG commands #
+#                                                                                       #
+helpmsg :                                                                               #
+# ------------------------------------------------------------------------------------- #
+
+  # /friends Help message config :
+  helpFriends:
+    # Top framing of help message :
+    top: "§6#§f-------------------- [§3Friends§f-§6BG§f] -------------------§6#"
+    # Bottom framing of help message :
+    bottom: "§6#§f----------------------- §2FREE §f-----------------------§6#"
+
+    # Suffix of all entries of the Help command. Default : &f&l->
+    sHelp: "&f&l->&f"
+
+    # Entries of the help command, after suffix :
+    enable: "&fTo enable friend requests&c;"
+    disable: "&fTo disable friends requests&c;"
+    accept: "&fTo accept friend request in progress&c;"
+    refuse: "&fTo refuse friend request in progress&c;"
+    add: "&fTo send friend request to target player&c;"
+    remove: "&fTo remove target player of your friends list&c;"
+    list: "&fTo see your friends list&c."
+
+  # /party help message config :
+  helpParty:
+    # Top framing of help message :
+    top: "§6#§f-------------------- [§3Friends§f-§6BG§f] -------------------§6#"
+    # Bottom framing of help message :
+    bottom: "§6#§f----------------------- §2FREE §f-----------------------§6#"
+
+    # Suffix of all entries of the Help command. Default : &f&l->
+    sHelp: "&f&l->&f"
+
+    # Entries of the help command, after suffix :
+    create: "&fTo create new group&c;"
+    delete: "&fTo remove your group&c;"
+    accept: "&fTo accept group request in progress&c;"
+    refuse: "&fTo refuse group request in progress&c;"
+    add: "&fTo send group request to target player&c;"
+    remove: "&fTo remove target player of your group list&c;"
+    tp: "&fTo enable or disable auto tp for group members&c;"
+    owner: "&fTo change the group leader&c;"
+    list: "&fTo see the list of players in the group&c."
+
+  # /msg | /r Help message config :
+  helpPvMsg:
+    # Top framing of help message :
+    top: "§6#§f-------------------- [§3Friends§f-§6BG§f] -------------------§6#"
+    # Bottom framing of help message :
+    bottom: "§6#§f----------------------- §2FREE §f-----------------------§6#"
+
+    # Suffix of all entries of the Help command. Default : &f&l->
+    sHelp: "&f&l->&f"
+
+    # Entries of the help command, after sHelp :
+    cmdMsg: "&fTo send a private message to target player&c;"
+    cmdR: "&fTo reply to the last private message&c;"
+    cmdEnable: "&fTo enable private messages&c;"
+    cmdDisable: "&fTo disable private messages&c."
+
+    # Report command label (exemple: /report <conditions>) :
+    reportCmd: "/report <message>"
 
 
 # ##################################################################################### #
@@ -366,7 +456,7 @@ mysql :                                                                         
 
   # Prefix and suffix MySQL console and chat messages :
   prefix: "&f[&3MySQL&f]"
-  suffix: "&l➾&f"
+  suffix: "&f&l->&f"
 
   # Message success connect/disconnect :
   connectSuccess: "&2Successful connection &c!"
@@ -386,14 +476,15 @@ mysql :                                                                         
   # database table prefix, leave blank so as not to use it :
   prefixTables: "tm_"
 
-  # Name of the mysql table that the plugin will use to create it :
-  tableName: "dataBase"
+  # Name of the mysql tables that the plugin will use to create it :
+  tableName: "fManager"
+  friendsTable: "fList"
 
   # DataBase login, use your DataBase logins for connect this plugin to your DataBase :
   host: "localhost"
   port: 3306
   user: "admin"
-  password: ""
+  password: "P@ssw0rd"
 
   # This is number of pool connexions established by the plugin (Default : 10)
   maxPoolSize: 16 # Default Redis-server config
@@ -448,13 +539,16 @@ redis :                                                                         
 #                                 ║ ║╠═╝ ║║╠═╣ ║ ║╣ ╚═╗                                 #
 #                                 ╚═╝╩  ═╩╝╩ ╩ ╩ ╚═╝╚═╝                                 #
 #                                                                                       #
-# Not available in 1.0-SNAPSHOT                                                         #
+# Not available in 1.X-SNAPSHOT                                                         #
 #                                                                                       #
 updates:                                                                                #
 # ##################################################################################### #
 
-  #Turn to true for active autoUpdates :
-  enable: false
+  # Turn to true for enable plugin updates checker :
+  checker: true
+
+  # Turn to true for enable auto-updates :
+  autoUpdate: false
 
 
 # #################### Plugin made by PataPom - Licensed under GPL3 License. #################### #

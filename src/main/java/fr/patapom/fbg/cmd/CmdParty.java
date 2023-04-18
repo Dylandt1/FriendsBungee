@@ -5,8 +5,8 @@ import fr.patapom.commons.friends.FriendsManager;
 import fr.patapom.commons.friends.FriendsProvider;
 import fr.patapom.commons.party.PartyManager;
 import fr.patapom.commons.party.PartyProvider;
-import fr.patapom.fbg.utils.exceptions.FManagerNotFoundException;
-import fr.patapom.fbg.utils.exceptions.PManagerNotFoundException;
+import fr.patapom.fbg.cmd.utils.Help;
+import fr.patapom.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.*;
@@ -37,6 +37,9 @@ import java.util.*;
 public class CmdParty extends Command implements TabExecutor
 {
     private static Map<UUID, UUID> requestGp = new HashMap<>();
+
+    private final Help H = new Help();
+
     private final Configuration config;
     private final String prefix;
     private final String suffix;
@@ -68,16 +71,10 @@ public class CmdParty extends Command implements TabExecutor
     private final String newOwnerTarget;
     private final String quitGroupSender;
     private final String quitGroupPlayers;
-
-    private final String suffixH;
-    private final String create;
-    private final String delete;
-    private final String accept;
-    private final String refuse;
-    private final String add;
-    private final String remove;
-    private final String list;
-    private final String ownercmd;
+    private final String tpEnabled;
+    private final String tpDisabled;
+    private final String tpAlreadyEnabled;
+    private final String tpAlreadyDisabled;
 
     public CmdParty()
     {
@@ -113,73 +110,79 @@ public class CmdParty extends Command implements TabExecutor
         this.newOwnerTarget = config.getString("groups.newOwnerTarget").replace("&", "§");
         this.quitGroupSender = config.getString("groups.quitGroupSender").replace("&", "§");
         this.quitGroupPlayers = config.getString("groups.quitGroupPlayers").replace("&", "§");
-        //msg help
-        this.suffixH = config.getString("groups.sHelp").replace("&", "§");
-        this.create = config.getString("groups.create").replace("&", "§");
-        this.delete = config.getString("groups.delete").replace("&", "§");
-        this.accept = config.getString("groups.accept").replace("&", "§");
-        this.refuse = config.getString("groups.refuse").replace("&", "§");
-        this.add = config.getString("groups.add").replace("&", "§");
-        this.remove = config.getString("groups.remove").replace("&", "§");
-        this.list = config.getString("groups.list").replace("&", "§");
-        this.ownercmd = config.getString("groups.owner").replace("&", "§");
+        this.tpEnabled = config.getString("groups.tpEnabled").replace("&", "§");
+        this.tpDisabled = config.getString("groups.tpDisabled").replace("&", "§");
+        this.tpAlreadyEnabled = config.getString("groups.tpAlreadyEnabled").replace("&", "§");
+        this.tpAlreadyDisabled = config.getString("groups.tpAlreadyDisabled").replace("&", "§");
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args)
     {
-        if(sender instanceof ProxiedPlayer)
+        if(!(sender instanceof ProxiedPlayer)) {return null;}
+
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        FriendsProvider fProvider = new FriendsProvider(p.getUniqueId());
+        FriendsManager fManager;
+        try {
+            fManager = fProvider.getFManager();
+        } catch (ManagerNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if(args.length == 1)
         {
-            ProxiedPlayer p = (ProxiedPlayer) sender;
-            FriendsProvider fProvider = new FriendsProvider(p.getUniqueId());
-            FriendsManager fManager;
-            try {
-                fManager = fProvider.getFManager();
-            } catch (FManagerNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            if(args.length == 1)
+            List<String> list = new ArrayList<>();
+            list.add("help");
+            list.add("create");
+            list.add("delete");
+            list.add("accept");
+            list.add("refuse");
+            list.add("quit");
+            list.add("add");
+            list.add("remove");
+            list.add("tp");
+            list.add("list");
+            list.add("owner");
+            return list;
+        }else if(args.length == 2)
+        {
+            List<String> list = new ArrayList<>();
+            if(args[0].equalsIgnoreCase("add"))
             {
-                List<String> list = new ArrayList<>();
-                list.add("help");
-                list.add("create");
-                list.add("delete");
-                list.add("accept");
-                list.add("refuse");
-                list.add("quit");
-                list.add("add");
-                list.add("remove");
-                list.add("list");
-                list.add("owner");
-                return list;
-            }else if(args.length == 2)
-            {
-                List<String> list = new ArrayList<>();
-                if(args[0].equalsIgnoreCase("add"))
+                for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
                 {
-                    for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
+                    list.add(pls.getName());
+                }
+            }else if(args[0].equalsIgnoreCase("remove"))
+            {
+                if (fManager.isInGroup())
+                {
+                    PartyProvider pProvider = new PartyProvider(fManager.getGroupId());
+
+                    if(!pProvider.pExist())
+                    {
+                        fManager.setGroupId(null);
+                        fProvider.save(fManager);
+                        return null;
+                    }
+
+                    PartyManager party;
+                    try {
+                        party = pProvider.getPManager();
+                    } catch (ManagerNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    for (ProxiedPlayer pls : party.getPlayersInGroup())
                     {
                         list.add(pls.getName());
                     }
-                }else if(args[0].equalsIgnoreCase("remove"))
-                {
-                    if (fManager.isInGroup())
-                    {
-                        PartyProvider pProvider = new PartyProvider(fManager.getGroupId());
-                        PartyManager party;
-                        try {
-                            party = pProvider.getPManager();
-                        } catch (PManagerNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        for (ProxiedPlayer pls : party.getPlayersInGroup())
-                        {
-                            list.add(pls.getName());
-                        }
-                    }
                 }
-                return list;
+            }else if(args[0].equalsIgnoreCase("tp"))
+            {
+                list.add("enable");
+                list.add("disable");
             }
+            return list;
         }
         return new ArrayList<>();
     }
@@ -199,7 +202,7 @@ public class CmdParty extends Command implements TabExecutor
         FriendsManager fManager;
         try {
             fManager = provider.getFManager();
-        } catch (FManagerNotFoundException e)
+        } catch (ManagerNotFoundException e)
         {
             e.printStackTrace();
             return;
@@ -207,12 +210,12 @@ public class CmdParty extends Command implements TabExecutor
 
         if (args.length == 0)
         {
-            helpParty(p);
+            H.helpParty(p);
         }else if (args.length == 1)
         {
             if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("h"))
             {
-                helpParty(p);
+                H.helpParty(p);
             }else if(args[0].equalsIgnoreCase("create"))
             {
                 if(!fManager.isInGroup())
@@ -221,10 +224,9 @@ public class CmdParty extends Command implements TabExecutor
                     PartyManager party;
                     try {
                         party = pProvider.getPManager();
-                    } catch (PManagerNotFoundException e) {
+                    } catch (ManagerNotFoundException e) {
                         throw new RuntimeException(e);
                     }
-                    fManager.setInGroup(true);
                     fManager.setGroupId(party.getGroupId());
                     provider.save(fManager);
                     sendMessage(p, prefix+" "+suffix+" "+groupCreated);
@@ -256,14 +258,14 @@ public class CmdParty extends Command implements TabExecutor
                 FriendsManager targetManager;
                 try {
                     targetManager = targetProvider.getFManager();
-                } catch (FManagerNotFoundException e) {
+                } catch (ManagerNotFoundException e) {
                     throw new RuntimeException(e);
                 }
                 PartyProvider partyProvider = new PartyProvider(targetManager.getGroupId());
                 PartyManager party;
                 try {
                     party = partyProvider.getPManager();
-                } catch (PManagerNotFoundException e) {
+                } catch (ManagerNotFoundException e) {
                     throw new RuntimeException(e);
                 }
                 if(party == null)
@@ -284,12 +286,24 @@ public class CmdParty extends Command implements TabExecutor
                 if(fManager.isInGroup())
                 {
                     PartyProvider pProvider = new PartyProvider(fManager.getGroupId());
+
+                    if(!pProvider.pExist())
+                    {
+                        fManager.setGroupId(null);
+                        provider.save(fManager);
+                        sendMessage(p, prefix+" "+suffix+" "+notInGroup);
+                        return;
+                    }
+
                     PartyManager party;
                     try {
                         party = pProvider.getPManager();
-                    } catch (PManagerNotFoundException e) {
+                    } catch (ManagerNotFoundException e) {
                         throw new RuntimeException(e);
                     }
+
+                    if(party.isOwner(p.getUniqueId())) {party.onQuit();return;}
+
                     party.removePlayerInGroup(p);
                     pProvider.save(party);
                     sendMessage(p, prefix+" "+suffix+" "+quitGroupSender);
@@ -326,10 +340,19 @@ public class CmdParty extends Command implements TabExecutor
                 if(fManager.isInGroup())
                 {
                     PartyProvider pProvider = new PartyProvider(fManager.getGroupId());
+
+                    if(!pProvider.pExist())
+                    {
+                        fManager.setGroupId(null);
+                        provider.save(fManager);
+                        sendMessage(p, prefix+" "+suffix+" "+notInGroup);
+                        return;
+                    }
+
                     PartyManager party;
                     try {
                         party = pProvider.getPManager();
-                    } catch (PManagerNotFoundException e) {
+                    } catch (ManagerNotFoundException e) {
                         throw new RuntimeException(e);
                     }
 
@@ -398,159 +421,142 @@ public class CmdParty extends Command implements TabExecutor
                 if(fManager.isInGroup())
                 {
                     PartyProvider pProvider = new PartyProvider(fManager.getGroupId());
-                    PartyManager party;
-                    try {
-                        party = pProvider.getPManager();
-                    } catch (PManagerNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if(party.isOwner(p.getUniqueId()))
+
+                    if(!pProvider.pExist())
                     {
-                        sendMessage(p, prefix+" "+suffix+" "+groupDeletedSender);
-                        ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), ()-> {
-                            for(int i = 0; i<party.getPlayersInGroup().size(); i++)
-                            {
-                                ProxiedPlayer player = party.getPlayersInGroup().get(i);
-                                if(!player.equals(p))
-                                {
-                                    party.removePlayerInGroup(player);
-                                    sendMessage(player, prefix+" "+suffix+" "+groupDeletedTarget);
-                                }
-                                if(i>=party.getPlayersInGroup().size())break;
-                            }
-                        });
-                        party.delete();
-                    }else {
-                        sendMessage(p, prefix+" "+suffix+" "+ownerGroup);
+                        fManager.setGroupId(null);
+                        provider.save(fManager);
+                        sendMessage(p, prefix+" "+suffix+" "+notInGroup);
+                        return;
+                    }
+
+                    try {
+                        PartyManager party = pProvider.getPManager();
+
+                        if(party.isOwner(p.getUniqueId()))
+                        {
+                            sendMessage(p, prefix+" "+suffix+" "+groupDeletedSender);
+                            party.removePlayerInGroup(p);
+                            party.delete();
+                        }else {
+                            sendMessage(p, prefix+" "+suffix+" "+ownerGroup);
+                        }
+                    } catch (ManagerNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
                 }else {
                     sendMessage(p, prefix+" "+suffix+" "+notInGroup);
                 }
             }else {
-                helpParty(p);
+                H.helpParty(p);
             }
         }else if (args.length == 2)
         {
-            if(fManager.isInGroup())
+            String targetName = args[1];
+
+            if(!fManager.isInGroup()) {sendMessage(p, prefix+" "+suffix+" "+notInGroup);return;}
+
+            if (ProxyServer.getInstance().getPlayer(targetName) == null)
             {
-                String targetName = args[1];
-                PartyProvider partyProvider = new PartyProvider(p);
-                PartyManager party;
-                try {
-                    party = partyProvider.getPManager();
-                } catch (PManagerNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                if (ProxyServer.getInstance().getPlayer(targetName) != null)
+                sendMessage(p, prefix+" "+suffix+" "+playerNotFound.replace("%targetPlayer%", targetName));
+                return;
+            }
+
+            PartyProvider partyProvider = new PartyProvider(p);
+
+            if(!partyProvider.pExist())
+            {
+                fManager.setGroupId(null);
+                provider.save(fManager);
+                sendMessage(p, prefix+" "+suffix+" "+notInGroup);
+                return;
+            }
+
+            PartyManager party;
+            try {
+                party = partyProvider.getPManager();
+            } catch (ManagerNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
+
+            if(args[0].equalsIgnoreCase("add"))
+            {
+                if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+" "+suffix+" "+ownerGroup);return;}
+                if (targetPl == p) {sendMessage(p, prefix+" "+suffix+" "+alreadyInGroup);return;}
+                if (party.getPlayersInGroup().size() == party.getGroupLenght())
                 {
-                    ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
+                    sendMessage(p, prefix+" "+suffix+" "+groupLimit.replace("%groupSize%", String.valueOf(party.getGroupLenght())));
+                    return;
+                }
 
-                    if(args[0].equalsIgnoreCase("add"))
+                TextComponent targetTxt = new TextComponent(prefix+" "+suffix+" "+requestTarget.replace("%player%", p.getName()));
+                targetTxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(scrollTargetRequest).create()));
+                targetTxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
+
+                sendMessage(p, prefix+" "+suffix+" "+requestSender.replace("%targetPlayer%", targetName));
+                targetPl.sendMessage(targetTxt);
+
+                requestGp.put(targetPl.getUniqueId(), p.getUniqueId());
+            }else if (args[0].equalsIgnoreCase("remove"))
+            {
+                if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+" "+suffix+" "+ownerGroup);return;}
+                if (targetPl == p) {sendMessage(p, prefix+" "+suffix+" "+yourselfCantGetOut);return;}
+                if (!party.getPlayersInGroup().contains(targetPl))
+                {
+                    sendMessage(p, prefix+" "+suffix+" "+targetNotInGroup.replace("%targetPlayer%", targetName));
+                    return;
+                }
+
+                party.removePlayerInGroup(targetPl);
+                sendMessage(p, prefix+" "+suffix+" "+targetDeleted.replace("%targetPlayer%", targetName));
+            }else if (args[0].equalsIgnoreCase("owner"))
+            {
+                if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+" "+suffix+" "+ownerGroup);return;}
+                if (targetPl == p) {sendMessage(p, prefix+" "+suffix+" "+alreadyOwner);return;}
+                if (!party.getPlayersInGroup().contains(targetPl)) {
+                    sendMessage(p, prefix+" "+suffix+" "+justMemberToOwner);return;
+                }
+
+                for (ProxiedPlayer players : party.getPlayersInGroup())
+                {
+                    if (players != targetPl)
                     {
-                        if(party.isOwner(p.getUniqueId()))
-                        {
-                            if (targetPl == p) {
-                                sendMessage(p, prefix+" "+suffix+" "+alreadyInGroup);
-                                return;
-                            }
-                            if (party.getPlayersInGroup().size() != party.getGroupLenght())
-                            {
-                                TextComponent targetTxt = new TextComponent(prefix+" "+suffix+" "+requestTarget.replace("%player%", p.getName()));
-                                targetTxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(scrollTargetRequest).create()));
-                                targetTxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
-
-                                sendMessage(p, prefix+" "+suffix+" "+requestSender.replace("%targetPlayer%", targetName));
-                                targetPl.sendMessage(targetTxt);
-
-                                requestGp.put(targetPl.getUniqueId(), p.getUniqueId());
-                            } else{
-                                sendMessage(p, prefix+" "+suffix+" "+groupLimit.replace("%groupSize%", String.valueOf(party.getGroupLenght())));
-                            }
-                        }else {
-                            sendMessage(p, prefix+" "+suffix+" "+ownerGroup);
-                        }
-                    }else if (args[0].equalsIgnoreCase("remove"))
-                    {
-                        if(party.isOwner(p.getUniqueId()))
-                        {
-                            if (targetPl == p)
-                            {
-                                sendMessage(p, prefix+" "+suffix+" "+yourselfCantGetOut);
-                                return;
-                            }
-                            if (!party.getPlayersInGroup().contains(targetPl))
-                            {
-                                sendMessage(p, prefix+" "+suffix+" "+targetNotInGroup.replace("%targetPlayer%", targetName));
-                                return;
-                            }
-                            party.removePlayerInGroup(targetPl);
-                            sendMessage(p, prefix+" "+suffix+" "+targetDeleted.replace("%targetPlayer%", targetName));
-                        }else {
-                            sendMessage(p, prefix+" "+suffix+" "+ownerGroup);
-                        }
-                    }else if (args[0].equalsIgnoreCase("owner"))
-                    {
-                        if(party.isOwner(p.getUniqueId()))
-                        {
-                            if (targetPl == p)
-                            {
-                                sendMessage(p, prefix+" "+suffix+" "+alreadyOwner);
-                                return;
-                            }
-                            if (!party.getPlayersInGroup().contains(targetPl))
-                            {
-                                sendMessage(p, prefix+" "+suffix+" "+justMemberToOwner);
-                                return;
-                            }
-
-                            for (ProxiedPlayer players : party.getPlayersInGroup())
-                            {
-                                if (players != targetPl)
-                                {
-                                    sendMessage(p, prefix+" "+suffix+" "+newOwnerAllInGroup.replace("%targetPlayer%", targetName));
-                                }
-                            }
-                            sendMessage(targetPl, prefix+" "+suffix+" "+newOwnerTarget);
-                            party.changeOwnerGroup(targetPl);
-                        }else {
-                            sendMessage(p, prefix+" "+suffix+" "+ownerGroup);
-                        }
-                    }else {
-                        helpParty(p);
+                        sendMessage(p, prefix+" "+suffix+" "+newOwnerAllInGroup.replace("%targetPlayer%", targetName));
                     }
+                }
+                sendMessage(targetPl, prefix+" "+suffix+" "+newOwnerTarget);
+                party.changeOwnerGroup(targetPl);
+            }else if(args[0].equalsIgnoreCase("tp"))
+            {
+                if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+" "+suffix+" "+ownerGroup);return;}
+
+                if(args[1].equalsIgnoreCase("enable"))
+                {
+                    if(!party.tp())
+                    {
+                        party.setTp(true);
+                        sendMessage(p, prefix+" "+suffix+" "+tpEnabled);
+                        return;
+                    }
+                    sendMessage(p, prefix+" "+suffix+" "+tpAlreadyEnabled);
+                }else if(args[0].equalsIgnoreCase("disable"))
+                {
+                    if(party.tp())
+                    {
+                        party.setTp(false);
+                        sendMessage(p, prefix+" "+suffix+" "+tpDisabled);
+                        return;
+                    }
+                    sendMessage(p, prefix+" "+suffix+" "+tpAlreadyDisabled);
                 }else {
-                    sendMessage(p, prefix+" "+suffix+" "+playerNotFound.replace("%targetPlayer%", targetName));
+                    H.helpParty(p);
                 }
             }else {
-                 sendMessage(p, prefix+" "+suffix+" "+notInGroup);
+                H.helpParty(p);
             }
         }
-    }
-
-    public void helpParty(ProxiedPlayer p)
-    {
-        sendMessage(p, " ");
-        sendMessage(p, "§6#§f-------------------- [§3Friends§f-§6BG§f] -------------------§6#");
-        sendMessage(p, " ");
-        sendMessage(p, " §6§l? §7§nHelp§f : ");
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bgroup §fcreate "+suffixH+" "+create);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bgroup §fdelete "+suffix+" "+delete);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bgroup §faccept "+suffix+" "+accept);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bgroup §frefuse "+suffix+" "+refuse);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bgroup §fadd §7<§6player§7> "+suffix+" "+add);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bgroup §fremove §7<§6player§7> "+suffix+" "+remove);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bgroup §fowner §7<§6player§7> "+suffix+" "+ownercmd);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bgroup §flist "+suffix+" "+list);
-        sendMessage(p, " ");
-        sendMessage(p, "§6#§f----------------------- §2FREE §f-----------------------§6#");
     }
 
     private void sendMessage(ProxiedPlayer p, String s) {

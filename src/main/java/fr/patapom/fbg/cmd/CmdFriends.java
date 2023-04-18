@@ -3,7 +3,8 @@ package fr.patapom.fbg.cmd;
 import fr.patapom.fbg.FriendsBG;
 import fr.patapom.commons.friends.FriendsManager;
 import fr.patapom.commons.friends.FriendsProvider;
-import fr.patapom.fbg.utils.exceptions.FManagerNotFoundException;
+import fr.patapom.fbg.cmd.utils.Help;
+import fr.patapom.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.*;
@@ -34,8 +35,10 @@ import java.util.*;
 public class CmdFriends extends Command implements TabExecutor
 {
     private Map<ProxiedPlayer, ProxiedPlayer> requestFriend = new HashMap<>();
-    private final Configuration config;
 
+    private final Help H = new Help();
+
+    private final Configuration config;
     private final String prefix;
     private final String suffix;
     private final String cmdNotUsable;
@@ -64,15 +67,6 @@ public class CmdFriends extends Command implements TabExecutor
     private final String noRequest;
     private final String refuseFriendSender;
     private final String refuseFriendTarget;
-
-    private final String suffixH;
-    private final String enable;
-    private final String disable;
-    private final String accept;
-    private final String refuse;
-    private final String add;
-    private final String remove;
-    private final String list;
 
     public CmdFriends()
     {
@@ -106,55 +100,47 @@ public class CmdFriends extends Command implements TabExecutor
         this.noRequest = config.getString("friends.noRequest").replace("&", "§");
         this.refuseFriendSender = config.getString("friends.refuseFriendSender").replace("&", "§");
         this.refuseFriendTarget = config.getString("friends.refuseFriendTarget").replace("&", "§");
-        this.suffixH = config.getString("friends.sHelp").replace("&", "§");
-        this.enable = config.getString("friends.enable").replace("&", "§");
-        this.disable = config.getString("friends.disable").replace("&", "§");
-        this.accept = config.getString("friends.accept").replace("&", "§");
-        this.refuse = config.getString("friends.refuse").replace("&", "§");
-        this.add = config.getString("friends.add").replace("&", "§");
-        this.remove = config.getString("friends.remove").replace("&", "§");
-        this.list = config.getString("friends.list").replace("&", "§");
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args)
     {
-        if(sender instanceof ProxiedPlayer)
+        if(!(sender instanceof ProxiedPlayer)) {return null;}
+
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        if(args.length == 1)
         {
-            ProxiedPlayer p = (ProxiedPlayer) sender;
-            if(args.length == 1)
+            List<String> list = new ArrayList<>();
+            list.add("help");
+            list.add("enable");
+            list.add("disable");
+            list.add("accept");
+            list.add("refuse");
+            list.add("add");
+            list.add("remove");
+            list.add("list");
+            return list;
+        }else if(args.length == 2)
+        {
+            List<String> list = new ArrayList<>();
+            if(args[0].equalsIgnoreCase("add"))
             {
-                List<String> list = new ArrayList<>();
-                list.add("help");
-                list.add("enable");
-                list.add("disable");
-                list.add("accept");
-                list.add("refuse");
-                list.add("add");
-                list.add("remove");
-                list.add("list");
-                return list;
-            }else if(args.length == 2)
-            {
-                List<String> list = new ArrayList<>();
-                if(args[0].equalsIgnoreCase("add"))
+                for(ProxiedPlayer pls : p.getServer().getInfo().getPlayers())
                 {
-                    for(ProxiedPlayer pls : p.getServer().getInfo().getPlayers())
-                    {
-                        list.add(pls.getName());
-                    }
-                }else if(args[0].equalsIgnoreCase("remove")){
-                    FriendsProvider provider = new FriendsProvider(p.getUniqueId());
-                    try {
-                        FriendsManager fManager = provider.getFManager();
-                        list.addAll(fManager.getFriendsMap().keySet());
-                    } catch (FManagerNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    list.add(pls.getName());
                 }
-                return list;
+            }else if(args[0].equalsIgnoreCase("remove")){
+                FriendsProvider provider = new FriendsProvider(p.getUniqueId());
+                try {
+                    FriendsManager fManager = provider.getFManager();
+                    list.addAll(fManager.getFriendsMap().keySet());
+                } catch (ManagerNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
+            return list;
         }
+
         return new ArrayList<>();
     }
 
@@ -171,7 +157,7 @@ public class CmdFriends extends Command implements TabExecutor
 
         if (args.length == 0)
         {
-            helpFriend(p);
+            H.helpFriends(p);
             return;
         }
 
@@ -183,50 +169,35 @@ public class CmdFriends extends Command implements TabExecutor
             {
                 if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("h"))
                 {
-                    helpFriend(p);
+                    H.helpFriends(p);
                     return;
                 }else if (args[0].equalsIgnoreCase("enable"))
                 {
-                    if (!fManager.isAllow()) {
-                        fManager.setAllow(true);
-                        provider.save(fManager);
-                        sendMessage(p, prefix+" "+suffix+" "+requestsAllow);
-                    } else {
-                        sendMessage(p, prefix+" "+suffix+" "+requestsAlreadyEnabled);
-                    }
+                    if (fManager.requestsAllow()) {sendMessage(p, prefix+" "+suffix+" "+requestsAlreadyEnabled);return;}
+
+                    fManager.setRequestsAllow(true);
+                    provider.save(fManager);
+                    sendMessage(p, prefix+" "+suffix+" "+requestsAllow);
                 }else if (args[0].equalsIgnoreCase("disable")) {
-                    if (fManager.isAllow()) {
-                        fManager.setAllow(false);
-                        provider.save(fManager);
-                        sendMessage(p, prefix+" "+suffix+" "+requestsDeny);
-                    } else {
-                        sendMessage(p, prefix+" "+suffix+" "+requestsAlreadyDisabled);
-                    }
+                    if (!fManager.requestsAllow()) {sendMessage(p, prefix+" "+suffix+" "+requestsAlreadyDisabled);return;}
+
+                    fManager.setRequestsAllow(false);
+                    provider.save(fManager);
+                    sendMessage(p, prefix+" "+suffix+" "+requestsDeny);
                 }else if (args[0].equalsIgnoreCase("accept"))
                 {
-                    if (!requestFriend.containsKey(p))
-                    {
-                        sendMessage(p, prefix+" "+suffix+" "+noRequest);
-                        return;
-                    }
-                    if(requestFriend.get(p) == null)
-                    {
-                        sendMessage(p, prefix+" "+suffix+" "+errorAdd);
-                        return;
-                    }
+                    if (!requestFriend.containsKey(p)) {sendMessage(p, prefix+" "+suffix+" "+noRequest);return;}
+                    if(requestFriend.get(p) == null) {sendMessage(p, prefix+" "+suffix+" "+errorAdd);return;}
+
                     final String targetName = requestFriend.get(p).getName();
                     final UUID targetUUID = requestFriend.get(p).getUniqueId();
-                    if (fManager.isFriends(targetName))
-                    {
-                        sendMessage(p, prefix+" "+suffix+" "+alreadyFriends);
-                        return;
-                    }
+                    if (fManager.isFriends(targetName)) {sendMessage(p, prefix+" "+suffix+" "+alreadyFriends);return;}
 
                     FriendsProvider targetProvider = new FriendsProvider(targetUUID);
                     FriendsManager targetManager;
                     try {
                         targetManager = targetProvider.getFManager();
-                    } catch (FManagerNotFoundException e) {
+                    } catch (ManagerNotFoundException e) {
                         e.printStackTrace();
                         return;
                     }
@@ -239,25 +210,13 @@ public class CmdFriends extends Command implements TabExecutor
                     sendMessage(p, prefix+" "+suffix+" "+newFriendSender.replace("%targetPlayer%", targetName));
                     sendMessage(requestFriend.get(p), prefix+" "+suffix+" "+newFriendTarget.replace("%player%", p.getName()));
                     this.requestFriend.remove(p);
-
                 } else if (args[0].equalsIgnoreCase("refuse"))
                 {
-                    if (!requestFriend.containsKey(p))
-                    {
-                        sendMessage(p, prefix+" "+suffix+" "+noRequest);
-                        return;
-                    }
-                    if (requestFriend.get(p) == null)
-                    {
-                        sendMessage(p, prefix+" "+suffix+" "+errorAdd);
-                        return;
-                    }
+                    if (!requestFriend.containsKey(p)) {sendMessage(p, prefix+" "+suffix+" "+noRequest);return;}
+                    if (requestFriend.get(p) == null) {sendMessage(p, prefix+" "+suffix+" "+errorAdd);return;}
+
                     final String targetName = requestFriend.get(p).getName();
-                    if (fManager.isFriends(targetName))
-                    {
-                        sendMessage(p, prefix+" "+suffix+" "+alreadyFriends);
-                        return;
-                    }
+                    if (fManager.isFriends(targetName)) {sendMessage(p, prefix+" "+suffix+" "+alreadyFriends);return;}
 
                     sendMessage(p, prefix+" "+suffix+" "+refuseFriendSender.replace("%targetPlayer%", targetName));
                     sendMessage(this.requestFriend.get(p), prefix+" "+suffix+" "+refuseFriendTarget.replace("%player%", p.getName()));
@@ -325,87 +284,78 @@ public class CmdFriends extends Command implements TabExecutor
                         sendMessage(p, "§6#§f---------------------------------------------------§6#");
                     }
                 }else {
-                    if (args[0].equalsIgnoreCase("add")) {
-                        helpFriend(p);
-                        return;
-                    }
-                    if (args[0].equalsIgnoreCase("remove")) {
-                        helpFriend(p);
-                        return;
-                    }
+                    if (args[0].equalsIgnoreCase("add")) {H.helpFriends(p);return;}
+                    if (args[0].equalsIgnoreCase("remove")) {H.helpFriends(p);return;}
                 }
             }
             if (args.length == 2) {
-                if (args[0].equalsIgnoreCase("add")) {
+                if (args[0].equalsIgnoreCase("add"))
+                {
                     String targetName = args[1];
-                    if (ProxyServer.getInstance().getPlayer(targetName) != null)
+                    if (ProxyServer.getInstance().getPlayer(targetName) == null)
                     {
-                        UUID targetUUID = ProxyServer.getInstance().getPlayer(targetName).getUniqueId();
-                        if (p.getUniqueId().equals(targetUUID))
-                        {
-                            sendMessage(p, prefix+" "+suffix+" "+yourSelfAsaFriend);
-                            return;
-                        }
-                        if (fManager.isFriends(targetName))
-                        {
-                            sendMessage(p, prefix+" "+suffix+" "+alreadyFriends.replace("%targetPlayer%", targetName));
-                            return;
-                        }
-                        FriendsProvider targetProvider = new FriendsProvider(targetUUID);
-                        FriendsManager targetManager;
-                        try {
-                            targetManager = targetProvider.getFManager();
-                        } catch (FManagerNotFoundException e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                        if (targetManager.isAllow()) {
-                            if (fManager.isAllow()) {
-                                if (this.requestFriend.containsValue(p))
-                                {
-                                    sendMessage(p, prefix+" "+suffix+" "+alreadyInProgress.replace("%targetPlayer%", targetName));
-                                    return;
-                                }
-                                this.requestFriend.put(ProxyServer.getInstance().getPlayer(targetName), p);
-
-                                TextComponent targetTxt = new TextComponent(prefix+" "+suffix+" "+friendRequestTarget.replace("%player%", p.getName()));
-                                targetTxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(scrollTargetRequest).create()));
-                                targetTxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f accept"));
-
-                                sendMessage(p, prefix+" "+suffix+" "+friendRequestSender.replace("%targetPlayer%", targetName));
-                                ProxyServer.getInstance().getPlayer(targetName).sendMessage(targetTxt);
-
-                            } else {
-                                sendMessage(p, prefix+" "+suffix+" "+senderRequestsDeny);
-                            }
-                        } else {
-                            sendMessage(p, prefix+" "+suffix+" "+targetRequestsDeny.replace("%targetPlayer%", targetName));
-                        }
-                    }else {
                         sendMessage(p, prefix+" "+suffix+" "+playerNotFound.replace("%targetPlayer%", targetName));
+                        return;
                     }
+
+                    UUID targetUUID = ProxyServer.getInstance().getPlayer(targetName).getUniqueId();
+                    if (p.getUniqueId().equals(targetUUID)) {sendMessage(p, prefix+" "+suffix+" "+yourSelfAsaFriend);return;}
+                    if (fManager.isFriends(targetName))
+                    {
+                        sendMessage(p, prefix+" "+suffix+" "+alreadyFriends.replace("%targetPlayer%", targetName));
+                        return;
+                    }
+
+                    FriendsProvider targetProvider = new FriendsProvider(targetUUID);
+                    FriendsManager targetManager;
+                    try {
+                        targetManager = targetProvider.getFManager();
+                    } catch (ManagerNotFoundException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    if (!fManager.requestsAllow()) {sendMessage(p, prefix+" "+suffix+" "+senderRequestsDeny);return;}
+                    if (!targetManager.requestsAllow())
+                    {
+                        sendMessage(p, prefix+" "+suffix+" "+targetRequestsDeny.replace("%targetPlayer%", targetName));
+                        return;
+                    }
+
+                    if (this.requestFriend.containsValue(p))
+                    {
+                        sendMessage(p, prefix+" "+suffix+" "+alreadyInProgress.replace("%targetPlayer%", targetName));
+                        return;
+                    }
+
+                    this.requestFriend.put(ProxyServer.getInstance().getPlayer(targetName), p);
+
+                    TextComponent targetTxt = new TextComponent(prefix+" "+suffix+" "+friendRequestTarget.replace("%player%", p.getName()));
+                    targetTxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(scrollTargetRequest).create()));
+                    targetTxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f accept"));
+
+                    sendMessage(p, prefix+" "+suffix+" "+friendRequestSender.replace("%targetPlayer%", targetName));
+                    ProxyServer.getInstance().getPlayer(targetName).sendMessage(targetTxt);
                 } else if (args[0].equalsIgnoreCase("remove"))
                 {
                     String targetName = args[1];
-                    if (p.getName().equals(targetName))
-                    {
-                        sendMessage(p, prefix+" "+suffix+" "+cantGetOut);
-                        return;
-                    }
+                    if (p.getName().equals(targetName)) {sendMessage(p, prefix+" "+suffix+" "+cantGetOut);return;}
                     if (!fManager.isFriends(targetName))
                     {
                         sendMessage(p, prefix+" "+suffix+" "+notFriends.replace("%targetPlayer%", targetName));
                         return;
                     }
+
                     UUID targerUUID = fManager.getFriendsMap().get(targetName);
                     FriendsProvider targetProvider = new FriendsProvider(targerUUID);
                     FriendsManager targetManager;
                     try {
                         targetManager = targetProvider.getFManager();
-                    } catch (FManagerNotFoundException e) {
+                    } catch (ManagerNotFoundException e) {
                         e.printStackTrace();
                         return;
                     }
+
                     fManager.removeFriend(targetName);
                     targetManager.removeFriend(p.getName());
                     provider.save(fManager);
@@ -413,34 +363,10 @@ public class CmdFriends extends Command implements TabExecutor
                     sendMessage(p, prefix+" "+suffix+" "+deletedFriend.replace("%targetPlayer%", targetName));
                 }
             }
-        } catch (FManagerNotFoundException e) {
+        } catch (ManagerNotFoundException e) {
             e.printStackTrace();
         }
 
-    }
-
-    public void helpFriend(ProxiedPlayer p)
-    {
-        sendMessage(p, " ");
-        sendMessage(p, "§6#§f-------------------- [§3Friends§f-§6BG§f] -------------------§6#");
-        sendMessage(p, " ");
-        sendMessage(p, " §6§l? §7§nHelp§f : ");
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §fenable "+suffixH+" "+enable);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §fdisable "+suffixH+" "+disable);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §faccept "+suffixH+" "+accept);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §frefuse "+suffixH+" "+refuse);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §fadd §7<§6player§7> "+suffixH+" "+add);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §fremove §7<§6player§7> "+suffixH+" "+remove);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §flist "+suffixH+" "+list);
-        sendMessage(p, " ");
-        sendMessage(p, "§6#§f----------------------- §2FREE §f-----------------------§6#");
     }
 
     private void sendMessage(ProxiedPlayer p, String s) {p.sendMessage(new TextComponent(s));}

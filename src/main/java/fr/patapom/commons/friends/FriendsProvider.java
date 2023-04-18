@@ -1,13 +1,14 @@
 package fr.patapom.commons.friends;
 
-import api.data.manager.json.SerializationManager;
-import api.data.manager.redis.RedisAccess;
-import api.data.manager.sql.DBAccess;
-import api.data.manager.sql.DBManager;
-import api.files.Files;
-import fr.patapom.commons.friends.FriendsManager;
+import fr.patapom.fbg.data.manager.sql.DBManager;
+import fr.patapom.fbg.data.manager.sql.SqlManager;
+import fr.patapom.tmapi.data.manager.Json.SerializationManager;
+import fr.patapom.fbg.data.manager.redis.RedisAccess;
+import fr.patapom.tmapi.data.manager.Files;
 import fr.patapom.fbg.FriendsBG;
-import fr.patapom.fbg.utils.exceptions.FManagerNotFoundException;
+import fr.patapom.tmapi.exceptions.ManagerNotFoundException;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 
@@ -16,9 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This file is part of FriendsBungee (FriendsBG-Free), a bungeecord friends plugin.
@@ -41,11 +40,11 @@ public class FriendsProvider
 {
     private final FriendsBG plugin;
     private final File saveDirectory;
-    private final UUID uuid;
 
-    private static final String prefixTables = DBAccess.getPrefixTables();
-    private static final String tableName = DBAccess.getTableName();
-    private static final String tableAllow = "fbg_allow";
+    private final ProxiedPlayer player;
+    private final UUID uuid;
+    private final String name;
+    private final String displayName;
 
     private final boolean redisEnable = FriendsBG.getInstance().redisEnable;
     private final boolean sqlEnable = FriendsBG.getInstance().sqlEnable;
@@ -53,28 +52,39 @@ public class FriendsProvider
     private String REDIS_KEY = "fManager:";
 
     /**
-     * Public methods :
+     * FriendsProvider initiator
      */
-
     public FriendsProvider(UUID playerUUID)
     {
+        // Init all variables
+        this.player = ProxyServer.getInstance().getPlayer(playerUUID);
         this.plugin = FriendsBG.getInstance();
         this.saveDirectory = new File(plugin.getDataFolder(), "/managers/fManagers/");
         this.uuid = playerUUID;
+        this.name = player.getName();
+        this.displayName = player.getDisplayName();
         if(redisEnable)
         {
             this.redisAccess = RedisAccess.getInstance();
+            // Format REDIS_KEY to fManager:XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
             this.REDIS_KEY = REDIS_KEY+uuid.toString();
         }
     }
 
-    public FriendsManager getFManager() throws FManagerNotFoundException
+    /**
+     * Function to get FriendsManager objects on Json files, Mysql server or Redis server
+     */
+    public FriendsManager getFManager() throws ManagerNotFoundException
     {
+        // Init null FriendsManager variable
         FriendsManager fManager;
+        // Set save directory and get SerializationManager instance for JSon files
         final File file = new File(saveDirectory, uuid.toString()+".json");
         final SerializationManager serManager = plugin.getSerializationManager();
+
         if(redisEnable && sqlEnable)
         {
+            // Get FriendsManager on Redis or Mysql server
             fManager = getFManagerOnRedis();
             if(fManager == null)
             {
@@ -83,15 +93,18 @@ public class FriendsProvider
             }
         }else if(redisEnable)
         {
+            // Get FriendsManager on Redis server
             fManager = getFManagerOnRedis();
+
             if(fManager == null)
             {
+                // Get FriendsManager on Json files or create new profile by default values
                 if(file.exists())
                 {
                     final String json = Files.loadFile(file);
                     fManager = (FriendsManager) serManager.deserialize(json, FriendsManager.class);
                 }else {
-                    fManager = new FriendsManager(uuid, false, new HashMap<>());
+                    fManager = new FriendsManager(uuid, name, displayName, true, true, null, new HashMap<>());
                     final String json = serManager.serialize(fManager);
                     Files.save(file, json);
                 }
@@ -99,81 +112,128 @@ public class FriendsProvider
             }
         }else if(sqlEnable)
         {
-            if(file.exists())
+            // Get FriendsManager on Mysql server
+            fManager = getFManagerOnMySQL();
+
+            if(fManager == null)
             {
-                final String json = Files.loadFile(file);
-                fManager = (FriendsManager) serManager.deserialize(json, FriendsManager.class);
-            }else {
-                fManager = getFManagerOnMySQL();
-                final String json = serManager.serialize(fManager);
-                Files.save(file, json);
+                if(FriendsBG.fManagers.containsKey(uuid))
+                {
+                    // Get FriendsManager on plugin cache
+                    fManager = FriendsBG.fManagers.get(uuid);
+                }else
+                {
+                    if(file.exists())
+                    {
+                        // Get FriendsManager on Json files or create new profile by default values
+                        final String json = Files.loadFile(file);
+                        fManager = (FriendsManager) serManager.deserialize(json, FriendsManager.class);
+                    }else {
+                        fManager = getFManagerOnMySQL();
+                        final String json = serManager.serialize(fManager);
+                        Files.save(file, json);
+                    }
+                }
             }
         }else
         {
-            if(file.exists())
+            if(FriendsBG.fManagers.containsKey(uuid))
             {
-                final String json = Files.loadFile(file);
-                fManager = (FriendsManager) serManager.deserialize(json, FriendsManager.class);
+                // Get FriendsManager on plugin cache
+                fManager = FriendsBG.fManagers.get(uuid);
             }else {
-                fManager = new FriendsManager(uuid, false, new HashMap<>());
-                final String json = serManager.serialize(fManager);
-                Files.save(file, json);
+                // Get FriendsManager on Json files or create new profile by default values
+                if(file.exists())
+                {
+                    final String json = Files.loadFile(file);
+                    fManager = (FriendsManager) serManager.deserialize(json, FriendsManager.class);
+                }else {
+                    fManager = new FriendsManager(uuid, name, displayName, true, true, null, new HashMap<>());
+                    final String json = serManager.serialize(fManager);
+                    Files.save(file, json);
+                }
             }
         }
         return fManager;
     }
 
+    /**
+     * Function to save FriendsManager on Redis server or Json file
+     */
     public void save(FriendsManager friendsManager)
     {
+        // Save FriendsManager on Redis server
+        if(redisEnable) {setFManagerOnRedis(friendsManager);return;}
+
+        // Save FriendsManager on plugin cache and Json file for security
+        FriendsBG.fManagers.replace(uuid, friendsManager);
         final File file = new File(saveDirectory, uuid.toString()+".json");
         final SerializationManager serManager = plugin.getSerializationManager();
         final String json = serManager.serialize(friendsManager);
-
-        if(redisEnable)
-        {
-            setFManagerOnRedis(friendsManager);
-        }
         Files.save(file, json);
     }
 
+    /**
+     * Function to save FriendsManager on Mysql server
+     */
     public void updateDB()
     {
+        // Init null PreparedStatements n°1
         PreparedStatement ps1;
+        // Init null PreparedStatements n°2 and associated ResulSet
         PreparedStatement ps2;
-        PreparedStatement ps3;
+        ResultSet rs2;
         try
         {
-            Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
+            // Get FriendsManager and create if not exist
             FriendsManager fManager = getFManager();
-
-            ps1 = connection.prepareStatement("UPDATE "+tableAllow+" SET isAllow = ? WHERE uuid = ?");
-            if(fManager.isAllow())
-            {
-                ps1.setInt(1, 1);
-            }else {
-                ps1.setInt(1, 0);
-            }
-            ps1.setString(2, uuid.toString());
+            // Init DB connection
+            Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
+            // Init PreparedStatement n°1 and set values
+            ps1 = connection.prepareStatement("UPDATE "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" SET name = ?, displayName = ?, requestsAllow = ?, msgAllow = ?, groupId = ? WHERE uuid = ?");
+            ps1.setString(1, name);
+            ps1.setString(2, displayName);
+            ps1.setInt(3, fManager.requestsAllow()?1:0);
+            ps1.setInt(4, fManager.msgAllow()?1:0);
+            ps1.setString(5, fManager.getGroupId().toString());
+            ps1.setString(6, uuid.toString());
+            // Execute PreparedStatement n°1 and close
             ps1.executeUpdate();
             ps1.close();
 
-            ps2 = connection.prepareStatement("DELETE FROM "+prefixTables+tableName+" WHERE player_uuid = ?");
-            ps2.setString(1, uuid.toString());
-            ps2.executeUpdate();
-            ps2.close();
+            // Init PreparedStatement n°2 and set values
+            ps2 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getFTable()+" WHERE uuid = ?");
+            ps2.setString(1, fManager.getUUID().toString());
+            // Execute PreparedStatement and init ResultSet
+            rs2 = ps2.executeQuery();
 
-            for(String s : fManager.getFriendsMap().keySet())
+            List<UUID> fUUIDList = new ArrayList<>();
+
+            while(rs2.next())
             {
-                ps3 = connection.prepareStatement("INSERT INTO "+prefixTables+tableName+" (player_uuid, friend_uuid, friend_name) VALUES (?, ?, ?)");
-                ps3.setString(1, uuid.toString());
-                ps3.setString(2, fManager.getFriendsMap().get(s).toString());
-                ps3.setString(3, s);
-                ps3.executeUpdate();
-                ps3.close();
+                fUUIDList.add(UUID.fromString(rs2.getString("friendUUID")));
             }
 
+            for(String fName : fManager.getFriendsMap().keySet())
+            {
+                // Add new friends in DB
+                if(!fUUIDList.contains(fManager.getFriendsMap().get(fName)))
+                {
+                    PreparedStatement ps = connection.prepareStatement("INSERT INTO "+SqlManager.getPrefixTables()+SqlManager.getFTable()+" (uuid, friendUUID, friendName) VALUES (?, ?, ?)");
+                    ps.setString(1, uuid.toString());
+                    ps.setString(2, fManager.getFriendsMap().get(fName).toString());
+                    ps.setString(3, fName);
+                    ps.executeUpdate();
+                    ps.close();
+                    return;
+                }
+            }
+
+            // Ajoutter la suppression des anciens amis
+
+            ps2.close();
             connection.close();
-        }catch (SQLException | FManagerNotFoundException e) {
+        }catch (SQLException | ManagerNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -205,28 +265,30 @@ public class FriendsProvider
         FriendsManager fManager = null;
         try {
             Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
-            ps1 = connection.prepareStatement("SELECT * FROM "+prefixTables+tableName+" WHERE player_uuid = ?");
-            ps2 = connection.prepareStatement("SELECT isAllow FROM "+tableAllow+" WHERE uuid = ?");
+            ps1 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" WHERE uuid = ?");
+            ps2 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getFTable()+" WHERE uuid = ?");
 
             ps1.setString(1, uuid.toString());
             ps2.setString(1, uuid.toString());
 
             rs1 = ps1.executeQuery();
             rs2 = ps2.executeQuery();
-            if(rs2.next())
+            if(rs1.next())
             {
                 Map<String, UUID> fList = new HashMap<>();
-                while(rs1.next())
+                while (rs2.next())
                 {
-                    fList.put(rs1.getString("friend_name"), UUID.fromString(rs1.getString("friend_uuid")));
+                    fList.put(rs2.getString("friendName"), UUID.fromString(rs2.getString("friendUUID")));
                 }
-                boolean isAllow = rs2.getInt("isAllow") == 1;
-                fManager = new FriendsManager(uuid, isAllow, fList);
+                String displayName = rs1.getString("displayName");
+                boolean requestsAllow = rs1.getInt("requestsAllow") == 1;
+                boolean msgAllow = rs1.getInt("msgAllow") == 1;
+                UUID groupId = UUID.fromString(rs1.getString("groupId"));
+                fManager = new FriendsManager(uuid, name, displayName, requestsAllow, msgAllow, groupId, fList);
             }else {
-                fManager = createFManager(uuid);
+                fManager = createFManager();
             }
             ps1.close();
-            ps2.close();
             connection.close();
         }catch (SQLException e) {
             e.printStackTrace();
@@ -234,15 +296,19 @@ public class FriendsProvider
         return fManager;
     }
 
-    private FriendsManager createFManager(UUID playerUUID)
+    private FriendsManager createFManager()
     {
         PreparedStatement ps;
         try {
             Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
-            ps = DBManager.DATABASE_ACCESS.getDBAccess().getConnection().prepareStatement("INSERT INTO "+tableAllow+" (uuid, isAllow) VALUES (?, ?)");
-            FriendsManager fManager = new FriendsManager(playerUUID, false, new HashMap<>());
-            ps.setString(1, playerUUID.toString());
-            ps.setInt(2, 0);
+            ps = DBManager.DATABASE_ACCESS.getDBAccess().getConnection().prepareStatement("INSERT INTO "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
+            FriendsManager fManager = new FriendsManager(uuid, name, displayName, true, true, null, new HashMap<>());
+            ps.setString(1, uuid.toString());
+            ps.setString(2, name);
+            ps.setString(3, displayName);
+            ps.setInt(4, 1);
+            ps.setInt(5, 1);
+            ps.setString(6, null);
             ps.executeUpdate();
             ps.close();
             connection.close();

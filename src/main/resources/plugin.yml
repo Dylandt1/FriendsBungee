@@ -21,8 +21,9 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.                  #
 # ---------------------------------------------------------------------------------------- #
 
-name: FreendsBungee
+name: FriendsBungee
 version: '${project.version}'
 main: fr.patapom.fbg.FriendsBG
-api-version: 1.18
+api-version: 1.19
 author: PataPom
+depends: [TM-API]

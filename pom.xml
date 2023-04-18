@@ -8,21 +8,31 @@
 
     <groupId>fr.patapom.fbg</groupId>
     <artifactId>FriendsBG-Free</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
 
-    <name>FreendsBungee</name>
+    <name>FriendsBungee</name>
 
+    <!-- Maven variables properties -->
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-compiler.version>3.8.1</maven-compiler.version>
+        <maven-shade.version>3.2.4</maven-shade.version>
+
+        <tmapi.version>3.0-SNAPSHOT</tmapi.version>
+        <bungee.version>1.19-R0.1-SNAPSHOT</bungee.version>
+        <bstats.version>3.0.1</bstats.version>
     </properties>
 
     <build>
+        <defaultGoal>clean package</defaultGoal>
+        <finalName>${project.name}-${project.version}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven-compiler.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -31,7 +41,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>${maven-shade.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -60,74 +70,30 @@
         </repository>
     </repositories>
 
-    <!-- Dependencies of FriendsBungee plugin -->
     <dependencies>
+
+        <!-- TM-API jar dependency-->
+        <dependency>
+            <groupId>fr.patapom.tmapi</groupId>
+            <artifactId>TM-API</artifactId>
+            <version>${tmapi.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- BungeeCord API jar dependency-->
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
-            <type>jar</type>
+            <version>${bungee.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- BungeeCord API javadoc dependency-->
+        <!-- Bstats for bungee dependency-->
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
-            <type>javadoc</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- HikariCP library dependency-->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
-        </dependency>
-
-        <!-- SLF4J library dependency-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.0-alpha6</version>
-        </dependency>
-
-        <!-- Redisson dependency-->
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-            <version>3.17.3</version>
-        </dependency>
-
-        <!-- JacksonCore dependency-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.13.3</version>
-        </dependency>
-
-        <!-- Jackson Databind dependency-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.13.3</version>
-        </dependency>
-
-        <!-- Jackson Dataformat YAML dependency-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.13.3</version>
-        </dependency>
-
-        <!-- Jackson Annotations dependency-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.13.3</version>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bungeecord</artifactId>
+            <version>${bstats.version}</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

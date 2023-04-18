@@ -25,35 +25,52 @@ import java.util.UUID;
 public class FriendsManager
 {
     private UUID uuid;
-
-    private boolean isAllow;
-    private boolean isInGroup;
     private UUID groupId;
+    private String name;
+    private String displayName;
+    private boolean requestsAllow;
+    private boolean msgAllow;
 
     private Map<String, UUID> friends;
 
     public FriendsManager() {}
 
-    public FriendsManager(UUID playerUUID, boolean isAllow, Map<String, UUID> friendsList)
+    public FriendsManager(UUID playerUUID, String playerName, String displayName, boolean requestsAllow, boolean msgAllow, UUID groupId, Map<String, UUID> friendsList)
     {
         this.uuid = playerUUID;
-        this.isAllow = isAllow;
-        this.isInGroup = false;
-        this.groupId = null;
+        this.name = playerName;
+        this.displayName = displayName;
+        this.requestsAllow = requestsAllow;
+        this.msgAllow = msgAllow;
+        this.groupId = groupId;
         this.friends = friendsList;
     }
 
-    public boolean isFriends(String friendName) {return friends.containsKey(friendName);}
-    public boolean isAllow() {return isAllow;}
-    public int getNbFriends() {return friends.size();}
-    public boolean isInGroup() {return isInGroup;}
+    /**
+     * Getters
+     */
+    public UUID getUUID() {return uuid;}
     public UUID getGroupId() {return groupId;}
+    public String getName() {return name;}
+    public String getDisplayName() {return displayName;}
 
-    public void setAllow(boolean status) {isAllow = status;}
+    public boolean requestsAllow() {return requestsAllow;}
+    public boolean msgAllow() {return msgAllow;}
+    public boolean hasFriends() {return !friends.isEmpty();}
+    public boolean isInGroup() {return groupId!=null;}
+
+    public boolean isFriends(String friendName) {return friends.containsKey(friendName);}
+    public int getNbFriends() {return friends.size();}
+
+    /**
+     * Setters
+     */
     public void addFriend(UUID friendUUID) {friends.put(ProxyServer.getInstance().getPlayer(friendUUID).getName(), friendUUID);}
     public void removeFriend(String friendName) {friends.remove(friendName);}
-    public void setInGroup(boolean isInGroup) {this.isInGroup = isInGroup;}
+
     public void setGroupId(UUID groupId) {this.groupId = groupId;}
+    public void setRequestsAllow(boolean status) {requestsAllow = status;}
+    public void setMsgAllow(boolean msgAllow) {this.msgAllow = msgAllow;}
 
     public Map<String, UUID> getFriendsMap() {return friends;}
 }

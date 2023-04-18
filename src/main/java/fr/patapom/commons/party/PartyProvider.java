@@ -1,17 +1,13 @@
 package fr.patapom.commons.party;
 
-import api.data.manager.json.SerializationManager;
-import api.data.manager.redis.RedisAccess;
-import api.files.Files;
-import fr.patapom.commons.party.PartyManager;
+import fr.patapom.fbg.data.manager.redis.RedisAccess;
 import fr.patapom.fbg.FriendsBG;
-import fr.patapom.fbg.utils.exceptions.PManagerNotFoundException;
+import fr.patapom.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 
-import java.io.File;
 import java.util.UUID;
 
 /**
@@ -33,14 +29,11 @@ import java.util.UUID;
 
 public class PartyProvider
 {
-    private final FriendsBG plugin;
-    private final File saveDirectory;
+    private ProxiedPlayer player;
     private final UUID groupId;
-    private ProxiedPlayer owner;
 
     private final Configuration config = FriendsBG.getInstance().getConfig();
     private final String lvPath = config.getString("groups.levels");
-    private final int DEFAULT = config.getInt(lvPath+".defaults");
 
     private final boolean redisEnable = FriendsBG.getInstance().redisEnable;
     private RedisAccess redisAccess;
@@ -50,13 +43,10 @@ public class PartyProvider
      * Public methods :
      */
 
-    // New party :
-    public PartyProvider(ProxiedPlayer owner)
+    public PartyProvider(ProxiedPlayer player)
     {
-        this.plugin = FriendsBG.getInstance();
+        this.player = player;
         this.groupId = UUID.randomUUID();
-        this.owner = owner;
-        this.saveDirectory = new File(plugin.getDataFolder(), "/managers/pManagers/");
         if(redisEnable)
         {
             this.redisAccess = RedisAccess.getInstance();
@@ -64,12 +54,9 @@ public class PartyProvider
         }
     }
 
-    // Existing party :
-    public PartyProvider(UUID groupID)
+    public PartyProvider(UUID groupId)
     {
-        this.plugin = FriendsBG.getInstance();
-        this.groupId = groupID;
-        this.saveDirectory = new File(plugin.getDataFolder(), "/managers/pManagers/");
+        this.groupId = groupId;
         if(redisEnable)
         {
             this.redisAccess = RedisAccess.getInstance();
@@ -77,42 +64,30 @@ public class PartyProvider
         }
     }
 
-    public PartyManager getPManager() throws PManagerNotFoundException
+    public PartyManager getPManager() throws ManagerNotFoundException
     {
         PartyManager pManager;
-        final File file = new File(saveDirectory, groupId.toString()+".json");
-        final SerializationManager serManager = plugin.getSerializationManager();
         int partyLength = config.getInt("groups.levels.default");
         if(redisEnable)
         {
             pManager = getPManagerOnRedis();
             if(pManager == null)
             {
-                if(file.exists())
+                for(String s : config.getStringList("groups.levels"))
                 {
-                    final String json = Files.loadFile(file);
-                    pManager = (PartyManager) serManager.deserialize(json, PartyManager.class);
-                }else {
-                    for(String s : config.getStringList("groups.levels"))
-                    {
-                        if(owner.hasPermission("fgb.group."+s)) {partyLength = config.getInt("groups.levels."+s);}
-                    }
-                    pManager = new PartyManager(owner , groupId, partyLength);
-                    final String json = serManager.serialize(pManager);
-                    Files.save(file, json);
+                    if(player.hasPermission("fgb.group."+s)) {partyLength = config.getInt("groups.levels."+s);}
                 }
+                pManager = new PartyManager(player , groupId, partyLength);
                 setPManagerOnRedis(pManager);
             }
         }else
         {
-            if(file.exists())
+            if(FriendsBG.parties.containsKey(groupId))
             {
-                final String json = Files.loadFile(file);
-                pManager = (PartyManager) serManager.deserialize(json, PartyManager.class);
+                pManager = FriendsBG.parties.get(groupId);
             }else {
-                pManager = new PartyManager(owner , groupId, partyLength);
-                final String json = serManager.serialize(pManager);
-                Files.save(file, json);
+                pManager = new PartyManager(player , groupId, partyLength);
+                FriendsBG.parties.put(groupId, pManager);
             }
         }
         return pManager;
@@ -120,14 +95,14 @@ public class PartyProvider
 
     public void save(PartyManager partyManager)
     {
-        if(redisEnable)
-        {
-            setPManagerOnRedis(partyManager);
-        }
-        final File file = new File(saveDirectory, groupId.toString()+".json");
-        final SerializationManager serManager = plugin.getSerializationManager();
-        final String json = serManager.serialize(partyManager);
-        Files.save(file, json);
+        if(redisEnable) {setPManagerOnRedis(partyManager);return;}
+        FriendsBG.parties.replace(groupId, partyManager);
+    }
+
+    public boolean pExist()
+    {
+        if(redisEnable) {return getPManagerOnRedis() != null;}
+        return FriendsBG.parties.containsKey(groupId);
     }
 
     /**
