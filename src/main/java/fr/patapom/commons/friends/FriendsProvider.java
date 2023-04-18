@@ -328,7 +328,7 @@ public class FriendsProvider
         return null;
     }
 
-    private FriendsManager createFManager(FriendsManager fManager)
+    private void createFManager(FriendsManager fManager)
     {
         try {
             Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
@@ -346,10 +346,8 @@ public class FriendsProvider
             ps2.executeUpdate();
             ps2.close();
             connection.close();
-            return fManager;
         }catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 }
