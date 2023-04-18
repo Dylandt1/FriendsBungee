@@ -258,21 +258,30 @@ public class FriendsProvider
 
     private FriendsManager getFManagerOnMySQL()
     {
-        PreparedStatement ps1;
-        PreparedStatement ps2;
-        ResultSet rs1;
-        ResultSet rs2;
+        final File file = new File(saveDirectory, uuid.toString()+".json");
+        final SerializationManager serManager = plugin.getSerializationManager();
         FriendsManager fManager = null;
+
+        if(file.exists())
+        {
+            // Get FriendsManager on Json files for no db or redis usage transition
+            final String json = Files.loadFile(file);
+            fManager = (FriendsManager) serManager.deserialize(json, FriendsManager.class);
+            if(redisEnable) {setFManagerOnRedis(fManager);}
+            createFManager(fManager);
+            return fManager;
+        }
+
         try {
             Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
-            ps1 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" WHERE uuid = ?");
-            ps2 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getFTable()+" WHERE uuid = ?");
+            PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" WHERE uuid = ?");
+            PreparedStatement ps2 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getFTable()+" WHERE uuid = ?");
 
             ps1.setString(1, uuid.toString());
             ps2.setString(1, uuid.toString());
 
-            rs1 = ps1.executeQuery();
-            rs2 = ps2.executeQuery();
+            ResultSet rs1 = ps1.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
             if(rs1.next())
             {
                 Map<String, UUID> fList = new HashMap<>();
@@ -311,6 +320,31 @@ public class FriendsProvider
             ps.setString(6, null);
             ps.executeUpdate();
             ps.close();
+            connection.close();
+            return fManager;
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private FriendsManager createFManager(FriendsManager fManager)
+    {
+        try {
+            Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
+            PreparedStatement ps1 = DBManager.DATABASE_ACCESS.getDBAccess().getConnection().prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" WHERE uuid = ?");
+            ResultSet rs1 = ps1.executeQuery();
+            if(!rs1.next()) {createFManager();}
+
+            PreparedStatement ps2 = DBManager.DATABASE_ACCESS.getDBAccess().getConnection().prepareStatement("INSERT INTO "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
+            ps2.setString(1, uuid.toString());
+            ps2.setString(2, name);
+            ps2.setString(3, fManager.getDisplayName());
+            ps2.setInt(4, fManager.requestsAllow()?1:0);
+            ps2.setInt(5, fManager.msgAllow()?1:0);
+            ps2.setString(6, fManager.getGroupId().toString());
+            ps2.executeUpdate();
+            ps2.close();
             connection.close();
             return fManager;
         }catch (SQLException e) {
