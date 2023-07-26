@@ -1,3 +1,9 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+# Additional ignored files
+../target/classes/
+../target/generated-sources/
+../target/maven-archive/
+../target/maven-status/
+../target/original-*.jar

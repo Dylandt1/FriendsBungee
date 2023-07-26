@@ -1,14 +1,22 @@
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/data/manager/redis/RedisAccess.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/cmd/CmdFriends.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/data/manager/sql/DBManager.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/cmd/CmdResend.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/listeners/PlayerListener.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/commons/friends/FriendsManager.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/cmd/CmdParty.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/commons/friends/FriendsProvider.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/cmd/CmdMsg.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/FriendsBG.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/cmd/utils/Help.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/commons/party/PartyManager.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/commons/party/PartyProvider.java
-/home/stag/IdeaProjects/FriendsBungee/src/main/java/fr/patapom/fbg/data/manager/sql/SqlManager.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\groups\GroupProvider.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\db\DBManager.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\redis\RedisAccess.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\json\Files.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\config\ConfigsManager.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\db\DBAccess.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\exceptions\ManagerNotFoundException.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\players\ProfileManager.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\redis\RedisCredentials.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\utils\Help.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\db\DBCredentials.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\FriendsBG.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\players\ProfileProvider.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\utils\Constants.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\CmdMsg.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\listeners\PlayerListener.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\groups\GroupManager.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\CmdFriends.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\CmdResend.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\CmdGroup.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\db\SqlManager.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\json\SerializationManager.java

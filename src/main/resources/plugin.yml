@@ -5,14 +5,14 @@
 #                                                                                          #
 #                   Plugin made by PataPom | Licensed under GPL3 License.                  #
 #                                                                                          #
-#  This file is part of FriendsBungee (FriendsBG-Free), a bungeecord friends plugin.       #                                           #
+#  This file is part of FriendsBungee, a BungeeCord friends plugin system.                 #
 #                                                                                          #
-#  FriendsBungee (FriendsBG-Free) is free software: you can redistribute it and/or modify  #
+#  FriendsBungee is free software: you can redistribute it and/or modify                   #
 #  it under the terms of the GNU General Public License as published by                    #
 #  the Free Software Foundation, either version 3 of the License, or                       #
 #  (at your option) any later version.                                                     #
 #                                                                                          #
-#  FriendsBungee (FriendsBG-Free) is distributed in the hope that it will be useful,       #
+#  FriendsBungee is distributed in the hope that it will be useful,                        #
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of                          #
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                           #
 #  GNU General Public License for more details.                                            #
@@ -23,7 +23,6 @@
 
 name: FriendsBungee
 version: '${project.version}'
-main: fr.patapom.fbg.FriendsBG
+main: fr.patapom.friendsbg.fbg.FriendsBG
 api-version: 1.19
 author: PataPom
-depends: [TM-API]
