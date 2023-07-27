@@ -1,11 +1,11 @@
 package fr.patapom.friendsbg.fbg.cmd;
 
-import fr.patapom.friendsbg.fbg.exceptions.ManagerNotFoundException;
 import fr.patapom.friendsbg.fbg.FriendsBG;
 import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.fbg.cmd.utils.Help;
 import fr.patapom.friendsbg.fbg.utils.Constants;
+import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.*;

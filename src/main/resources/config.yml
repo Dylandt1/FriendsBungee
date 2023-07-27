@@ -449,7 +449,7 @@ helpmsg :                                                                       
 # For the connection to work you just need to create an empty database and configure    #
 # the fields that the plugin must take into account and it will take care of the rest!  #
 #                                                                                       #
-# !! Color does not work in mysql !!                                                    #
+# !! Colors does not work in mysql !!                                                   #
 #                                                                                       #
 mysql :                                                                                 #
 # ------------------------------------------------------------------------------------- #
@@ -464,19 +464,20 @@ mysql :                                                                         
 
   # Message failed connect/disconnect :
   connectFail: "&cConnection failed !"
-  diconnectFail: "&cDisconnection failed !"
+  disconnectFail: "&cDisconnection failed !"
 
   # Change to true for use DataBase connection :
   use: false
+
+  # database table prefix, leave blank so as not to use it :
+  prefixTables: "fbg_"
 
   # Name of the database to connect to, use the name of your database so that you don't have an error.
   # This parameter is the only one that requires you to intervene in your dataBase :
   dbName: "bungee"
 
-  # database table prefix, leave blank so as not to use it :
-  prefixTables: "tm_"
-
-  # Name of the mysql tables that the plugin will use to create it :
+  # Name of the mysql tables that the plugin will use to create it,
+  # tableName is used to store all players profiles and friendsTable used to store all friends and associations players.
   tableName: "fManager"
   friendsTable: "fList"
 
@@ -493,13 +494,13 @@ mysql :                                                                         
   maxLifeTime: 600000 # Default = 10 minutes -> 600 000 ms
 
   # This is time out for pools not used :
-  poolTimeOut: 300000 # Default = 5 minutes -> 300 000 ms
+  poolTimeout: 300000 # Default = 5 minutes -> 300 000 ms
 
   # This is time to detect data leak :
   dataLeak: 300000 # Default = 5 minutes -> 300 000 ms
 
   # This is time out for no pool available :
-  timeOut: 10000 # Default = 10 seconds -> 10 000 ms
+  timeout: 10000 # Default = 10 seconds -> 10 000 ms
 
 
 # ##################################################################################### #
@@ -508,9 +509,11 @@ mysql :                                                                         
 #                                     ╩╚═╚═╝═╩╝╩╚═╝                                     #
 #                                                                                       #
 # For use this, you need to install and configure Redis-server on GNU/LINUX or Windows  #
-# server.                                                                               #
+# server. This software is an in-memory database system.                                #
 #                                                                                       #
-# !! Color does not work in redis !!                                                    #
+# It can be used as an alternative to MariaDB/MySQL servers.                            #
+#                                                                                       #
+# !! Colors does not work in redis !!                                                    #
 #                                                                                       #
 redis :                                                                                 #
 # ------------------------------------------------------------------------------------- #
@@ -525,13 +528,13 @@ redis :                                                                         
   clientName: "client"
 
   # DataBase connection pool used for get and set information :
-  dataBase: 1 # Default = 1 -> Max = poolSize
+  dataBase: 1 # Default = 1
 
   # This is number of allocated threads to redis server :
-  threads: 1
+  threads: 1 # Default = 1
 
   # This is number of allocated Netty threads to redis server :
-  nettyThreads: 1
+  nettyThreads: 1 # Default = 1
 
 
 # ##################################################################################### #
@@ -539,15 +542,13 @@ redis :                                                                         
 #                                 ║ ║╠═╝ ║║╠═╣ ║ ║╣ ╚═╗                                 #
 #                                 ╚═╝╩  ═╩╝╩ ╩ ╩ ╚═╝╚═╝                                 #
 #                                                                                       #
-# Not available in 1.X-SNAPSHOT                                                         #
-#                                                                                       #
 updates:                                                                                #
 # ##################################################################################### #
 
-  # Turn to true for enable plugin updates checker :
+  # Turn to true for enable plugin updates checker (Available) :
   checker: true
 
-  # Turn to true for enable auto-updates :
+  # Turn to true for enable auto-updates (Not available) :
   autoUpdate: false
 
 

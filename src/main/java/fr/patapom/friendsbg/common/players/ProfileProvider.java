@@ -1,12 +1,13 @@
 package fr.patapom.friendsbg.common.players;
 
-import fr.patapom.friendsbg.fbg.exceptions.ManagerNotFoundException;
+import fr.patapom.friendsbg.fbg.data.manager.DBManager;
+import fr.patapom.friendsbg.fbg.data.manager.RedisManager;
 import fr.patapom.friendsbg.fbg.json.Files;
 import fr.patapom.friendsbg.fbg.json.SerializationManager;
-import fr.patapom.friendsbg.fbg.db.DBManager;
-import fr.patapom.friendsbg.fbg.db.SqlManager;
-import fr.patapom.friendsbg.fbg.redis.RedisAccess;
 import fr.patapom.friendsbg.fbg.FriendsBG;
+import fr.tmmods.tmapi.data.manager.redis.RedisAccess;
+import fr.tmmods.tmapi.data.manager.sql.SqlManager;
+import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.redisson.api.RBucket;
@@ -51,6 +52,8 @@ public class ProfileProvider
     private RedisAccess redisAccess;
     private String REDIS_KEY = "fManager:";
 
+    private String prefixTables;
+
     /**
      * FriendsProvider initiator
      */
@@ -65,10 +68,10 @@ public class ProfileProvider
         this.displayName = player.getDisplayName();
         if(redisEnable)
         {
-            this.redisAccess = RedisAccess.getInstance();
-            // Format REDIS_KEY to fManager:XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+            this.redisAccess = RedisManager.FBG_REDIS.getRedisAccess();
             this.REDIS_KEY = REDIS_KEY+uuid.toString();
         }
+        this.prefixTables = plugin.getConfig().getString("mysql.prefixTables");
     }
 
     /**
@@ -188,9 +191,9 @@ public class ProfileProvider
             // Get FriendsManager and create if not exist
             ProfileManager fManager = getFManager();
             // Init DB connection
-            Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
+            Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
             // Init PreparedStatement n°1 and set values
-            ps1 = connection.prepareStatement("UPDATE "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" SET name = ?, displayName = ?, requestsAllow = ?, msgAllow = ?, groupId = ? WHERE uuid = ?");
+            ps1 = connection.prepareStatement("UPDATE " + prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName() + "SET name = ?, displayName = ?, requestsAllow = ?, msgAllow = ?, groupId = ? WHERE uuid = ?");
             ps1.setString(1, name);
             ps1.setString(2, displayName);
             ps1.setInt(3, fManager.requestsAllow()?1:0);
@@ -202,7 +205,7 @@ public class ProfileProvider
             ps1.close();
 
             // Init PreparedStatement n°2 and set values
-            ps2 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getFTable()+" WHERE uuid = ?");
+            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+FriendsBG.getInstance().sqlFListManager.getTableName()+" WHERE uuid = ?");
             ps2.setString(1, fManager.getUUID().toString());
             // Execute PreparedStatement and init ResultSet
             rs2 = ps2.executeQuery();
@@ -219,7 +222,7 @@ public class ProfileProvider
                 // Add new friends in DB
                 if(!fUUIDList.contains(fManager.getFriendsMap().get(fName)))
                 {
-                    PreparedStatement ps = connection.prepareStatement("INSERT INTO "+SqlManager.getPrefixTables()+SqlManager.getFTable()+" (uuid, friendUUID, friendName) VALUES (?, ?, ?)");
+                    PreparedStatement ps = connection.prepareStatement("INSERT INTO "+prefixTables+FriendsBG.getInstance().sqlFListManager.getTableName()+" (uuid, friendUUID, friendName) VALUES (?, ?, ?)");
                     ps.setString(1, uuid.toString());
                     ps.setString(2, fManager.getFriendsMap().get(fName).toString());
                     ps.setString(3, fName);
@@ -264,9 +267,9 @@ public class ProfileProvider
         ResultSet rs2;
         ProfileManager fManager = null;
         try {
-            Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
-            ps1 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" WHERE uuid = ?");
-            ps2 = connection.prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getFTable()+" WHERE uuid = ?");
+            Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
+            ps1 = connection.prepareStatement("SELECT * FROM "+prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName()+" WHERE uuid = ?");
+            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+FriendsBG.getInstance().sqlFListManager.getTableName()+" WHERE uuid = ?");
 
             ps1.setString(1, uuid.toString());
             ps2.setString(1, uuid.toString());
@@ -300,8 +303,8 @@ public class ProfileProvider
     {
         PreparedStatement ps;
         try {
-            Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
-            ps = DBManager.DATABASE_ACCESS.getDBAccess().getConnection().prepareStatement("INSERT INTO "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
+            Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
+            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
             ProfileManager fManager = new ProfileManager(uuid, name, displayName, true, true, null, new HashMap<>());
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
@@ -319,24 +322,28 @@ public class ProfileProvider
         return null;
     }
 
+    @Deprecated
     private void createFManager(ProfileManager fManager)
     {
         try {
-            Connection connection = DBManager.DATABASE_ACCESS.getDBAccess().getConnection();
-            PreparedStatement ps1 = DBManager.DATABASE_ACCESS.getDBAccess().getConnection().prepareStatement("SELECT * FROM "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" WHERE uuid = ?");
-            ResultSet rs1 = ps1.executeQuery();
-            if(!rs1.next()) {createFManager();}
-
-            PreparedStatement ps2 = DBManager.DATABASE_ACCESS.getDBAccess().getConnection().prepareStatement("INSERT INTO "+SqlManager.getPrefixTables()+SqlManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
-            ps2.setString(1, uuid.toString());
-            ps2.setString(2, name);
-            ps2.setString(3, fManager.getDisplayName());
-            ps2.setInt(4, fManager.requestsAllow()?1:0);
-            ps2.setInt(5, fManager.msgAllow()?1:0);
-            ps2.setString(6, fManager.getGroupId().toString());
-            ps2.executeUpdate();
-            ps2.close();
-            connection.close();
+            Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM "+prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName()+" WHERE uuid = ?");
+            ResultSet rs = ps.executeQuery();
+            if(!rs.next())
+            {
+                createFManager();
+            }else {
+                ps = connection.prepareStatement("INSERT INTO "+prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
+                ps.setString(1, uuid.toString());
+                ps.setString(2, name);
+                ps.setString(3, fManager.getDisplayName());
+                ps.setInt(4, fManager.requestsAllow()?1:0);
+                ps.setInt(5, fManager.msgAllow()?1:0);
+                ps.setString(6, fManager.getGroupId().toString());
+                ps.executeUpdate();
+                ps.close();
+                connection.close();
+            }
         }catch (SQLException e) {
             e.printStackTrace();
         }

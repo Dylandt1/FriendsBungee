@@ -85,6 +85,15 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- TM-API jar dependency -->
+        <dependency>
+            <groupId>fr.tm-mods</groupId>
+            <artifactId>tm-api</artifactId>
+            <version>3.1-RELEASE</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- HikariCP library dependency-->
         <dependency>
             <groupId>com.zaxxer</groupId>

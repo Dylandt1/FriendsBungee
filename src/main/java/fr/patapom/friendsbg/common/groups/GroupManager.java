@@ -1,9 +1,9 @@
 package fr.patapom.friendsbg.common.groups;
 
-import fr.patapom.friendsbg.fbg.exceptions.ManagerNotFoundException;
 import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.fbg.FriendsBG;
 import fr.patapom.friendsbg.common.players.ProfileManager;
+import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -80,7 +80,7 @@ public class GroupManager
                 fManager.setGroupId(groupId);
                 fProvider.save(fManager);
             } catch (ManagerNotFoundException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
             playersInGroup.put(player.getName(), player.getUniqueId());
         }

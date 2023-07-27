@@ -1,24 +1,27 @@
 package fr.patapom.friendsbg.fbg;
 
-import fr.patapom.friendsbg.fbg.config.ConfigsManager;
+import fr.patapom.friendsbg.fbg.data.manager.DBManager;
+import fr.patapom.friendsbg.fbg.data.manager.RedisManager;
 import fr.patapom.friendsbg.fbg.json.SerializationManager;
 import fr.patapom.friendsbg.common.players.ProfileManager;
-import fr.patapom.friendsbg.fbg.redis.RedisAccess;
 //import fr.patapom.tmapi.data.manager.UpdateChecker;
 import fr.patapom.friendsbg.common.groups.GroupManager;
-import fr.patapom.friendsbg.fbg.db.DBManager;
-import fr.patapom.friendsbg.fbg.db.SqlManager;
 import fr.patapom.friendsbg.fbg.listeners.PlayerListener;
 import fr.patapom.friendsbg.fbg.cmd.CmdFriends;
 import fr.patapom.friendsbg.fbg.cmd.CmdMsg;
 import fr.patapom.friendsbg.fbg.cmd.CmdGroup;
 import fr.patapom.friendsbg.fbg.cmd.CmdResend;
+import fr.tmmods.tmapi.bungee.config.ConfigsManager;
+import fr.tmmods.tmapi.data.manager.UpdateChecker;
+import fr.tmmods.tmapi.data.manager.redis.RedisAccess;
+import fr.tmmods.tmapi.data.manager.sql.SqlManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
 //import org.bstats.bungeecord.Metrics;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -41,13 +44,17 @@ import java.util.*;
 public class FriendsBG extends Plugin
 {
     private final int pluginId = 17971;
-    //private static Metrics metrics;
+
+    private final String console = "[FriendsBungee] -> ";
 
     private static FriendsBG INSTANCE;
     private static PluginManager pm;
 
     private Configuration config;
     private SerializationManager serManager;
+
+    public SqlManager sqlProfilesManager;
+    public SqlManager sqlFListManager;
 
     private String prefix;
     private String suffix;
@@ -62,30 +69,32 @@ public class FriendsBG extends Plugin
     @Override
     public void onLoad()
     {
+        getLogger().info(console + "Loading in progress...");
+
+        // UpdateChecker added by TM-API free software
+        getLogger().info(console + "Checking for update");
+        new UpdateChecker(pluginId).getVersion(version -> {
+            if (this.getDescription().getVersion().equals(version)) {
+                getLogger().info(console + "Up to date !");
+            } else {
+                getLogger().info(console + "New update is available !");
+            }
+        });
+
         //Config Files
-        this.config = ConfigsManager.loadConfig("config", this);
+        getLogger().info(console + "Loading config files...");
+        this.config = ConfigsManager.getConfig("config", this);
         this.serManager = new SerializationManager();
         this.prefix = config.getString("prefix").replace("&", "§");
         this.suffix = config.getString("suffix").replace("&", "§");
         this.redisEnable = config.getBoolean("redis.use");
         this.sqlEnable = config.getBoolean("mysql.use");
-
-        /**
-         * if(config.getBoolean("updates.enable"))
-         * {
-         *      PluginUpdateChecker updateChecker = new PluginUpdateChecker()
-         *      if(updateChecker.isAvailable())
-         *      {
-         *          this.newVersion = updateChecker.getVersionAvailable();
-         *          System.out.println(prefix+" "+suffix+" "+"§aNew version available §f: §b"+newVersion);
-         *      }
-         * }
-         */
     }
 
     @Override
     public void onEnable()
     {
+        getLogger().info(console + "Loading plugin parts...");
         INSTANCE = this;
         pm = ProxyServer.getInstance().getPluginManager();
 
@@ -103,13 +112,22 @@ public class FriendsBG extends Plugin
 
         if(sqlEnable)
         {
-            DBManager.init();
-            new SqlManager().createTables();
+            getLogger().info(console + "Connecting to databases...");
+            DBManager.initAllConnections();
+            try {
+                sqlProfilesManager = new SqlManager(DBManager.FBG_DATABASE.getDbAccess().getConnection(), config.getString("mysql.prefixTables"), config.getString("mysql.tableName"));
+                sqlFListManager = new SqlManager(DBManager.FBG_DATABASE.getDbAccess().getConnection(), config.getString("mysql.prefixTables"), config.getString("mysql.friendsTable"));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         if(redisEnable)
         {
-            RedisAccess.init();
+            getLogger().info(console + "Connecting to redis servers...");
+            RedisManager.initAllConnections();
         }
+
+        getLogger().info(console + "Ready to use !");
     }
 
     public static FriendsBG getInstance() { return INSTANCE; }
@@ -121,14 +139,17 @@ public class FriendsBG extends Plugin
     @Override
     public void onDisable()
     {
+        getLogger().info(console + "Disabling in progress...");
         if(sqlEnable)
         {
-            DBManager.stop();
+            DBManager.closeAllConnections();
+            getLogger().info(console + "Database connections closed !");
         }
-        if(redisEnable && RedisAccess.getInstance() != null)
+        if(redisEnable)
         {
-            RedisAccess.getInstance().getRedisCli().shutdown();
+            RedisManager.closeAllConnections();
+            getLogger().info(console + "Redis connections closed !");
         }
-        System.out.println("[FriendsBungee] -> Goodbye !");
+        getLogger().info(console + "Goodbye !");
     }
 }

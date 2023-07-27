@@ -1,8 +1,9 @@
 package fr.patapom.friendsbg.common.groups;
 
-import fr.patapom.friendsbg.fbg.exceptions.ManagerNotFoundException;
-import fr.patapom.friendsbg.fbg.redis.RedisAccess;
 import fr.patapom.friendsbg.fbg.FriendsBG;
+import fr.patapom.friendsbg.fbg.data.manager.RedisManager;
+import fr.tmmods.tmapi.data.manager.redis.RedisAccess;
+import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import org.redisson.api.RBucket;
@@ -49,7 +50,7 @@ public class GroupProvider
         this.groupId = UUID.randomUUID();
         if(redisEnable)
         {
-            this.redisAccess = RedisAccess.getInstance();
+            this.redisAccess = RedisManager.FBG_REDIS.getRedisAccess();
             this.REDIS_KEY = REDIS_KEY+groupId.toString();
         }
     }
@@ -59,7 +60,7 @@ public class GroupProvider
         this.groupId = groupId;
         if(redisEnable)
         {
-            this.redisAccess = RedisAccess.getInstance();
+            this.redisAccess = RedisManager.FBG_REDIS.getRedisAccess();
             this.REDIS_KEY = REDIS_KEY+groupId.toString();
         }
     }
