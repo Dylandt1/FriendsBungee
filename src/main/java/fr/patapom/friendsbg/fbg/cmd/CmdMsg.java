@@ -88,9 +88,9 @@ public class CmdMsg extends Command implements TabExecutor
     {
         if(!(sender instanceof ProxiedPlayer)) {return null;}
 
-        List<String> list = new ArrayList<>();
         if(args.length == 1)
         {
+            List<String> list = new ArrayList<>();
             list.add("enable");
             list.add("disable");
             for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
@@ -99,7 +99,7 @@ public class CmdMsg extends Command implements TabExecutor
             }
             return list;
         }
-        return new ArrayList<>();
+        return null;
     }
 
     @Override

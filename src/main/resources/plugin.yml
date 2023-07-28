@@ -26,3 +26,5 @@ version: '${project.version}'
 main: fr.patapom.friendsbg.fbg.FriendsBG
 api-version: 1.19
 author: PataPom
+depends:
+  - TM-API

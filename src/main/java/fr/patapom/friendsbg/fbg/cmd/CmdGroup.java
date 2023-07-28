@@ -389,13 +389,15 @@ public class CmdGroup extends Command implements TabExecutor
                             sendMessage(p, " ");
                         } else {
                             StringBuilder colorPath = new StringBuilder();
+
                             for (int x = 0; x < membersOnline.size(); x++) {
                                 colorPath.append("§b").append(membersOnline.get(x)).append("§c, ");
-                                sendMessage(p, "§6Membres §aen ligne §f: §3" + membersOnline.size());
-                                sendMessage(p, " ");
-                                sendMessage(p, colorPath.substring(0, colorPath.length() - 2));
-                                sendMessage(p, " ");
                             }
+
+                            sendMessage(p, "§6Membres §aen ligne §f: §3" + membersOnline.size());
+                            sendMessage(p, " ");
+                            sendMessage(p, colorPath.substring(0, colorPath.length() - 2));
+                            sendMessage(p, " ");
                         }
                         if (membersOffline.isEmpty())
                         {
@@ -403,13 +405,15 @@ public class CmdGroup extends Command implements TabExecutor
                             sendMessage(p, " ");
                         } else {
                             StringBuilder colorPath = new StringBuilder();
+
                             for (int x = 0; x < membersOffline.size(); x++) {
                                 colorPath.append("§7").append(membersOffline.get(x)).append("§c, ");
-                                sendMessage(p, "§6Membres §chors-ligne §f: §3" + membersOffline.size());
-                                sendMessage(p, " ");
-                                sendMessage(p, colorPath.substring(0, colorPath.length() - 2));
-                                sendMessage(p, " ");
                             }
+
+                            sendMessage(p, "§6Membres §chors-ligne §f: §3" + membersOffline.size());
+                            sendMessage(p, " ");
+                            sendMessage(p, colorPath.substring(0, colorPath.length() - 2));
+                            sendMessage(p, " ");
                         }
                         sendMessage(p, "§6#§f---------------------------------------------------§6#");
                     }
@@ -452,17 +456,9 @@ public class CmdGroup extends Command implements TabExecutor
             }
         }else if (args.length == 2)
         {
-            String targetName = args[1];
-
             if(!profile.isInGroup()) {sendMessage(p, prefix+" "+suffix+" "+notInGroup);return;}
 
-            if (ProxyServer.getInstance().getPlayer(targetName) == null)
-            {
-                sendMessage(p, prefix+" "+suffix+" "+playerNotFound.replace("%targetPlayer%", targetName));
-                return;
-            }
-
-            GroupProvider partyProvider = new GroupProvider(p);
+            GroupProvider partyProvider = new GroupProvider(profile.getGroupId());
 
             if(!partyProvider.pExist())
             {
@@ -479,10 +475,19 @@ public class CmdGroup extends Command implements TabExecutor
                 throw new RuntimeException(e);
             }
 
-            ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
+            final String targetName = args[1];
+            final String notFound = playerNotFound.replace("%targetPlayer%", targetName);
 
             if(args[0].equalsIgnoreCase("add"))
             {
+                if (ProxyServer.getInstance().getPlayer(targetName) == null)
+                {
+                    sendMessage(p, prefix+" "+suffix+" "+notFound);
+                    return;
+                }
+
+                ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
+
                 if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+" "+suffix+" "+ownerGroup);return;}
                 if (targetPl == p) {sendMessage(p, prefix+" "+suffix+" "+alreadyInGroup);return;}
                 if (party.getPlayersInGroup().size() == party.getGroupLenght())
@@ -493,7 +498,7 @@ public class CmdGroup extends Command implements TabExecutor
 
                 TextComponent targetTxt = new TextComponent(prefix+" "+suffix+" "+requestTarget.replace("%player%", p.getName()));
                 targetTxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(scrollTargetRequest).create()));
-                targetTxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
+                targetTxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/gp accept"));
 
                 sendMessage(p, prefix+" "+suffix+" "+requestSender.replace("%targetPlayer%", targetName));
                 targetPl.sendMessage(targetTxt);
@@ -501,6 +506,14 @@ public class CmdGroup extends Command implements TabExecutor
                 requestGp.put(targetPl.getUniqueId(), p.getUniqueId());
             }else if (args[0].equalsIgnoreCase("remove"))
             {
+                if (ProxyServer.getInstance().getPlayer(targetName) == null)
+                {
+                    sendMessage(p, prefix+" "+suffix+" "+notFound);
+                    return;
+                }
+
+                ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
+
                 if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+" "+suffix+" "+ownerGroup);return;}
                 if (targetPl == p) {sendMessage(p, prefix+" "+suffix+" "+yourselfCantGetOut);return;}
                 if (!party.getPlayersInGroup().contains(targetPl))
@@ -513,6 +526,14 @@ public class CmdGroup extends Command implements TabExecutor
                 sendMessage(p, prefix+" "+suffix+" "+targetDeleted.replace("%targetPlayer%", targetName));
             }else if (args[0].equalsIgnoreCase("owner"))
             {
+                if (ProxyServer.getInstance().getPlayer(targetName) == null)
+                {
+                    sendMessage(p, prefix+" "+suffix+" "+notFound);
+                    return;
+                }
+
+                ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
+
                 if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+" "+suffix+" "+ownerGroup);return;}
                 if (targetPl == p) {sendMessage(p, prefix+" "+suffix+" "+alreadyOwner);return;}
                 if (!party.getPlayersInGroup().contains(targetPl)) {
@@ -541,7 +562,7 @@ public class CmdGroup extends Command implements TabExecutor
                         return;
                     }
                     sendMessage(p, prefix+" "+suffix+" "+tpAlreadyEnabled);
-                }else if(args[0].equalsIgnoreCase("disable"))
+                }else if(args[1].equalsIgnoreCase("disable"))
                 {
                     if(party.tp())
                     {

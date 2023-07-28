@@ -260,14 +260,15 @@ public class CmdFriends extends Command implements TabExecutor
                             sendMessage(p, " ");
                         } else {
                             StringBuilder colorPath = new StringBuilder();
-                            for (int x = 0; x < friendsOnline.size(); x++)
-                            {
+
+                            for (int x = 0; x < friendsOnline.size(); x++) {
                                 colorPath.append("§b").append(friendsOnline.get(x)).append("§c, ");
-                                sendMessage(p, msgFOnline+" §3" + friendsOnline.size());
-                                sendMessage(p, " ");
-                                sendMessage(p, colorPath.substring(0, colorPath.length() - 2));
-                                sendMessage(p, " ");
                             }
+
+                            sendMessage(p, msgFOnline+" §3" + friendsOnline.size());
+                            sendMessage(p, " ");
+                            sendMessage(p, colorPath.substring(0, colorPath.length() - 2));
+                            sendMessage(p, " ");
                         }
                         if (friendsOffline.isEmpty())
                         {
@@ -275,14 +276,15 @@ public class CmdFriends extends Command implements TabExecutor
                             sendMessage(p, " ");
                         } else {
                             StringBuilder colorPath = new StringBuilder();
-                            for (int x = 0; x < friendsOffline.size(); x++)
-                            {
+
+                            for (int x = 0; x < friendsOffline.size(); x++) {
                                 colorPath.append("§7").append(friendsOffline.get(x)).append("§c, ");
-                                sendMessage(p, msgFOffline+" §3" + friendsOffline.size());
-                                sendMessage(p, " ");
-                                sendMessage(p, colorPath.substring(0, colorPath.length() - 2));
-                                sendMessage(p, " ");
                             }
+
+                            sendMessage(p, msgFOffline+" §3" + friendsOffline.size());
+                            sendMessage(p, " ");
+                            sendMessage(p, colorPath.substring(0, colorPath.length() - 2));
+                            sendMessage(p, " ");
                         }
                         sendMessage(p, "§6#§f---------------------------------------------------§6#");
                     }
