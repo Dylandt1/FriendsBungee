@@ -1,16 +1,12 @@
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\groups\GroupProvider.java
-F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\data\manager\DBManager.java
-F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\json\Files.java
-F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\players\ProfileManager.java
-F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\data\manager\RedisManager.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\utils\Help.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\FriendsBG.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\players\ProfileProvider.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\utils\Constants.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\players\ProfileManager.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\CmdMsg.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\listeners\PlayerListener.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\groups\GroupManager.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\CmdFriends.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\CmdResend.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\CmdGroup.java
-F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\json\SerializationManager.java

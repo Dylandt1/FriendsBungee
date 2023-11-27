@@ -26,7 +26,7 @@ public class Constants
      * This class is under development and is juste use for test !!!
      */
 
-    Configuration config = FriendsBG.getInstance().getConfig();
+    private Configuration config = FriendsBG.getInstance().getConfig();
 
     /**
      * General constant vars

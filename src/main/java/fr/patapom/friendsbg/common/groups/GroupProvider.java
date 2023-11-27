@@ -1,7 +1,7 @@
 package fr.patapom.friendsbg.common.groups;
 
 import fr.patapom.friendsbg.fbg.FriendsBG;
-import fr.patapom.friendsbg.fbg.data.manager.RedisManager;
+import fr.tmmods.tmapi.bungee.data.manager.RedisManager;
 import fr.tmmods.tmapi.data.manager.redis.RedisAccess;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

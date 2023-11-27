@@ -1,27 +1,25 @@
 package fr.patapom.friendsbg.fbg;
 
-import fr.patapom.friendsbg.fbg.data.manager.DBManager;
-import fr.patapom.friendsbg.fbg.data.manager.RedisManager;
-import fr.patapom.friendsbg.fbg.json.SerializationManager;
 import fr.patapom.friendsbg.common.players.ProfileManager;
-//import fr.patapom.tmapi.data.manager.UpdateChecker;
 import fr.patapom.friendsbg.common.groups.GroupManager;
 import fr.patapom.friendsbg.fbg.listeners.PlayerListener;
 import fr.patapom.friendsbg.fbg.cmd.CmdFriends;
 import fr.patapom.friendsbg.fbg.cmd.CmdMsg;
 import fr.patapom.friendsbg.fbg.cmd.CmdGroup;
 import fr.patapom.friendsbg.fbg.cmd.CmdResend;
+import fr.tmmods.tmapi.bungee.TMBungeeAPI;
 import fr.tmmods.tmapi.bungee.config.ConfigsManager;
+import fr.tmmods.tmapi.bungee.data.manager.DBManager;
+import fr.tmmods.tmapi.bungee.data.manager.RedisManager;
+import fr.tmmods.tmapi.data.manager.Json.SerializationManager;
 import fr.tmmods.tmapi.data.manager.UpdateChecker;
-import fr.tmmods.tmapi.data.manager.redis.RedisAccess;
 import fr.tmmods.tmapi.data.manager.sql.SqlManager;
+import fr.tmmods.tmapi.spigot.TMSpigotAPI;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
-//import org.bstats.bungeecord.Metrics;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -52,9 +50,6 @@ public class FriendsBG extends Plugin
 
     private Configuration config;
     private SerializationManager serManager;
-
-    public SqlManager sqlProfilesManager;
-    public SqlManager sqlFListManager;
 
     private String prefix;
     private String suffix;
@@ -87,8 +82,8 @@ public class FriendsBG extends Plugin
         this.serManager = new SerializationManager();
         this.prefix = config.getString("prefix").replace("&", "§");
         this.suffix = config.getString("suffix").replace("&", "§");
-        this.redisEnable = config.getBoolean("redis.use");
-        this.sqlEnable = config.getBoolean("mysql.use");
+        this.redisEnable = TMBungeeAPI.getInstance().redisEnable;
+        this.sqlEnable = TMBungeeAPI.getInstance().sqlEnable;
     }
 
     @Override
@@ -98,11 +93,6 @@ public class FriendsBG extends Plugin
         INSTANCE = this;
         pm = ProxyServer.getInstance().getPluginManager();
 
-        //metrics = new Metrics(INSTANCE, pluginId);
-
-        // Optional: Add custom charts
-        //metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
-
         pm.registerCommand(this, new CmdFriends());
         pm.registerCommand(this, new CmdGroup());
         pm.registerCommand(this, new CmdMsg());
@@ -110,29 +100,11 @@ public class FriendsBG extends Plugin
 
         pm.registerListener(this, new PlayerListener());
 
-        if(sqlEnable)
-        {
-            getLogger().info(console + "Connecting to databases...");
-            DBManager.initAllConnections();
-            try {
-                sqlProfilesManager = new SqlManager(DBManager.FBG_DATABASE.getDbAccess().getConnection(), config.getString("mysql.prefixTables"), config.getString("mysql.tableName"));
-                sqlFListManager = new SqlManager(DBManager.FBG_DATABASE.getDbAccess().getConnection(), config.getString("mysql.prefixTables"), config.getString("mysql.friendsTable"));
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if(redisEnable)
-        {
-            getLogger().info(console + "Connecting to redis servers...");
-            RedisManager.initAllConnections();
-        }
-
         getLogger().info(console + "Ready to use !");
     }
 
     public static FriendsBG getInstance() { return INSTANCE; }
-
-    //public static Metrics getMetrics() { return metrics; }
+    public int getPluginId() { return pluginId; }
     public Configuration getConfig() {return config;}
     public SerializationManager getSerializationManager() {return serManager;}
 

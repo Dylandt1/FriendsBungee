@@ -15,12 +15,12 @@
     <!-- Maven variables properties -->
     <properties>
         <plugin.state>SNAPSHOT</plugin.state>
-        <minecraft.version>1.19</minecraft.version>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-compiler.version>3.8.1</maven-compiler.version>
         <maven-shade.version>3.2.4</maven-shade.version>
 
+        <minecraft.version>1.19</minecraft.version>
         <bungee.version>1.19-R0.1-SNAPSHOT</bungee.version>
         <hikari.version>4.0.3</hikari.version>
         <slf4j.version>2.0.0-alpha6</slf4j.version>

@@ -1,10 +1,11 @@
 package fr.patapom.friendsbg.common.players;
 
-import fr.patapom.friendsbg.fbg.data.manager.DBManager;
-import fr.patapom.friendsbg.fbg.data.manager.RedisManager;
-import fr.patapom.friendsbg.fbg.json.Files;
-import fr.patapom.friendsbg.fbg.json.SerializationManager;
 import fr.patapom.friendsbg.fbg.FriendsBG;
+import fr.tmmods.tmapi.bungee.TMBungeeAPI;
+import fr.tmmods.tmapi.bungee.data.manager.DBManager;
+import fr.tmmods.tmapi.bungee.data.manager.RedisManager;
+import fr.tmmods.tmapi.data.manager.Files;
+import fr.tmmods.tmapi.data.manager.Json.SerializationManager;
 import fr.tmmods.tmapi.data.manager.redis.RedisAccess;
 import fr.tmmods.tmapi.data.manager.sql.SqlManager;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
@@ -53,6 +54,8 @@ public class ProfileProvider
     private String REDIS_KEY = "fManager:";
 
     private String prefixTables;
+    private SqlManager sqlProfilesManager;
+    private SqlManager sqlFListManager;
 
     /**
      * FriendsProvider initiator
@@ -72,6 +75,8 @@ public class ProfileProvider
             this.REDIS_KEY = REDIS_KEY+uuid.toString();
         }
         this.prefixTables = plugin.getConfig().getString("mysql.prefixTables");
+        this.sqlProfilesManager = TMBungeeAPI.getInstance().sqlProfilesManager;
+        this.sqlFListManager = TMBungeeAPI.getInstance().sqlFListManager;
     }
 
     /**
@@ -193,7 +198,7 @@ public class ProfileProvider
             // Init DB connection
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
             // Init PreparedStatement n°1 and set values
-            ps1 = connection.prepareStatement("UPDATE " + prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName() + "SET name = ?, displayName = ?, requestsAllow = ?, msgAllow = ?, groupId = ? WHERE uuid = ?");
+            ps1 = connection.prepareStatement("UPDATE " + prefixTables+sqlProfilesManager.getTableName() + "SET name = ?, displayName = ?, requestsAllow = ?, msgAllow = ?, groupId = ? WHERE uuid = ?");
             ps1.setString(1, name);
             ps1.setString(2, displayName);
             ps1.setInt(3, fManager.requestsAllow()?1:0);
@@ -205,7 +210,7 @@ public class ProfileProvider
             ps1.close();
 
             // Init PreparedStatement n°2 and set values
-            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+FriendsBG.getInstance().sqlFListManager.getTableName()+" WHERE uuid = ?");
+            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+sqlFListManager.getTableName()+" WHERE uuid = ?");
             ps2.setString(1, fManager.getUUID().toString());
             // Execute PreparedStatement and init ResultSet
             rs2 = ps2.executeQuery();
@@ -222,7 +227,7 @@ public class ProfileProvider
                 // Add new friends in DB
                 if(!fUUIDList.contains(fManager.getFriendsMap().get(fName)))
                 {
-                    PreparedStatement ps = connection.prepareStatement("INSERT INTO "+prefixTables+FriendsBG.getInstance().sqlFListManager.getTableName()+" (uuid, friendUUID, friendName) VALUES (?, ?, ?)");
+                    PreparedStatement ps = connection.prepareStatement("INSERT INTO "+prefixTables+sqlFListManager.getTableName()+" (uuid, friendUUID, friendName) VALUES (?, ?, ?)");
                     ps.setString(1, uuid.toString());
                     ps.setString(2, fManager.getFriendsMap().get(fName).toString());
                     ps.setString(3, fName);
@@ -268,8 +273,8 @@ public class ProfileProvider
         ProfileManager fManager = null;
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            ps1 = connection.prepareStatement("SELECT * FROM "+prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName()+" WHERE uuid = ?");
-            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+FriendsBG.getInstance().sqlFListManager.getTableName()+" WHERE uuid = ?");
+            ps1 = connection.prepareStatement("SELECT * FROM "+prefixTables+sqlProfilesManager.getTableName()+" WHERE uuid = ?");
+            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+sqlFListManager.getTableName()+" WHERE uuid = ?");
 
             ps1.setString(1, uuid.toString());
             ps2.setString(1, uuid.toString());
@@ -304,7 +309,7 @@ public class ProfileProvider
         PreparedStatement ps;
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
+            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+sqlProfilesManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
             ProfileManager fManager = new ProfileManager(uuid, name, displayName, true, true, null, new HashMap<>());
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
@@ -327,13 +332,13 @@ public class ProfileProvider
     {
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM "+prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName()+" WHERE uuid = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + prefixTables + sqlProfilesManager.getTableName()+ " WHERE uuid = ?");
             ResultSet rs = ps.executeQuery();
             if(!rs.next())
             {
                 createFManager();
             }else {
-                ps = connection.prepareStatement("INSERT INTO "+prefixTables+FriendsBG.getInstance().sqlProfilesManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
+                ps = connection.prepareStatement("INSERT INTO " + prefixTables + sqlProfilesManager.getTableName() + " (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
                 ps.setString(1, uuid.toString());
                 ps.setString(2, name);
                 ps.setString(3, fManager.getDisplayName());
