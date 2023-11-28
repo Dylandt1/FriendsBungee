@@ -22,10 +22,6 @@
 
         <minecraft.version>1.19</minecraft.version>
         <bungee.version>1.19-R0.1-SNAPSHOT</bungee.version>
-        <hikari.version>4.0.3</hikari.version>
-        <slf4j.version>2.0.0-alpha6</slf4j.version>
-        <redis.version>3.17.3</redis.version>
-        <jackson.version>2.13.3</jackson.version>
         <bstats.version>3.0.1</bstats.version>
     </properties>
 
@@ -92,55 +88,6 @@
             <version>3.1-RELEASE</version>
             <type>jar</type>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- HikariCP library dependency-->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>${hikari.version}</version>
-        </dependency>
-
-        <!-- SLF4J library dependency-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-
-        <!-- Redisson dependency-->
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-            <version>${redis.version}</version>
-        </dependency>
-
-        <!-- JacksonCore dependency-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <!-- Jackson Databind dependency-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <!-- Jackson Dataformat YAML dependency-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <!-- Jackson Annotations dependency-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
 
         <!-- Bstats for bungee dependency
