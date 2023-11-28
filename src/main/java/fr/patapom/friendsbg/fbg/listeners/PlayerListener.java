@@ -64,7 +64,7 @@ public class PlayerListener implements Listener
                         if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
                         {
                             ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(plsUUID);
-                            sendMessage(onlineFriend, fPrefix+" "+fSuffix+" "+friendConnected.replace("%player%", p.getDisplayName()));
+                            sendMessage(onlineFriend, fPrefix+fSuffix+friendConnected.replace("%player%", p.getDisplayName()));
                         }
                     }
                 }
@@ -109,7 +109,7 @@ public class PlayerListener implements Listener
                         if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
                         {
                             ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(plsUUID);
-                            sendMessage(onlineFriend, fPrefix+" "+fSuffix+" "+friendDisconnected.replace("%player%", p.getDisplayName()));
+                            sendMessage(onlineFriend, fPrefix+fSuffix+friendDisconnected.replace("%player%", p.getDisplayName()));
                         }
                     }
                 }

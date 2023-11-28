@@ -14,7 +14,9 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 import net.md_5.bungee.config.Configuration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This file is part of FriendsBungee, a BungeeCord friends plugin system.
@@ -57,10 +59,13 @@ public class CmdMsg extends Command implements TabExecutor
     private final String msgTargetDisabled;
     private final String errorMsg;
     private final String reportCmd;
+    private final boolean antiSpam;
+    private final int cool_down;
+    private final String antiSpamMsg;
 
     public CmdMsg()
     {
-        super("message", null, new String[]{"msg", "tell", "w"});
+        super("message", null, new String[]{"msg", "tell", "w", "mp"});
         this.config = FriendsBG.getInstance().getConfig();
         this.sPrefix = config.getString("msg.sender.prefix").replace("&", "§");
         this.sdPrefix = config.getString("msg.sender.2ndPrefix").replace("&", "§");
@@ -81,6 +86,9 @@ public class CmdMsg extends Command implements TabExecutor
         this.msgTargetDisabled = config.getString("msg.msgTargetDisabled").replace("&", "§");
         this.errorMsg = config.getString("msg.errorMsg").replace("&", "§");
         this.reportCmd = config.getString("msg.reportCmd").replace("&", "§");
+        this.antiSpamMsg = config.getString("msg.antiSpam.message").replace("&", "§");
+        this.antiSpam = config.getBoolean("msg.antiSpam.use");
+        this.cool_down = config.getInt("msg.antiSpam.cool_down")*1000;
     }
 
     @Override
@@ -88,9 +96,10 @@ public class CmdMsg extends Command implements TabExecutor
     {
         if(!(sender instanceof ProxiedPlayer)) {return null;}
 
+        List<String> list = new ArrayList<>();
+
         if(args.length == 1)
         {
-            List<String> list = new ArrayList<>();
             list.add("enable");
             list.add("disable");
             for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
@@ -140,7 +149,7 @@ public class CmdMsg extends Command implements TabExecutor
             }
         }else
         {
-            if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/msg enable"));return;}
+            if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/mp enable"));return;}
 
             String targetName = args[0];
             if(ProxyServer.getInstance().getPlayer(targetName) == null) {sendMessage(p, playerNotFound);return;}
@@ -161,6 +170,22 @@ public class CmdMsg extends Command implements TabExecutor
                 sendMessage(p, sendToSender);
             }else {
                 if(!targetProfile.msgAllow()) {sendMessage(p, msgTargetDisabled.replace("%targetPlayer%", targetPl.getDisplayName()));return;}
+
+                if(antiSpam)
+                {
+                    if(!FriendsBG.getInstance().cooldown.containsKey(p.getUniqueId()))
+                    {
+                        FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
+                    }else if(System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()) > cool_down)
+                    {
+                        FriendsBG.getInstance().cooldown.remove(p.getUniqueId());
+                        FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
+                    }
+                    else {
+                        sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf(cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId())) / 1000)));
+                        return;
+                    }
+                }
 
                 StringBuilder msg = new StringBuilder();
 

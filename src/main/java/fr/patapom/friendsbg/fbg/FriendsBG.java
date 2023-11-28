@@ -13,8 +13,6 @@ import fr.tmmods.tmapi.bungee.data.manager.DBManager;
 import fr.tmmods.tmapi.bungee.data.manager.RedisManager;
 import fr.tmmods.tmapi.data.manager.Json.SerializationManager;
 import fr.tmmods.tmapi.data.manager.UpdateChecker;
-import fr.tmmods.tmapi.data.manager.sql.SqlManager;
-import fr.tmmods.tmapi.spigot.TMSpigotAPI;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -61,6 +59,8 @@ public class FriendsBG extends Plugin
     public static Map<UUID, GroupManager> parties = new HashMap<>();
     public static Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
 
+    public HashMap<UUID, Long> cooldown = new HashMap<>();
+
     @Override
     public void onLoad()
     {
@@ -82,8 +82,8 @@ public class FriendsBG extends Plugin
         this.serManager = new SerializationManager();
         this.prefix = config.getString("prefix").replace("&", "§");
         this.suffix = config.getString("suffix").replace("&", "§");
-        this.redisEnable = TMBungeeAPI.getInstance().redisEnable;
-        this.sqlEnable = TMBungeeAPI.getInstance().sqlEnable;
+        this.redisEnable = TMBungeeAPI.redisEnable;
+        this.sqlEnable = TMBungeeAPI.sqlEnable;
     }
 
     @Override

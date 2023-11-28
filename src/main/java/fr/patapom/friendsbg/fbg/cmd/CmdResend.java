@@ -58,6 +58,9 @@ public class CmdResend extends Command implements TabExecutor
     private final String msgTargetDisabled;
     private final String errorMsg;
     private final String reportCmd;
+    private final boolean antiSpam;
+    private final int cool_down;
+    private final String antiSpamMsg;
 
     public CmdResend()
     {
@@ -83,6 +86,9 @@ public class CmdResend extends Command implements TabExecutor
         this.msgTargetDisabled = config.getString("msg.msgTargetDisabled").replace("&", "§");
         this.errorMsg = config.getString("msg.errorMsg").replace("&", "§");
         this.reportCmd = config.getString("msg.reportCmd").replace("&", "§");
+        this.antiSpamMsg = config.getString("msg.antiSpam.message").replace("&", "§");
+        this.antiSpam = config.getBoolean("msg.antiSpam.use");
+        this.cool_down = config.getInt("msg.antiSpam.cool_down")*1000;
     }
 
     @Override
@@ -139,6 +145,22 @@ public class CmdResend extends Command implements TabExecutor
 
             if(targetProfile == null) {sendMessage(p, errorMsg);return;}
             if(!targetProfile.msgAllow()) {sendMessage(p, msgTargetDisabled.replace("%targetPlayer%", targetPl.getName()));return;}
+
+            if(antiSpam)
+            {
+                if(!FriendsBG.getInstance().cooldown.containsKey(p.getUniqueId()))
+                {
+                    FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
+                }else if(System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()) > cool_down)
+                {
+                    FriendsBG.getInstance().cooldown.remove(p.getUniqueId());
+                    FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
+                }
+                else {
+                    sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf(cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId())) / 1000)));
+                    return;
+                }
+            }
 
             StringBuilder msg = new StringBuilder();
 

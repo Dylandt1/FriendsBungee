@@ -163,13 +163,13 @@ public class Help
         sendMessage(p, " ");
         sendMessage(p, " §6§l? §7§nHelp§f : ");
         sendMessage(p, " ");
-        sendMessage(p, "§f/§bmsg §7<§6player§7> §7<§fmessage§7> "+suffixHMSG+" "+cmdMsgHMSG);
+        sendMessage(p, "§f/§bmp §7<§6player§7> §7<§fmessage§7> "+suffixHMSG+" "+cmdMsgHMSG);
         sendMessage(p, " ");
         sendMessage(p, "§f/§br §7<§fmessage§7> "+suffixHMSG+" "+cmdRHMSG);
         sendMessage(p, " ");
-        sendMessage(p, "§f/§bmsg enable "+suffixHMSG+" "+cmdEnableHMSG);
+        sendMessage(p, "§f/§bmp enable "+suffixHMSG+" "+cmdEnableHMSG);
         sendMessage(p, " ");
-        sendMessage(p, "§f/§bmsg disable "+suffixHMSG+" "+cmdDisableHMSG);
+        sendMessage(p, "§f/§bmp disable "+suffixHMSG+" "+cmdDisableHMSG);
         sendMessage(p, " ");
         sendMessage(p, msgBottom);
     }

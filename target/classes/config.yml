@@ -58,8 +58,8 @@ friends :                                                                       
 # ------------------------------------------------------------------------------------- #
 
   # Prefix and suffix of all friends messages
-  prefix : "&f[&6Friends&f]"
-  suffix: "&f&l->&f"
+  prefix : "&f[&6Friends&f] "
+  suffix: "&f&l->&f "
 
   # Message for using commands in the console :
   cmdNotUsable: "&cThis command is only available in game !"
@@ -300,12 +300,22 @@ groups :                                                                        
 #                                                                                       #
 # Parameters supported :                                                                #
 #                                                                                       #
-#   - %player% : sender                                                                 #
-#   - %targetPlayer% : target                                                           #
+#   - %player% : message sender                                                         #
+#   - %targetPlayer% : target player                                                    #
 #   - %cmd% : command label                                                             #
+#   - %cooldown% : cool down message in seconds
 #                                                                                       #
 msg:                                                                                    #
 # ##################################################################################### #
+
+  # Anti spam :
+  antiSpam:
+    # Turn to true to enable anti spam cool down :
+    use: false
+    # Make cool down in seconds. Default = 2 :
+    cool_down: 2
+    # AntiSpam message :
+    message: "&cYou have to wait another &6%cooldown% &cseconds to send a message."
 
   # Sender part :
   sender:
@@ -421,7 +431,7 @@ helpmsg :                                                                       
     owner: "&fTo change the group leader&c;"
     list: "&fTo see the list of players in the group&c."
 
-  # /msg | /r Help message config :
+  # /mp | /r Help message config :
   helpPvMsg:
     # Top framing of help message :
     top: "§6#§f-------------------- [§3Friends§f-§6BG§f] -------------------§6#"
