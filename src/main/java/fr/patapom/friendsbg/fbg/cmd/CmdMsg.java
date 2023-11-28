@@ -106,9 +106,8 @@ public class CmdMsg extends Command implements TabExecutor
             {
                 list.add(player.getName());
             }
-            return list;
         }
-        return null;
+        return list;
     }
 
     @Override
