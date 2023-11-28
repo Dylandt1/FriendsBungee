@@ -26,20 +26,20 @@
 # ################################################################################################### #
 
 # Prefix and suffix of plugin's messages :
-prefix : "&f[&3Friends&f-&6Bungee&f]"
+prefix: "&f[&3Friends&f-&6Bungee&f]"
 suffix: "&f&l->&f"
 
 # Message unable to create configuration file :
-fileNotCreate : "&cUnable to create configuration file !"
+fileNotCreate: "&cUnable to create configuration file !"
 
 # Message unable to load configuration file :
-fileNotLoad : "&cUnable to load configuration file !"
+fileNotLoad: "&cUnable to load configuration file !"
 
 # Message configuration file not found :
-fileNotFound : "&cConfiguration file not found !"
+fileNotFound: "&cConfiguration file not found !"
 
 # Message configuration file not found :
-unableSave : "&cConfiguration file not backed up !"
+unableSave: "&cConfiguration file not backed up !"
 
 
 # ##################################################################################### #
@@ -54,11 +54,11 @@ unableSave : "&cConfiguration file not backed up !"
 #   - %player% : sender                                                                 #
 #   - %targetPlayer% : target                                                           #
 #                                                                                       #
-friends :                                                                               #
+friends:                                                                                #
 # ------------------------------------------------------------------------------------- #
 
   # Prefix and suffix of all friends messages
-  prefix : "&f[&6Friends&f] "
+  prefix: "&f[&6Friends&f] "
   suffix: "&f&l->&f "
 
   # Message for using commands in the console :
@@ -86,7 +86,7 @@ friends :                                                                       
   targetRequestsDeny: "&b%targetPlayer% &cdoes not accept friend requests !"
 
   # Message no friends in list :
-  noFriendsInList : "&cYou don't have any friends on this server !"
+  noFriendsInList: "&cYou don't have any friends on this server !"
 
   # Message list friends online :
   friendsOnline: "&aFriends online &f:"
@@ -95,7 +95,7 @@ friends :                                                                       
   friendsOffline: "&cFriends offline &f:"
 
   # Message already friends :
-  alreadyFriends : "&6You are already friends with &b%targetPlayer% &c!"
+  alreadyFriends: "&6You are already friends with &b%targetPlayer% &c!"
 
   # Message already friend request in progress :
   alreadyInProgress: "&cYou already have a friend request in progress with &b%targetPlayer% &c!"
@@ -110,10 +110,10 @@ friends :                                                                       
   scrollTargetRequest: "&aAccept"
 
   # Message new friend for sender :
-  newFriendSender : "§aYou are now friend with &b%targetPlayer% &c!"
+  newFriendSender: "§aYou are now friend with &b%targetPlayer% &c!"
 
   # Message new friend for target :
-  newFriendTarget : "&b%player% &aaccept your friend request &c!"
+  newFriendTarget: "&b%player% &aaccept your friend request &c!"
 
   # Message yourself as a friend :
   yourSelfAsaFriend: "&cYou can’t add yourself as a friend !"
@@ -128,18 +128,18 @@ friends :                                                                       
   deletedFriend: "&cYou just removed &b%targetPlayer% &cfrom your friends !"
 
   # Message error adding friend! :
-  errorAddFriend : "&cError when adding a friend !"
+  errorAddFriend: "&cError when adding a friend !"
 
   # Message no friend request in progress :
-  noRequest : "&cNo friend request in progress !"
+  noRequest: "&cNo friend request in progress !"
 
   # Message refuse friend request for sender :
-  refuseFriendSender : "&cYou have refused the friend request of &b%targetPlayer% &c!"
+  refuseFriendSender: "&cYou have refused the friend request of &b%targetPlayer% &c!"
 
   # Message refuse friend request for target :
-  refuseFriendTarget : "&b%player% &crefused your friend request !"
+  refuseFriendTarget: "&b%player% &crefused your friend request !"
 
-  #
+  # Friends connect/disconnect messages :
   friendConnected: "&aYour friend &b%player% &ais now connected &c!"
   friendDisconnected: "&6Your friend &b%player% &6is now disconnected &c!"
 
@@ -158,15 +158,15 @@ friends :                                                                       
 #   - %groupSize% : group size limit (just for groupLimit)                              #
 #   - %playerSize% : number of players in group (just for groupLimit)                   #
 #                                                                                       #
-groups :                                                                                #
+groups:                                                                                 #
 # ------------------------------------------------------------------------------------- #
 
   # Prefix and suffix for plugin messages :
-  prefix : "&f[&2Groups&f]"
-  suffix : "&f&l->&f"
+  prefix: "&f[&2Groups&f]"
+  suffix: "&f&l->&f"
 
   # Timing to teleport players in group list :
-  timingTP : 1000 # in milliseconds
+  timingTP: 1000 # in milliseconds
 
   # Groups members ranks labels, just for group private chat :
   ranks:
@@ -198,10 +198,10 @@ groups :                                                                        
   playerNotFound: "&b%targetPlayer% &cis not found !"
 
   # No group message :
-  notInGroup : "&cYou are not in any group !"
+  notInGroup: "&cYou are not in any group !"
 
   # Message already in group :
-  alreadyInGroup : "&6You are already in a group &c!"
+  alreadyInGroup: "&6You are already in a group &c!"
 
   # Message group created :
   groupCreated: "&aYour group has been recorded &c!"
@@ -213,7 +213,7 @@ groups :                                                                        
   groupDeletedTarget: "&cOwner have been deleted group !"
 
   # Message no player in group :
-  noPlayersInGroup : "&cYou don't have any players in your group !"
+  noPlayersInGroup: "&cYou don't have any players in your group !"
 
   # Message group request sender :
   requestSender: "&aYou have send group request to &b%targetPlayer% &c!"
@@ -228,10 +228,10 @@ groups :                                                                        
   requestTarget: "&b%player% &asent you a group request, click or use &f/&bp &faccept &ato accept this request &c!"
 
   # Message new player in group for sender :
-  newGroupSender : "&b%targetPlayer% &ais now in your group &c!"
+  newGroupSender: "&b%targetPlayer% &ais now in your group &c!"
 
   # Message new player in group for target :
-  newGroupTarget : "&aYou are now in group of %player% &c!"
+  newGroupTarget: "&aYou are now in group of %player% &c!"
 
   # Message can't remove yourself :
   yourselfCantGetOut: "&cYou can’t get away from your group !"
@@ -255,19 +255,19 @@ groups :                                                                        
   newOwnerTarget: "&aYou're the new owner of group &c!"
 
   # Message error adding in group :
-  errorAdd : "&cError when adding a new player in group !"
+  errorAdd: "&cError when adding a new player in group !"
 
   # Message no group request in progress :
-  noRequest : "&cNo group request in progress !"
+  noRequest: "&cNo group request in progress !"
 
   # Message owner commands :
-  ownerGroup : "&cYou must be the group owner to execute this command !"
+  ownerGroup: "&cYou must be the group owner to execute this command !"
 
   # Message refuse group request for sender :
-  refuseGroupSender : "&cYou have refused the group request of &b%targetPlayer% &c!"
+  refuseGroupSender: "&cYou have refused the group request of &b%targetPlayer% &c!"
 
   # Message refuse group request for target :
-  refuseGroupTarget : "&b%player% &crefused your group request !"
+  refuseGroupTarget: "&b%player% &crefused your group request !"
 
   # Message quit the group for sender :
   quitGroupSender: "&cYou left the group !"
@@ -303,7 +303,7 @@ groups :                                                                        
 #   - %player% : message sender                                                         #
 #   - %targetPlayer% : target player                                                    #
 #   - %cmd% : command label                                                             #
-#   - %cooldown% : cool down message in seconds
+#   - %cooldown% : cool down message in seconds                                         #
 #                                                                                       #
 msg:                                                                                    #
 # ##################################################################################### #
@@ -321,12 +321,12 @@ msg:                                                                            
   sender:
 
     # Message prefix. If 2ndPrefix = "", is not used and you can make 2ndSuffix = "" :
-    prefix : "&7[&cme&7]"
+    prefix: "&7[&cme&7]"
     2ndPrefix: "&7[&c%targetPlayer%&7]"
 
     # Message suffix. suffix is after prefix and 2ndSuffix is after 2ndPrefix.
     # If 2ndPrefix = "", for good rendering, you can make 2ndSuffix = "" :
-    suffix : "&f&l->&f"
+    suffix: "&f&l->&f"
     2ndSuffix: "&f:"
 
   # Target part :
@@ -388,7 +388,7 @@ msg:                                                                            
 #                                                                                       #
 # This part allows you to configure the framing and help messages of FriendsBG commands #
 #                                                                                       #
-helpmsg :                                                                               #
+helpmsg:                                                                                #
 # ------------------------------------------------------------------------------------- #
 
   # /friends Help message config :
