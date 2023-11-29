@@ -43,7 +43,6 @@ public class ProfileProvider
     private final FriendsBG plugin;
     private final File saveDirectory;
 
-    private final ProxiedPlayer player;
     private final UUID uuid;
     private final String name;
     private final String displayName;
@@ -53,9 +52,10 @@ public class ProfileProvider
     private RedisAccess redisAccess;
     private String REDIS_KEY = "fManager:";
 
-    private String prefixTables;
-    private SqlManager sqlProfilesManager;
-    private SqlManager sqlFListManager;
+    private final String prefixTables;
+    private final String profilesTable;
+    private final String friendsTable;
+    private final String teamsTable;
 
     /**
      * FriendsProvider initiator
@@ -63,7 +63,7 @@ public class ProfileProvider
     public ProfileProvider(UUID playerUUID)
     {
         // Init all variables
-        this.player = ProxyServer.getInstance().getPlayer(playerUUID);
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerUUID);
         this.plugin = FriendsBG.getInstance();
         this.saveDirectory = new File(plugin.getDataFolder(), "/managers/fManagers/");
         this.uuid = playerUUID;
@@ -74,9 +74,10 @@ public class ProfileProvider
             this.redisAccess = RedisManager.FBG_REDIS.getRedisAccess();
             this.REDIS_KEY = REDIS_KEY+uuid.toString();
         }
-        this.prefixTables = plugin.getConfig().getString("mysql.prefixTables");
-        this.sqlProfilesManager = TMBungeeAPI.getInstance().sqlProfilesManager;
-        this.sqlFListManager = TMBungeeAPI.getInstance().sqlFListManager;
+        this.prefixTables = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getPrefixTables();
+        this.profilesTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getProfilesTable();
+        this.friendsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getFriendsTable();
+        this.teamsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getTeamsTable();
     }
 
     /**
@@ -112,7 +113,7 @@ public class ProfileProvider
                     final String json = Files.loadFile(file);
                     fManager = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
                 }else {
-                    fManager = new ProfileManager(uuid, name, displayName, true, true, null, new HashMap<>());
+                    fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>());
                     final String json = serManager.serialize(fManager);
                     Files.save(file, json);
                 }
@@ -120,8 +121,14 @@ public class ProfileProvider
             }
         }else if(sqlEnable)
         {
-            // Get FriendsManager on Mysql server
-            fManager = getFManagerOnMySQL();
+            if(FriendsBG.fManagers.containsKey(uuid))
+            {
+                // Get FriendsManager on plugin cache
+                fManager = FriendsBG.fManagers.get(uuid);
+            }else {
+                // Get FriendsManager on Mysql server
+                fManager = getFManagerOnMySQL();
+            }
 
             if(fManager == null)
             {
@@ -156,7 +163,7 @@ public class ProfileProvider
                     final String json = Files.loadFile(file);
                     fManager = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
                 }else {
-                    fManager = new ProfileManager(uuid, name, displayName, true, true, null, new HashMap<>());
+                    fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>());
                     final String json = serManager.serialize(fManager);
                     Files.save(file, json);
                 }
@@ -173,8 +180,24 @@ public class ProfileProvider
         // Save FriendsManager on Redis server
         if(redisEnable) {setFManagerOnRedis(friendsManager);return;}
 
+        if(sqlEnable)
+        {
+            if(FriendsBG.fManagers.containsKey(uuid))
+            {
+                FriendsBG.fManagers.replace(uuid, friendsManager);
+            }else {
+                FriendsBG.fManagers.put(uuid, friendsManager);
+            }
+            return;
+        }
+
         // Save FriendsManager on plugin cache and Json file for security
-        FriendsBG.fManagers.replace(uuid, friendsManager);
+        if(FriendsBG.fManagers.containsKey(uuid))
+        {
+            FriendsBG.fManagers.replace(uuid, friendsManager);
+        }else {
+            FriendsBG.fManagers.put(uuid, friendsManager);
+        }
         final File file = new File(saveDirectory, uuid.toString()+".json");
         final SerializationManager serManager = plugin.getSerializationManager();
         final String json = serManager.serialize(friendsManager);
@@ -198,20 +221,28 @@ public class ProfileProvider
             // Init DB connection
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
             // Init PreparedStatement n°1 and set values
-            ps1 = connection.prepareStatement("UPDATE " + prefixTables+sqlProfilesManager.getTableName() + "SET name = ?, displayName = ?, requestsAllow = ?, msgAllow = ?, groupId = ? WHERE uuid = ?");
+            ps1 = connection.prepareStatement("UPDATE " + prefixTables+profilesTable + " SET name = ?, displayName = ?, fAllow = ?, msgAllow = ?, gpAllow = ?, teamsAllow = ?, teamId = ?, rankInTeam = ? WHERE uuid = ?");
             ps1.setString(1, name);
             ps1.setString(2, displayName);
-            ps1.setInt(3, fManager.requestsAllow()?1:0);
+            ps1.setInt(3, fManager.fAllow()?1:0);
             ps1.setInt(4, fManager.msgAllow()?1:0);
-            ps1.setString(5, fManager.getGroupId().toString());
-            ps1.setString(6, uuid.toString());
+            ps1.setInt(5, fManager.gpAllow()?1:0);
+            ps1.setInt(6, fManager.teamsAllow()?1:0);
+            if(fManager.getTeamId() == null)
+            {
+                ps1.setString(7, null);
+            }else {
+                ps1.setString(7, fManager.getTeamId().toString());
+            }
+            ps1.setString(8, fManager.getRankInTeam());
+            ps1.setString(9, uuid.toString());
             // Execute PreparedStatement n°1 and close
             ps1.executeUpdate();
             ps1.close();
 
             // Init PreparedStatement n°2 and set values
-            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+sqlFListManager.getTableName()+" WHERE uuid = ?");
-            ps2.setString(1, fManager.getUUID().toString());
+            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+friendsTable+" WHERE uuid = ?");
+            ps2.setString(1, uuid.toString());
             // Execute PreparedStatement and init ResultSet
             rs2 = ps2.executeQuery();
 
@@ -227,7 +258,7 @@ public class ProfileProvider
                 // Add new friends in DB
                 if(!fUUIDList.contains(fManager.getFriendsMap().get(fName)))
                 {
-                    PreparedStatement ps = connection.prepareStatement("INSERT INTO "+prefixTables+sqlFListManager.getTableName()+" (uuid, friendUUID, friendName) VALUES (?, ?, ?)");
+                    PreparedStatement ps = connection.prepareStatement("INSERT INTO "+prefixTables+friendsTable+" (uuid, friendUUID, friendName) VALUES (?, ?, ?)");
                     ps.setString(1, uuid.toString());
                     ps.setString(2, fManager.getFriendsMap().get(fName).toString());
                     ps.setString(3, fName);
@@ -273,8 +304,8 @@ public class ProfileProvider
         ProfileManager fManager = null;
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            ps1 = connection.prepareStatement("SELECT * FROM "+prefixTables+sqlProfilesManager.getTableName()+" WHERE uuid = ?");
-            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+sqlFListManager.getTableName()+" WHERE uuid = ?");
+            ps1 = connection.prepareStatement("SELECT * FROM "+prefixTables+profilesTable+" WHERE uuid = ?");
+            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+friendsTable+" WHERE uuid = ?");
 
             ps1.setString(1, uuid.toString());
             ps2.setString(1, uuid.toString());
@@ -289,10 +320,19 @@ public class ProfileProvider
                     fList.put(rs2.getString("friendName"), UUID.fromString(rs2.getString("friendUUID")));
                 }
                 String displayName = rs1.getString("displayName");
-                boolean requestsAllow = rs1.getInt("requestsAllow") == 1;
+                boolean fAllow = rs1.getInt("fAllow") == 1;
                 boolean msgAllow = rs1.getInt("msgAllow") == 1;
-                UUID groupId = UUID.fromString(rs1.getString("groupId"));
-                fManager = new ProfileManager(uuid, name, displayName, requestsAllow, msgAllow, groupId, fList);
+                boolean gpAllow = rs1.getInt("gpAllow") == 1;
+                boolean teamsAllow = rs1.getInt("teamsAllow") == 1;
+                UUID teamId;
+                if(rs1.getString("teamId") == null)
+                {
+                    teamId = null;
+                }else {
+                    teamId = UUID.fromString(rs1.getString("teamId"));
+                }
+                String rankInTeam = rs1.getString("rankInTeam");
+                fManager = new ProfileManager(uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, rankInTeam, null, teamId, fList);
             }else {
                 fManager = createFManager();
             }
@@ -309,14 +349,17 @@ public class ProfileProvider
         PreparedStatement ps;
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+sqlProfilesManager.getTableName()+" (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
-            ProfileManager fManager = new ProfileManager(uuid, name, displayName, true, true, null, new HashMap<>());
+            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+profilesTable+" (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, rankInTeam) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            ProfileManager fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>());
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
             ps.setString(3, displayName);
             ps.setInt(4, 1);
             ps.setInt(5, 1);
-            ps.setString(6, null);
+            ps.setInt(6, 1);
+            ps.setInt(7, 1);
+            ps.setString(8, null);
+            ps.setString(9, null);
             ps.executeUpdate();
             ps.close();
             connection.close();
@@ -332,19 +375,27 @@ public class ProfileProvider
     {
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + prefixTables + sqlProfilesManager.getTableName()+ " WHERE uuid = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM "+prefixTables+profilesTable+" WHERE uuid = ?");
             ResultSet rs = ps.executeQuery();
             if(!rs.next())
             {
                 createFManager();
             }else {
-                ps = connection.prepareStatement("INSERT INTO " + prefixTables + sqlProfilesManager.getTableName() + " (uuid, name, displayName, requestsAllow, msgAllow, groupId) VALUES (?, ?, ?, ?, ?, ?)");
+                ps = connection.prepareStatement("INSERT INTO " + prefixTables + profilesTable + " (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, rankInTeam) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 ps.setString(1, uuid.toString());
                 ps.setString(2, name);
                 ps.setString(3, fManager.getDisplayName());
-                ps.setInt(4, fManager.requestsAllow()?1:0);
+                ps.setInt(4, fManager.fAllow()?1:0);
                 ps.setInt(5, fManager.msgAllow()?1:0);
-                ps.setString(6, fManager.getGroupId().toString());
+                ps.setInt(6, fManager.gpAllow()?1:0);
+                ps.setInt(7, fManager.teamsAllow()?1:0);
+                if(fManager.getTeamId() == null)
+                {
+                    ps.setString(8, null);
+                }else {
+                    ps.setString(8, fManager.getTeamId().toString());
+                }
+                ps.setString(9, fManager.getRankInTeam());
                 ps.executeUpdate();
                 ps.close();
                 connection.close();

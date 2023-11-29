@@ -59,12 +59,14 @@ public class CmdResend extends Command implements TabExecutor
     private final String errorMsg;
     private final String reportCmd;
     private final boolean antiSpam;
+    private final int antiSpamLevel;
     private final int cool_down;
     private final String antiSpamMsg;
 
     public CmdResend()
     {
-        super("resend", null, new String[]{"r"});
+        super("resend", null, String.valueOf(
+                FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.resend")));
         this.config = FriendsBG.getInstance().getConfig();
         this.playerOffline = config.getString("msg.playerOffline").replace("&", "§");
         this.cmdNotUsable = config.getString("msg.cmdNotUsable").replace("&", "§");
@@ -88,6 +90,7 @@ public class CmdResend extends Command implements TabExecutor
         this.reportCmd = config.getString("msg.reportCmd").replace("&", "§");
         this.antiSpamMsg = config.getString("msg.antiSpam.message").replace("&", "§");
         this.antiSpam = config.getBoolean("msg.antiSpam.use");
+        this.antiSpamLevel = config.getInt("msg.antiSpam.level");
         this.cool_down = config.getInt("msg.antiSpam.cool_down")*1000;
     }
 
@@ -146,7 +149,7 @@ public class CmdResend extends Command implements TabExecutor
             if(targetProfile == null) {sendMessage(p, errorMsg);return;}
             if(!targetProfile.msgAllow()) {sendMessage(p, msgTargetDisabled.replace("%targetPlayer%", targetPl.getName()));return;}
 
-            if(antiSpam)
+            if(antiSpam && antiSpamLevel == 1 || antiSpamLevel == 3)
             {
                 if(!FriendsBG.getInstance().cooldown.containsKey(p.getUniqueId()))
                 {
@@ -157,7 +160,7 @@ public class CmdResend extends Command implements TabExecutor
                     FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
                 }
                 else {
-                    sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf(cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId())) / 1000)));
+                    sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf((cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()))) / 1000)));
                     return;
                 }
             }

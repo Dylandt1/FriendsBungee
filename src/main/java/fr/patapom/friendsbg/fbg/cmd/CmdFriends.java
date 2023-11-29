@@ -70,6 +70,7 @@ public class CmdFriends extends Command implements TabExecutor
     private final String noRequest;
     private final String refuseFriendSender;
     private final String refuseFriendTarget;
+    private final String noRequestTarget;
 
     public CmdFriends()
     {
@@ -103,14 +104,14 @@ public class CmdFriends extends Command implements TabExecutor
         this.noRequest = config.getString("friends.noRequest").replace("&", "§");
         this.refuseFriendSender = config.getString("friends.refuseFriendSender").replace("&", "§");
         this.refuseFriendTarget = config.getString("friends.refuseFriendTarget").replace("&", "§");
+        this.noRequestTarget = config.getString("friends.noRequestTarget").replace("&", "§");
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args)
     {
-        if(!(sender instanceof ProxiedPlayer)) {return null;}
+        if(!(sender instanceof ProxiedPlayer p)) {return null;}
 
-        ProxiedPlayer p = (ProxiedPlayer) sender;
         if(args.length == 1)
         {
             List<String> list = new ArrayList<>();
@@ -176,15 +177,15 @@ public class CmdFriends extends Command implements TabExecutor
                     return;
                 }else if (args[0].equalsIgnoreCase("enable"))
                 {
-                    if (profile.requestsAllow()) {sendMessage(p, prefix+" "+suffix+" "+requestsAlreadyEnabled);return;}
+                    if (profile.fAllow()) {sendMessage(p, prefix+" "+suffix+" "+requestsAlreadyEnabled);return;}
 
-                    profile.setRequestsAllow(true);
+                    profile.setFAllow(true);
                     provider.save(profile);
                     sendMessage(p, prefix+" "+suffix+" "+requestsAllow);
                 }else if (args[0].equalsIgnoreCase("disable")) {
-                    if (!profile.requestsAllow()) {sendMessage(p, prefix+" "+suffix+" "+requestsAlreadyDisabled);return;}
+                    if (!profile.fAllow()) {sendMessage(p, prefix+" "+suffix+" "+requestsAlreadyDisabled);return;}
 
-                    profile.setRequestsAllow(false);
+                    profile.setFAllow(false);
                     provider.save(profile);
                     sendMessage(p, prefix+" "+suffix+" "+requestsDeny);
                 }else if (args[0].equalsIgnoreCase("accept"))
@@ -245,14 +246,7 @@ public class CmdFriends extends Command implements TabExecutor
                         int i = profile.getNbFriends();
 
                         sendMessage(p, " ");
-                        if (i < 10)
-                        {
-                            sendMessage(p, "§6#§f-------------------- §bFriends §f(§3"+i+"§f) --------------------§6#");
-                        } else if (i < 100) {
-                            sendMessage(p, "§6#§f-------------------- §bFriends §f(§3"+i+"§f) -------------------§6#");
-                        } else {
-                            sendMessage(p, "§6#§f------------------- §bFriends §f(§3"+i+"§f) -------------------§6#");
-                        }
+                        sendMessage(p, "§6#§f-------------------- §bFriends §f(§3"+i+"§f) --------------------§6#");
                         sendMessage(p, " ");
                         if (friendsOnline.isEmpty())
                         {
@@ -261,8 +255,8 @@ public class CmdFriends extends Command implements TabExecutor
                         } else {
                             StringBuilder colorPath = new StringBuilder();
 
-                            for (int x = 0; x < friendsOnline.size(); x++) {
-                                colorPath.append("§b").append(friendsOnline.get(x)).append("§c, ");
+                            for (String s : friendsOnline) {
+                                colorPath.append("§b").append(s).append("§c, ");
                             }
 
                             sendMessage(p, msgFOnline+" §3" + friendsOnline.size());
@@ -277,8 +271,8 @@ public class CmdFriends extends Command implements TabExecutor
                         } else {
                             StringBuilder colorPath = new StringBuilder();
 
-                            for (int x = 0; x < friendsOffline.size(); x++) {
-                                colorPath.append("§7").append(friendsOffline.get(x)).append("§c, ");
+                            for (String s : friendsOffline) {
+                                colorPath.append("§7").append(s).append("§c, ");
                             }
 
                             sendMessage(p, msgFOffline+" §3" + friendsOffline.size());
@@ -320,8 +314,8 @@ public class CmdFriends extends Command implements TabExecutor
                         return;
                     }
 
-                    if (!profile.requestsAllow()) {sendMessage(p, prefix+" "+suffix+" "+senderRequestsDeny);return;}
-                    if (!targetManager.requestsAllow())
+                    if (!profile.fAllow()) {sendMessage(p, prefix+" "+suffix+" "+senderRequestsDeny);return;}
+                    if (!targetManager.fAllow())
                     {
                         sendMessage(p, prefix+" "+suffix+" "+targetRequestsDeny.replace("%targetPlayer%", targetName));
                         return;

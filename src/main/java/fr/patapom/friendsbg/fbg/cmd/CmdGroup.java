@@ -75,6 +75,8 @@ public class CmdGroup extends Command implements TabExecutor
     private final String tpDisabled;
     private final String tpAlreadyEnabled;
     private final String tpAlreadyDisabled;
+    private final String targetRequestsDeny;
+    private final String senderRequestsDeny;
 
     public CmdGroup()
     {
@@ -114,14 +116,15 @@ public class CmdGroup extends Command implements TabExecutor
         this.tpDisabled = config.getString("groups.tpDisabled").replace("&", "§");
         this.tpAlreadyEnabled = config.getString("groups.tpAlreadyEnabled").replace("&", "§");
         this.tpAlreadyDisabled = config.getString("groups.tpAlreadyDisabled").replace("&", "§");
+        this.targetRequestsDeny = config.getString("groups.targetRequestsDeny").replace("&", "§");
+        this.senderRequestsDeny = config.getString("groups.senderRequestsDeny").replace("&", "§");
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args)
     {
-        if(!(sender instanceof ProxiedPlayer)) {return null;}
+        if(!(sender instanceof ProxiedPlayer p)) {return null;}
 
-        ProxiedPlayer p = (ProxiedPlayer) sender;
         ProfileProvider provider = new ProfileProvider(p.getUniqueId());
         ProfileManager profile;
         try {
@@ -159,7 +162,7 @@ public class CmdGroup extends Command implements TabExecutor
                 {
                     GroupProvider pProvider = new GroupProvider(profile.getGroupId());
 
-                    if(!pProvider.pExist())
+                    if(!pProvider.gExist())
                     {
                         profile.setGroupId(null);
                         provider.save(profile);
@@ -190,13 +193,11 @@ public class CmdGroup extends Command implements TabExecutor
     @Override
     public void execute(CommandSender sender, String[] args)
     {
-        if (!(sender instanceof ProxiedPlayer))
+        if (!(sender instanceof ProxiedPlayer p))
         {
             sender.sendMessage(new TextComponent(prefix+" "+suffix+" "+cmdNotUsable));
             return;
         }
-
-        ProxiedPlayer p = (ProxiedPlayer)sender;
 
         ProfileProvider provider = new ProfileProvider(p.getUniqueId());
         ProfileManager profile;
@@ -287,7 +288,7 @@ public class CmdGroup extends Command implements TabExecutor
                 {
                     GroupProvider pProvider = new GroupProvider(profile.getGroupId());
 
-                    if(!pProvider.pExist())
+                    if(!pProvider.gExist())
                     {
                         profile.setGroupId(null);
                         provider.save(profile);
@@ -341,7 +342,7 @@ public class CmdGroup extends Command implements TabExecutor
                 {
                     GroupProvider pProvider = new GroupProvider(profile.getGroupId());
 
-                    if(!pProvider.pExist())
+                    if(!pProvider.gExist())
                     {
                         profile.setGroupId(null);
                         provider.save(profile);
@@ -374,14 +375,7 @@ public class CmdGroup extends Command implements TabExecutor
                         int i = party.getGroupLenght();
 
                         sendMessage(p, " ");
-                        if (i < 10)
-                        {
-                            sendMessage(p, "§6#§f--------------------- §2Groupe §f(§3"+i+"§f) --------------------§6#");
-                        } else if (i < 100) {
-                            sendMessage(p, "§6#§f--------------------- §2Groupe §f(§3"+i+"§f) -------------------§6#");
-                        } else {
-                            sendMessage(p, "§6#§f-------------------- §2Groupe §f(§3"+i+"§f) -------------------§6#");
-                        }
+                        sendMessage(p, "§6#§f-------------------- §2Group §f(§3"+i+"§f) --------------------§6#");
                         sendMessage(p, " ");
                         if (membersOnline.isEmpty())
                         {
@@ -390,8 +384,8 @@ public class CmdGroup extends Command implements TabExecutor
                         } else {
                             StringBuilder colorPath = new StringBuilder();
 
-                            for (int x = 0; x < membersOnline.size(); x++) {
-                                colorPath.append("§b").append(membersOnline.get(x)).append("§c, ");
+                            for (String s : membersOnline) {
+                                colorPath.append("§b").append(s).append("§c, ");
                             }
 
                             sendMessage(p, "§6Membres §aen ligne §f: §3" + membersOnline.size());
@@ -406,8 +400,8 @@ public class CmdGroup extends Command implements TabExecutor
                         } else {
                             StringBuilder colorPath = new StringBuilder();
 
-                            for (int x = 0; x < membersOffline.size(); x++) {
-                                colorPath.append("§7").append(membersOffline.get(x)).append("§c, ");
+                            for (String s : membersOffline) {
+                                colorPath.append("§7").append(s).append("§c, ");
                             }
 
                             sendMessage(p, "§6Membres §chors-ligne §f: §3" + membersOffline.size());
@@ -426,7 +420,7 @@ public class CmdGroup extends Command implements TabExecutor
                 {
                     GroupProvider pProvider = new GroupProvider(profile.getGroupId());
 
-                    if(!pProvider.pExist())
+                    if(!pProvider.gExist())
                     {
                         profile.setGroupId(null);
                         provider.save(profile);
@@ -457,10 +451,11 @@ public class CmdGroup extends Command implements TabExecutor
         }else if (args.length == 2)
         {
             if(!profile.isInGroup()) {sendMessage(p, prefix+" "+suffix+" "+notInGroup);return;}
+            if(!profile.gpAllow()) {sendMessage(p, prefix+" "+suffix+" "+senderRequestsDeny);return;}
 
             GroupProvider partyProvider = new GroupProvider(profile.getGroupId());
 
-            if(!partyProvider.pExist())
+            if(!partyProvider.gExist())
             {
                 profile.setGroupId(null);
                 provider.save(profile);
@@ -495,6 +490,16 @@ public class CmdGroup extends Command implements TabExecutor
                     sendMessage(p, prefix+" "+suffix+" "+groupLimit.replace("%groupSize%", String.valueOf(party.getGroupLenght())));
                     return;
                 }
+
+                ProfileProvider targetProvider = new ProfileProvider(targetPl.getUniqueId());
+                ProfileManager targetProfile;
+                try {
+                    targetProfile = targetProvider.getFManager();
+                } catch (ManagerNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if(!targetProfile.gpAllow()) {sendMessage(p, prefix+" "+suffix+" "+targetRequestsDeny);return;}
 
                 TextComponent targetTxt = new TextComponent(prefix+" "+suffix+" "+requestTarget.replace("%player%", p.getName()));
                 targetTxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(scrollTargetRequest).create()));

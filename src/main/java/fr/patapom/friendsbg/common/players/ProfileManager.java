@@ -26,23 +26,31 @@ public class ProfileManager
 {
     private UUID uuid;
     private UUID groupId;
+    private UUID teamId;
     private String name;
     private String displayName;
-    private boolean requestsAllow;
+    private String rankInTeam;
+    private boolean fAllow;
     private boolean msgAllow;
+    private boolean gpAllow;
+    private boolean teamsAllow;
 
     private Map<String, UUID> friends;
 
     public ProfileManager() {}
 
-    public ProfileManager(UUID playerUUID, String playerName, String displayName, boolean requestsAllow, boolean msgAllow, UUID groupId, Map<String, UUID> friendsList)
+    public ProfileManager(UUID playerUUID, String playerName, String displayName, boolean fAllow, boolean msgAllow, boolean gpAllow, boolean teamsAllow, String rankInTeam, UUID groupId, UUID teamId, Map<String, UUID> friendsList)
     {
         this.uuid = playerUUID;
         this.name = playerName;
         this.displayName = displayName;
-        this.requestsAllow = requestsAllow;
+        this.fAllow = fAllow;
         this.msgAllow = msgAllow;
+        this.gpAllow = gpAllow;
+        this.teamsAllow = teamsAllow;
+        this.rankInTeam = rankInTeam;
         this.groupId = groupId;
+        this.teamId = teamId;
         this.friends = friendsList;
     }
 
@@ -51,13 +59,18 @@ public class ProfileManager
      */
     public UUID getUUID() {return uuid;}
     public UUID getGroupId() {return groupId;}
+    public UUID getTeamId() {return teamId;}
     public String getName() {return name;}
     public String getDisplayName() {return displayName;}
+    public String getRankInTeam() {return rankInTeam;}
 
-    public boolean requestsAllow() {return requestsAllow;}
+    public boolean fAllow() {return fAllow;}
     public boolean msgAllow() {return msgAllow;}
+    public boolean gpAllow() {return gpAllow;}
+    public boolean teamsAllow() {return teamsAllow;}
     public boolean hasFriends() {return !friends.isEmpty();}
     public boolean isInGroup() {return groupId!=null;}
+    public boolean isInTeam() {return teamId!=null;}
 
     public boolean isFriends(String friendName) {return friends.containsKey(friendName);}
     public int getNbFriends() {return friends.size();}
@@ -69,8 +82,12 @@ public class ProfileManager
     public void removeFriend(String friendName) {friends.remove(friendName);}
 
     public void setGroupId(UUID groupId) {this.groupId = groupId;}
-    public void setRequestsAllow(boolean status) {requestsAllow = status;}
-    public void setMsgAllow(boolean msgAllow) {this.msgAllow = msgAllow;}
+    public void setTeamId(UUID teamId) {this.teamId = teamId;}
+    public void setFAllow(boolean status) {fAllow = status;}
+    public void setMsgAllow(boolean status) {this.msgAllow = status;}
+    public void setGpAllow(boolean status) {this.gpAllow = status;}
+    public void setTeamsAllow(boolean status) {this.teamsAllow = status;}
+    public void setRankInTeam(String rank) {this.rankInTeam = rank;}
 
     public Map<String, UUID> getFriendsMap() {return friends;}
 }

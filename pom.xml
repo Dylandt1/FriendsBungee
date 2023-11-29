@@ -22,6 +22,10 @@
 
         <minecraft.version>1.19</minecraft.version>
         <bungee.version>1.19-R0.1-SNAPSHOT</bungee.version>
+        <hikari.version>4.0.3</hikari.version>
+        <slf4j.version>2.0.0-alpha6</slf4j.version>
+        <redis.version>3.17.3</redis.version>
+        <jackson.version>2.13.3</jackson.version>
         <bstats.version>3.0.1</bstats.version>
     </properties>
 

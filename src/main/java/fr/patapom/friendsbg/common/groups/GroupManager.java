@@ -4,6 +4,7 @@ import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.fbg.FriendsBG;
 import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
+import fr.tmmods.tmapi.spigot.data.manager.RedisManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -138,6 +139,12 @@ public class GroupManager
             }
             pls.sendMessage(new TextComponent(prefix+" "+suffix+" "+ownerOffline));
         }
+        if(FriendsBG.getInstance().redisEnable)
+        {
+            GroupProvider provider = new GroupProvider(groupId);
+            provider.delete();
+            return;
+        }
         FriendsBG.parties.remove(groupId);
     }
 
@@ -150,6 +157,12 @@ public class GroupManager
             String suffix = config.getString("groups.suffix").replace("&", "§");
             String groupDeletedTarget = config.getString("groups.groupDeletedTargets").replace("&", "§");
             sendMessage(player, prefix+" "+suffix+" "+groupDeletedTarget);
+        }
+        if(FriendsBG.getInstance().redisEnable)
+        {
+            GroupProvider provider = new GroupProvider(groupId);
+            provider.delete();
+            return;
         }
         FriendsBG.parties.remove(groupId);
     }

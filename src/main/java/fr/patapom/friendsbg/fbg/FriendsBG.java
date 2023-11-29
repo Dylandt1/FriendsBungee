@@ -55,6 +55,8 @@ public class FriendsBG extends Plugin
     public boolean redisEnable;
     public boolean sqlEnable;
 
+    public int antiSpamLevel;
+
     public static Map<UUID, ProfileManager> fManagers = new HashMap<>();
     public static Map<UUID, GroupManager> parties = new HashMap<>();
     public static Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
@@ -84,6 +86,7 @@ public class FriendsBG extends Plugin
         this.suffix = config.getString("suffix").replace("&", "§");
         this.redisEnable = TMBungeeAPI.redisEnable;
         this.sqlEnable = TMBungeeAPI.sqlEnable;
+        this.antiSpamLevel = config.getInt("msg.antiSpam.");
     }
 
     @Override

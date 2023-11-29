@@ -74,7 +74,7 @@ public class PlayerListener implements Listener
             {
                 GroupProvider pProvider = new GroupProvider(fManager.getGroupId());
 
-                if(!pProvider.pExist())
+                if(!pProvider.gExist())
                 {
                     fManager.setGroupId(null);
                     fProvider.save(fManager);
@@ -101,6 +101,7 @@ public class PlayerListener implements Listener
             ProfileProvider fProvider = new ProfileProvider(p.getUniqueId());
             ProfileManager fManager = fProvider.getFManager();
 
+            // Send connected message to all friends
             ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), ()-> {
                 if(fManager.hasFriends())
                 {
@@ -119,7 +120,7 @@ public class PlayerListener implements Listener
             {
                 GroupProvider pProvider = new GroupProvider(fManager.getGroupId());
 
-                if(!pProvider.pExist())
+                if(!pProvider.gExist())
                 {
                     fManager.setGroupId(null);
                     fProvider.save(fManager);
@@ -132,17 +133,20 @@ public class PlayerListener implements Listener
                 } catch (ManagerNotFoundException ex2) {
                     throw new RuntimeException(ex2);
                 }
+
                 if(pManager.isOwner(p.getUniqueId()))
                 {
+                    // Eject all group members and send message
                     pManager.removePlayerInGroup(e.getPlayer());
                     ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), pManager::onQuit);
                 }else {
+                    // Eject player from group and send message
                     pManager.removePlayerInGroup(e.getPlayer());
                     pProvider.save(pManager);
                 }
             }
 
-            if(config.getBoolean("mysql.use")) {fProvider.updateDB();return;}
+            if(FriendsBG.getInstance().sqlEnable) {fProvider.updateDB();return;}
 
             fProvider.save(fManager);
         } catch (ManagerNotFoundException ex1) {
@@ -162,7 +166,7 @@ public class PlayerListener implements Listener
             {
                 GroupProvider pProvider = new GroupProvider(fManager.getGroupId());
 
-                if(!pProvider.pExist())
+                if(!pProvider.gExist())
                 {
                     fManager.setGroupId(null);
                     fProvider.save(fManager);

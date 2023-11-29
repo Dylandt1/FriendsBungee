@@ -94,13 +94,20 @@ public class GroupProvider
         return pManager;
     }
 
-    public void save(GroupManager partyManager)
+    public void save(GroupManager groupManager)
     {
-        if(redisEnable) {setPManagerOnRedis(partyManager);return;}
-        FriendsBG.parties.replace(groupId, partyManager);
+        if(redisEnable) {setPManagerOnRedis(groupManager);return;}
+        FriendsBG.parties.replace(groupId, groupManager);
     }
 
-    public boolean pExist()
+    public void delete()
+    {
+        final RedissonClient redisCli = redisAccess.getRedisCli();
+        final RBucket<GroupManager> pBucket = redisCli.getBucket(REDIS_KEY);
+        pBucket.delete();
+    }
+
+    public boolean gExist()
     {
         if(redisEnable) {return getPManagerOnRedis() != null;}
         return FriendsBG.parties.containsKey(groupId);
@@ -110,11 +117,11 @@ public class GroupProvider
      * Privates methods :
      */
 
-    private void setPManagerOnRedis(GroupManager partyManager)
+    private void setPManagerOnRedis(GroupManager groupManager)
     {
         final RedissonClient redisCli = redisAccess.getRedisCli();
         final RBucket<GroupManager> pBucket = redisCli.getBucket(REDIS_KEY);
-        pBucket.set(partyManager);
+        pBucket.set(groupManager);
     }
 
     private GroupManager getPManagerOnRedis()
