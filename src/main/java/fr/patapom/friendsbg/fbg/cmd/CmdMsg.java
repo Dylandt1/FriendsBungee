@@ -71,7 +71,7 @@ public class CmdMsg extends Command implements TabExecutor
 
     public CmdMsg()
     {
-        super("msg", null, FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.send").toArray(new String[0]));
+        super("message", null, FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.send").toArray(new String[0]));
         this.config = FriendsBG.getInstance().getConfig();
         this.prefix = config.getString("prefix").replace("&", "§");
         this.suffix = config.getString("suffix").replace("&", "§");

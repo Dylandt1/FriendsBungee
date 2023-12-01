@@ -182,6 +182,7 @@ public class CmdGroup extends Command implements TabExecutor
             list.add("tp");
             list.add("list");
             list.add("owner");
+            list.add("mp");
             return list;
         }else if(args.length == 2)
         {
@@ -247,12 +248,12 @@ public class CmdGroup extends Command implements TabExecutor
 
         if (args.length == 0)
         {
-            H.helpParty(p);
+            H.helpGroup(p);
         }else if (args.length == 1)
         {
             if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("h"))
             {
-                H.helpParty(p);
+                H.helpGroup(p);
             }else if(args[0].equalsIgnoreCase("create"))
             {
                 if(!profile.isInGroup())
@@ -474,7 +475,7 @@ public class CmdGroup extends Command implements TabExecutor
                     sendMessage(p, mainPrefix+mainSuffix+"§6OPTs §f: §2"+profile.getOpts().size()+"§f/§24");
                 }
             }else {
-                H.helpParty(p);
+                H.helpGroup(p);
             }
         }else if (args.length == 2)
         {
@@ -605,17 +606,17 @@ public class CmdGroup extends Command implements TabExecutor
                     }
                     sendMessage(p, prefix+suffix+tpAlreadyDisabled);
                 }else {
-                    H.helpParty(p);
+                    H.helpGroup(p);
                 }
             }else {
-                H.helpParty(p);
+                H.helpGroup(p);
             }
         }else {
             if(args[0].equalsIgnoreCase("mp"))
             {
 
             }else {
-                H.helpParty(p);
+                H.helpGroup(p);
             }
         }
     }

@@ -53,9 +53,6 @@ public class FriendsBG extends Plugin
     private Configuration config;
     private SerializationManager serManager;
 
-    private String prefix;
-    private String suffix;
-
     public boolean redisEnable;
     public boolean sqlEnable;
 
@@ -64,7 +61,7 @@ public class FriendsBG extends Plugin
     public static Map<UUID, ProfileManager> fManagers = new HashMap<>();
     public static Map<UUID, GroupManager> parties = new HashMap<>();
     public static Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
-    public static Map<UUID, String> reports = new HashMap<>();
+    public static Map<Integer, String> reports = new HashMap<>();
 
     public HashMap<UUID, Long> cooldown = new HashMap<>();
 
@@ -98,8 +95,6 @@ public class FriendsBG extends Plugin
         getLogger().info(console + " ");
         this.config = ConfigsManager.getConfig("config", this);
         this.serManager = new SerializationManager();
-        this.prefix = config.getString("prefix").replace("&", "§");
-        this.suffix = config.getString("suffix").replace("&", "§");
         this.redisEnable = TMBungeeAPI.redisEnable;
         this.sqlEnable = TMBungeeAPI.sqlEnable;
         this.antiSpamLevel = config.getInt("msg.antiSpam.");
@@ -126,8 +121,8 @@ public class FriendsBG extends Plugin
         if(file.exists())
         {
             final String json = Files.loadFile(file);
-            Type type = new TypeToken<Map<UUID, String>>() {}.getType();
-            reports = (Map<UUID, String>) serManager.deserializeByType(json.replace("?", "§"), type);
+            Type type = new TypeToken<Map<Integer, String>>() {}.getType();
+            reports = (Map<Integer, String>) serManager.deserializeByType(json.replace("?", "§"), type);
         }
 
         getLogger().info(console + "Ready to use !");

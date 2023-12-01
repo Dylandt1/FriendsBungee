@@ -41,6 +41,9 @@ fileNotFound: "&cConfiguration file not found !"
 # Message configuration file not found :
 unableSave: "&cConfiguration file not backed up !"
 
+# Message when command is not found :
+cmdNotFound: "&cCommand not found &f: &f/&b%cmd% &f%args% &c!"
+
 
 # ##################################################################################### #
 #                     ╔═╗╦═╗╦╔═╗╔╗╔╔╦╗╔═╗  ╔╦╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗                     #
@@ -176,6 +179,7 @@ groups:                                                                         
 
   # Groups members ranks labels, just for group private chat (Not available in 2.0-SNAPSHOT) :
   ranks:
+    # Default rank label (change this entrie name may cause errors) :
     default:
       # Rank name :
       name: "&1Member"
@@ -183,20 +187,21 @@ groups:                                                                         
       label: "&f[&2%groupLabel%&f] (%rankName%&f) "
       # Color of player name for this rank :
       color: "&f"
-    chief:
-      name: "&cChief"
-      label: "&f[&2%groupLabel%&f] (%rankName%&f) "
-      color: "&b"
 
-  # Level groups length (permissions example : fgb.group.lv1 to fbg.group.lvX) :
+    # Custom entries :
+    custom:
+      name: "custom"
+      label: "custom"
+      color: "&7"
+
+  # Level groups length (permissions example : fgb.group.custom to fbg.group.custom) :
   lengths:
-    default: 5 #Default group members length, bypass permission.
-    lv1: 10
-    lv2: 15
-    lv3: 20
-    lv4: 25
-    lv5: 30
-  #  custom_entries: custom_integer
+    # Default group members length (change this entrie name may cause errors) :
+    default: 5
+    # Custom entries :
+    lv10: 10
+    custom1: 15
+    test: 20
 
   # Message for using commands in the console :
   cmdNotUsable: "&cThis command is only available in game !"
@@ -363,18 +368,20 @@ groups:                                                                         
 msg:                                                                                    #
 # ##################################################################################### #
 
-  # Alias of message commands
+  # Alias of message commands :
   cmdAlias:
-    # Alias for send private messages
+    # Alias for /message command :
     send:
       - mp
-      - message
+      - msg
       - w
       - tell
-    # Alias for reply last message
+
+    # Alias for /resend command :
     resend:
       - r
-    # Alias for send report
+
+    # Alias for /report command :
     report:
       - rpt
 
@@ -382,26 +389,55 @@ msg:                                                                            
   antiSpam:
     # Turn to true to enable anti spam cool down :
     use: false
+
     # Make cool down in seconds. Default: 2 :
     cool_down: 2
-    # Anti Spam level, 1: private message only, 2: public message only, 3: private and public messages. Default: 1
+
+    # Anti Spam level :
+    #
+    #  - level 1: private message only
+    #  - level 2: public message only
+    #  - level 3: private and public messages
+    #  - level 4: public chat only and commands
+    #  - level 5: public/commands and private chat
+    #
     level: 1
+
     # AntiSpam message :
     message: "&cYou have to wait another &6%cooldown% &cseconds to send a message."
 
-  # Report part (Permission: frb.report.admin) :
+  # Reports part :
   report:
-    # Prefix and suffix of report messages for admins
+    # Prefix and suffix of report messages for admins :
     prefix: "&7[&cReport&7] "
     suffix: "&f&l-> "
-    # Message to admins when player send report
+
+    # Report command admins perm :
+    admPerm: "fbg.reports.admin"
+
+    # Key format to listing reports list :
+    keyForm: "&f| &f%key% &f|- "
+
+    # Report reasons available on command /report <reason> <description> :
+    reasons:
+      - bug
+      - bugs
+      - lag
+      - lags
+      - complaints
+      - claim
+
+    # Message to admins when player send report :
     admMessage: "&cNew report send by &b%sender% &c!"
-    # Confirmation message to sender
-    reportConfirmation: "&cYour report has been saved, an admin will respond to it as soon as possible."
-    # Message when player have already report in progress
-    alreadySend: "&cYou have already send report, wait admin response to send another report !"
-    # Message when admin delete report
+
+    # Confirmation message to clear reports list :
+    allReportsDeleted: "&All reports were deleted !"
+
+    # Message when admin delete report :
     reportDeleted: "&cReport &f(%report%&f) &chas been deleted !"
+
+    # Confirmation message to sender :
+    reportConfirmation: "&cYour report has been saved, an admin will respond to it as soon as possible."
 
   # Sender part :
   sender:
@@ -477,13 +513,13 @@ msg:                                                                            
 helpMsg:                                                                                #
 # ------------------------------------------------------------------------------------- #
 
-  # /friends Help message config :
+  # /friends help message config :
   helpFriends:
 
     # Top framing of help message :
-    top: "§6#&f------------------ [&3Friends&f-&6Bungee&f] ------------------&6#"
+    top: "§6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#"
 
-    # Entries of the help command, after suffix :
+    # Command arguments :
     enable: "&c- &f/&bf &fenable &f&l-> &fTo enable friend requests&c;\n"
     disable: "&c- &f/&bf &fdisable &f&l-> &fTo disable friends requests&c;\n"
     accept: "&c- &f/&bf &faccept &f&l-> &fTo accept friend request in progress&c;\n"
@@ -495,12 +531,12 @@ helpMsg:                                                                        
     # Bottom framing of help message :
     bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
 
-  # /party help message config :
-  helpParty:
+  # /group help message config :
+  helpGroup:
     # Top framing of help message :
-    top: "&6#&f------------------ [&3Friends&f-&6Bungee&f] ------------------&6#\n"
+    top: "&6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#\n"
 
-    # Entries of the help command, after suffix :
+    # Command arguments :
     enable: "&c- &f/&bgroup &fenable &f&l-> &fTo enable group requests&c;\n"
     disable: "&c- &f/&bgroup &fdisable &f&l-> &fTo disable group requests&c;\n"
     create: "&c- &f/&bgroup &fcreate &f&l-> &fTo create new group&c;\n"
@@ -512,29 +548,37 @@ helpMsg:                                                                        
     tp: "&c- &f/&bgroup §ftp &7<&aenable &f| &cdisable &7> &f&l-> &fTo enable or disable auto tp for group members&c;\n"
     owner: "&c- &f/&bgroup &fowner &7<&fnewOwner&7> &f&l-> &fTo change the group leader&c;\n"
     list: "&c- &f/&bgroup &flist &f&l-> &fTo see the list of players in the group&c.\n"
+    mp: "&c- &f/&bgroup &fmp &7<&fmessage&7> &f&l-> &fTo send group message&c.\n"
 
     # Bottom framing of help message :
     bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
 
-  # /mp | /r | report Help message config :
+  # /mp help message config :
   helpPvMsg:
     # Top framing of help message :
-    top: "&6#&f------------------ [&3Friends&f-&6Bungee&f] ------------------&6#\n"
+    top: "&6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#\n"
 
-    # Entries of the help command, after sHelp :
-    cmdMsg: "&c- &f/&bmp &7<&ftarget_player&7> &7<&fmessage&7> &f&l-> &fTo send a private message to target player&c;\n"
-    cmdR: "&c- &f/&br &f&l-> &fTo reply to the last private message&c;\n"
-    cmdEnable: "&c- &f/&bmp &fenable &f&l-> &fTo enable private messages&c;\n"
-    cmdDisable: "&c- &f/&bmp &fdisable &f&l-> &fTo disable private messages&c;\n"
-    cmdReport: "&c- &f/&breport &7<&freason&7> &7<&fdescription&7> &f&l-> &fTo send report message&c.\n"
+    # Command arguments :
+    mp: "&c- &f/&bmp &7<&ftarget_player&7> &7<&fmessage&7> &f&l-> &fTo send a private message to target player&c;\n"
+    r: "&c- &f/&br &f&l-> &fTo reply to the last private message&c;\n"
+    enable: "&c- &f/&bmp &fenable &f&l-> &fTo enable private messages&c;\n"
+    disable: "&c- &f/&bmp &fdisable &f&l-> &fTo disable private messages&c;\n"
 
     # Bottom framing of help message :
     bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
 
-    reportReasons:
-      - bug
-      - claim
-      - lag
+  # /report
+  helpReport:
+    # Top framing of help message :
+    top: "&6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#\n"
+
+    # Command arguments :
+    report: "&c- &f/&breport &7<&ftarget_player or reason&7> &7<&fdescription&7> &f&l-> &fTo send report&c;\n"
+    list: "&c- &f/&breport &flist &f&l-> &fTo list all reports&c;\n"
+    remove: "&c- &f/&breport &fremove &7<&fid&7> &f&l-> &fTo remove report&c;\n"
+
+    # Bottom framing of help message :
+    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
 
 
 # ##################################################################################### #
@@ -548,11 +592,11 @@ updates:                                                                        
   # Turn to true/false for enable/disable plugin updates checker (Available) :
   checker: true
 
-  # Send message to admins (not available)
+  # Send message to admins (not available) :
   adminMsg:
-    # Turn to true to enable update warning
+    # Turn to true to enable update warning :
     use: false
-    # Message design
+    # Message design :
     prefix: "&f[&6UpdateChecker&f] "
     suffix: "&f&l->&f "
     message: "&6New update is available !"

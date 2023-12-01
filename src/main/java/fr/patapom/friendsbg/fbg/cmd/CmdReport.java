@@ -25,8 +25,11 @@ public class CmdReport extends Command implements TabExecutor
     private final String reportConfirmation;
     private final String cmdNotUsable;
     private final String tooLong;
-    private final String alreadySend;
     private final String reportDeleted;
+    private final String cmdNotFound;
+    private final String admPerm;
+    private final String keyForm;
+    private final String allReportsDeleted;
 
     public CmdReport()
     {
@@ -38,8 +41,11 @@ public class CmdReport extends Command implements TabExecutor
         this.reportConfirmation = config.getString("msg.report.reportConfirmation").replace("&", "§");
         this.cmdNotUsable = config.getString("msg.cmdNotUsable").replace("&", "§");
         this.tooLong = config.getString("msg.tooLong").replace("&", "§");
-        this.alreadySend = config.getString("msg.report.alreadySend").replace("&", "§");
         this.reportDeleted = config.getString("msg.report.reportDeleted").replace("&", "§");
+        this.cmdNotFound = config.getString("cmdNotFound").replace("&", "§");
+        this.admPerm = config.getString("msg.report.admPerm");
+        this.keyForm = config.getString("msg.report.keyForm").replace("&", "§");
+        this.allReportsDeleted = config.getString("msg.report.allReportsDeleted").replace("&", "§");
     }
 
     @Override
@@ -51,20 +57,31 @@ public class CmdReport extends Command implements TabExecutor
 
         if(args.length == 1)
         {
-            list.addAll(config.getStringList("helpMsg.helpPvMsg.reportReasons"));
+            list.addAll(config.getStringList("msg.report.reasons"));
 
             for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
             {
                 list.add(pls.getName());
             }
 
-            list.add("list");
-            list.add("remove");
+            if(p.hasPermission(admPerm))
+            {
+                list.add("list");
+                list.add("remove");
+            }
+
         }else if(args.length == 2)
         {
-            for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
+            if(p.hasPermission(admPerm))
             {
-                if(FriendsBG.reports.containsKey(pls.getUniqueId())) list.add(pls.getName());
+                if(args[0].equalsIgnoreCase("remove"))
+                {
+                    list.add("all");
+                    for(int key : FriendsBG.reports.keySet())
+                    {
+                        list.add(String.valueOf(key));
+                    }
+                }
             }
         }
         return list;
@@ -79,37 +96,45 @@ public class CmdReport extends Command implements TabExecutor
         {
             if(args[0].equalsIgnoreCase("list"))
             {
-                for(UUID key : FriendsBG.reports.keySet())
+                if(p.hasPermission(admPerm))
                 {
-                    sendMessage(p, " ");
-                    sendMessage(p, FriendsBG.reports.get(key));
+                    for(int key : FriendsBG.reports.keySet())
+                    {
+                        sendMessage(p, " ");
+                        sendMessage(p, keyForm.replace("%key%", String.valueOf(key))+FriendsBG.reports.get(key));
+                    }
+                }else {
+
+                    StringBuilder sb = new StringBuilder();
+                    for(String arg : args) {sb.append(arg).append(" ");}
+                    sendMessage(p, cmdNotFound.replace("%cmd%", this.getName()).replace("%args%", sb));
                 }
             }
         }else if(args.length == 2)
         {
             if(args[0].equalsIgnoreCase("remove"))
             {
-                if(ProxyServer.getInstance().getPlayer(args[1]) != null)
+                if(p.hasPermission(admPerm))
                 {
-                    ProxiedPlayer pl = ProxyServer.getInstance().getPlayer(args[1]);
-                    if(FriendsBG.reports.containsKey(pl.getUniqueId()))
+                    if(FriendsBG.reports.containsKey(Integer.parseInt(args[1])))
                     {
-                        FriendsBG.reports.remove(pl.getUniqueId());
-                        sendMessage(p, prefix+suffix+reportDeleted);
+                        FriendsBG.reports.remove(Integer.parseInt(args[1]));
+                        sendMessage(p, prefix+suffix+reportDeleted.replace("%report%", args[1].toString()));
+                    }else if(args[1].equalsIgnoreCase("all"))
+                    {
+                        FriendsBG.reports.clear();
+                        sendMessage(p, prefix+suffix+allReportsDeleted);
                     }
+                }else {
+                    StringBuilder sb = new StringBuilder();
+                    for(String arg : args) {sb.append(arg).append(" ");}
+                    sendMessage(p, cmdNotFound.replace("%cmd%", this.getName()).replace("%args%", sb));
                 }
-            }
-        }else if(args.length > 2)
-        {
-            if(FriendsBG.reports.containsKey(p.getUniqueId()))
-            {
-                sendMessage(p, prefix+suffix+alreadySend);
-                return;
-            }
-
-            if(config.getStringList("helpMsg.helpPvMsg.reportReasons").contains(args[0])
+            }else if(config.getStringList("msg.report.reasons").contains(args[0])
                     || ProxyServer.getInstance().getPlayer(args[0]) != null)
             {
+                int id = FriendsBG.reports.size()+1;
+
                 String reason = args[0];
                 StringBuilder report = new StringBuilder();
 
@@ -123,19 +148,20 @@ public class CmdReport extends Command implements TabExecutor
                     report.append(args[i].replace("&", "§")).append(" ");
                 }
 
-                FriendsBG.reports.put(p.getUniqueId(), report.toString());
+                FriendsBG.reports.put(id, report.toString());
                 sendMessage(p, prefix+suffix+reportConfirmation);
-                sendMessage(p, prefix+suffix+"nb reports in list cache : "+FriendsBG.reports.size());
 
-                for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
+                for(ProxiedPlayer pl : ProxyServer.getInstance().getPlayers())
                 {
-                    if(pls.hasPermission("frb.report.admin")) {sendMessage(pls, prefix+suffix+admMessage.replace("%sender%", p.getName()));}
+                    if(pl.hasPermission(admPerm)) {sendMessage(pl, prefix+suffix+admMessage.replace("%sender%", p.getName()));}
                 }
             }else {
-                H.helpMsg(p);
+                StringBuilder sb = new StringBuilder();
+                for(String arg : args) {sb.append(arg).append(" ");}
+                sendMessage(p, cmdNotFound.replace("%cmd%", this.getName()).replace("%args%", sb));
             }
         }else {
-            H.helpMsg(p);
+            H.helpReport(p);
         }
     }
 

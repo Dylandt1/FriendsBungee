@@ -35,7 +35,6 @@ public class Help
     // Help /friends
     private final String friendsTop;
     private final String friendsBottom;
-    private final String suffixHF;
     private final String enableHF;
     private final String disableHF;
     private final String acceptHF;
@@ -45,42 +44,44 @@ public class Help
     private final String listHF;
 
     // Help /party
-    private final String partyTop;
-    private final String partyBottom;
-    private final String suffixHP;
-    private final String createHP;
-    private final String deleteHP;
-    private final String acceptHP;
-    private final String refuseHP;
-    private final String addHP;
-    private final String removeHP;
-    private final String tpHP;
-    private final String listHP;
-    private final String ownercmdHP;
-    private final String enableHP;
-    private final String disableHP;
+    private final String groupTop;
+    private final String groupBottom;
+    private final String createHG;
+    private final String deleteHG;
+    private final String acceptHG;
+    private final String refuseHG;
+    private final String addHG;
+    private final String removeHG;
+    private final String tpHG;
+    private final String listHG;
+    private final String ownerHG;
+    private final String enableHG;
+    private final String disableHG;
 
     // Help /msg | /r
     private final String msgTop;
     private final String msgBottom;
-    private final String suffixHMSG;
-    private final String cmdMsgHMSG;
-    private final String cmdRHMSG;
-    private final String cmdEnableHMSG;
-    private final String cmdDisableHMSG;
-    private final String cmdReportHMSG;
+    private final String mpHMSG;
+    private final String rHMSG;
+    private final String enableHMSG;
+    private final String disableHMSG;
 
-    private final Configuration config;
+    // Help /report
+    private final String reportAdm;
+    private final String reportTop;
+    private final String reportBottom;
+    private final String reportHRPT;
+    private final String removeHRPT;
+    private final String listHRPT;
 
     public Help()
     {
         this.helpMsg = "helpMsg.";
-        this.config = FriendsBG.getInstance().getConfig();
+        Configuration config = FriendsBG.getInstance().getConfig();
 
         // Help /friends
         this.friendsTop = config.getString(helpMsg+"helpFriends.top").replace("&", "§");
         this.friendsBottom = config.getString(helpMsg+"helpFriends.bottom").replace("&", "§");
-        this.suffixHF = config.getString(helpMsg+"helpFriends.sHelp").replace("&", "§");
         this.enableHF = config.getString(helpMsg+"helpFriends.enable").replace("&", "§");
         this.disableHF = config.getString(helpMsg+"helpFriends.disable").replace("&", "§");
         this.acceptHF = config.getString(helpMsg+"helpFriends.accept").replace("&", "§");
@@ -89,31 +90,36 @@ public class Help
         this.removeHF = config.getString(helpMsg+"helpFriends.remove").replace("&", "§");
         this.listHF = config.getString(helpMsg+"helpFriends.list").replace("&", "§");
 
-        // Help /party
-        this.partyTop = config.getString(helpMsg+"helpParty.top").replace("&", "§");
-        this.partyBottom = config.getString(helpMsg+"helpParty.bottom").replace("&", "§");
-        this.suffixHP = config.getString(helpMsg+"helpParty.sHelp").replace("&", "§");
-        this.createHP = config.getString(helpMsg+"helpParty.create").replace("&", "§");
-        this.deleteHP = config.getString(helpMsg+"helpParty.delete").replace("&", "§");
-        this.acceptHP = config.getString(helpMsg+"helpParty.accept").replace("&", "§");
-        this.refuseHP = config.getString(helpMsg+"helpParty.refuse").replace("&", "§");
-        this.addHP = config.getString(helpMsg+"helpParty.add").replace("&", "§");
-        this.removeHP = config.getString(helpMsg+"helpParty.remove").replace("&", "§");
-        this.tpHP = config.getString(helpMsg+"helpParty.tp").replace("&", "§");
-        this.listHP = config.getString(helpMsg+"helpParty.list").replace("&", "§");
-        this.ownercmdHP = config.getString(helpMsg+"helpParty.owner").replace("&", "§");
-        this.enableHP = config.getString(helpMsg+"helpParty.enable").replace("&", "§");
-        this.disableHP = config.getString(helpMsg+"helpParty.disable").replace("&", "§");
+        // Help /group
+        this.groupTop = config.getString(helpMsg+"helpGroup.top").replace("&", "§");
+        this.groupBottom = config.getString(helpMsg+"helpGroup.bottom").replace("&", "§");
+        this.createHG = config.getString(helpMsg+"helpGroup.create").replace("&", "§");
+        this.deleteHG = config.getString(helpMsg+"helpGroup.delete").replace("&", "§");
+        this.acceptHG = config.getString(helpMsg+"helpGroup.accept").replace("&", "§");
+        this.refuseHG = config.getString(helpMsg+"helpGroup.refuse").replace("&", "§");
+        this.addHG = config.getString(helpMsg+"helpGroup.add").replace("&", "§");
+        this.removeHG = config.getString(helpMsg+"helpGroup.remove").replace("&", "§");
+        this.tpHG = config.getString(helpMsg+"helpGroup.tp").replace("&", "§");
+        this.listHG = config.getString(helpMsg+"helpGroup.list").replace("&", "§");
+        this.ownerHG = config.getString(helpMsg+"helpGroup.owner").replace("&", "§");
+        this.enableHG = config.getString(helpMsg+"helpGroup.enable").replace("&", "§");
+        this.disableHG = config.getString(helpMsg+"helpGroup.disable").replace("&", "§");
 
         // Help /msg | /r
         this.msgTop = config.getString(helpMsg+"helpPvMsg.top").replace("&", "§");
         this.msgBottom = config.getString(helpMsg+"helpPvMsg.bottom").replace("&", "§");
-        this.suffixHMSG = config.getString(helpMsg+"helpPvMsg.sHelp").replace("&", "§");
-        this.cmdMsgHMSG = config.getString(helpMsg+"helpPvMsg.cmdMsg").replace("&", "§");
-        this.cmdRHMSG = config.getString(helpMsg+"helpPvMsg.cmdR").replace("&", "§");
-        this.cmdEnableHMSG = config.getString(helpMsg+"helpPvMsg.cmdEnable").replace("&", "§");
-        this.cmdDisableHMSG = config.getString(helpMsg+"helpPvMsg.cmdDisable").replace("&", "§");
-        this.cmdReportHMSG = config.getString(helpMsg+"helpPvMsg.cmdReport").replace("&", "§");
+        this.mpHMSG = config.getString(helpMsg+"helpPvMsg.mp").replace("&", "§");
+        this.rHMSG = config.getString(helpMsg+"helpPvMsg.r").replace("&", "§");
+        this.enableHMSG = config.getString(helpMsg+"helpPvMsg.enable").replace("&", "§");
+        this.disableHMSG = config.getString(helpMsg+"helpPvMsg.disable").replace("&", "§");
+
+        // Help /report
+        this.reportAdm = config.getString("msg.report.admPerm");
+        this.reportTop = config.getString(helpMsg+"helpReport.top").replace("&", "§");
+        this.reportBottom = config.getString(helpMsg+"helpReport.bottom").replace("&", "§");
+        this.reportHRPT = config.getString(helpMsg+"helpReport.report").replace("&", "§");
+        this.listHRPT = config.getString(helpMsg+"helpReport.list").replace("&", "§");
+        this.removeHRPT = config.getString(helpMsg+"helpReport.remove").replace("&", "§");
     }
 
     public void helpFriends(ProxiedPlayer p)
@@ -132,24 +138,24 @@ public class Help
         sendMessage(p, friendsBottom);
     }
 
-    public void helpParty(ProxiedPlayer p)
+    public void helpGroup(ProxiedPlayer p)
     {
         sendMessage(p, " ");
-        sendMessage(p, partyTop);
+        sendMessage(p, groupTop);
         sendMessage(p, "§6§l? §7§nHelp§f : ");
         sendMessage(p, " ");
-        sendMessage(p, enableHP);
-        sendMessage(p, disableHP);
-        sendMessage(p, createHP);
-        sendMessage(p, deleteHP);
-        sendMessage(p, acceptHP);
-        sendMessage(p, refuseHP);
-        sendMessage(p, addHP);
-        sendMessage(p, removeHP);
-        sendMessage(p, tpHP);
-        sendMessage(p, ownercmdHP);
-        sendMessage(p, listHP);
-        sendMessage(p, partyBottom);
+        sendMessage(p, enableHG);
+        sendMessage(p, disableHG);
+        sendMessage(p, createHG);
+        sendMessage(p, deleteHG);
+        sendMessage(p, acceptHG);
+        sendMessage(p, refuseHG);
+        sendMessage(p, addHG);
+        sendMessage(p, removeHG);
+        sendMessage(p, tpHG);
+        sendMessage(p, ownerHG);
+        sendMessage(p, listHG);
+        sendMessage(p, groupBottom);
     }
 
     public void helpMsg(ProxiedPlayer p)
@@ -158,12 +164,26 @@ public class Help
         sendMessage(p, msgTop);
         sendMessage(p, " §6§l? §7§nHelp§f : ");
         sendMessage(p, " ");
-        sendMessage(p, cmdMsgHMSG);
-        sendMessage(p, cmdRHMSG);
-        sendMessage(p, cmdEnableHMSG);
-        sendMessage(p, cmdDisableHMSG);
-        sendMessage(p, cmdReportHMSG);
+        sendMessage(p, mpHMSG);
+        sendMessage(p, rHMSG);
+        sendMessage(p, enableHMSG);
+        sendMessage(p, disableHMSG);
         sendMessage(p, msgBottom);
+    }
+
+    public void helpReport(ProxiedPlayer p)
+    {
+        sendMessage(p, " ");
+        sendMessage(p, reportTop);
+        sendMessage(p, " §6§l? §7§nHelp§f : ");
+        sendMessage(p, " ");
+        sendMessage(p, reportHRPT);
+        if(p.hasPermission(reportAdm))
+        {
+            sendMessage(p, listHRPT);
+            sendMessage(p, removeHRPT);
+        }
+        sendMessage(p, reportBottom);
     }
 
     private void sendMessage(ProxiedPlayer p, String s) {p.sendMessage(new TextComponent(s));}
