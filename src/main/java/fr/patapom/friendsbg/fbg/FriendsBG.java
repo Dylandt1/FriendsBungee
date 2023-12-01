@@ -3,7 +3,6 @@ package fr.patapom.friendsbg.fbg;
 import com.google.common.reflect.TypeToken;
 import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.groups.GroupManager;
-import fr.patapom.friendsbg.common.teams.TeamManager;
 import fr.patapom.friendsbg.fbg.cmd.*;
 import fr.patapom.friendsbg.fbg.listeners.PlayerListener;
 import fr.tmmods.tmapi.bungee.TMBungeeAPI;
@@ -64,7 +63,6 @@ public class FriendsBG extends Plugin
 
     public static Map<UUID, ProfileManager> fManagers = new HashMap<>();
     public static Map<UUID, GroupManager> parties = new HashMap<>();
-    public static Map<UUID, TeamManager> teams = new HashMap<>();
     public static Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
     public static Map<UUID, String> reports = new HashMap<>();
 
