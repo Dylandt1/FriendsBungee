@@ -60,13 +60,12 @@ public class ProfileProvider
     /**
      * FriendsProvider initiator
      */
-    public ProfileProvider(UUID playerUUID)
+    public ProfileProvider(ProxiedPlayer player)
     {
         // Init all variables
-        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerUUID);
         this.plugin = FriendsBG.getInstance();
         this.saveDirectory = new File(plugin.getDataFolder(), "/managers/fManagers/");
-        this.uuid = playerUUID;
+        this.uuid = player.getUniqueId();
         this.name = player.getName();
         this.displayName = player.getDisplayName();
         if(redisEnable)
@@ -80,8 +79,27 @@ public class ProfileProvider
         this.teamsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getTeamsTable();
     }
 
+    public ProfileProvider(UUID playerUUID)
+    {
+        // Init all variables
+        this.plugin = FriendsBG.getInstance();
+        this.saveDirectory = new File(plugin.getDataFolder(), "/managers/fManagers/");
+        this.uuid = playerUUID;
+        this.name = null;
+        this.displayName = null;
+        if(redisEnable)
+        {
+            this.redisAccess = RedisManager.FBG_REDIS.getRedisAccess();
+            this.REDIS_KEY = REDIS_KEY+uuid.toString();
+        }
+        this.prefixTables = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getPrefixTables();
+        this.profilesTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getProfilesTable();
+        this.friendsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getFriendsTable();
+        this.teamsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getTeamsTable();
+    }
+
     /**
-     * Function to get FriendsManager objects on Json files, Mysql server or Redis server
+     * Function to get FriendsManager
      */
     public ProfileManager getFManager() throws ManagerNotFoundException
     {
@@ -100,6 +118,23 @@ public class ProfileProvider
                 fManager = getFManagerOnMySQL();
                 setFManagerOnRedis(fManager);
             }
+        }else if(sqlEnable)
+        {
+            if(FriendsBG.fManagers.containsKey(uuid))
+            {
+                // Get FriendsManager on plugin cache
+                fManager = FriendsBG.fManagers.get(uuid);
+            }else {
+                // Get FriendsManager on Mysql server
+                fManager = getFManagerOnMySQL();
+                FriendsBG.fManagers.put(uuid, fManager);
+            }
+
+            if(fManager == null)
+            {
+                fManager = createFManager();
+                FriendsBG.fManagers.put(uuid, fManager);
+            }
         }else if(redisEnable)
         {
             // Get FriendsManager on Redis server
@@ -112,43 +147,13 @@ public class ProfileProvider
                 {
                     final String json = Files.loadFile(file);
                     fManager = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
+                    FriendsBG.fManagers.put(uuid, fManager);
                 }else {
-                    fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>());
+                    fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>(), new HashSet<>());
                     final String json = serManager.serialize(fManager);
                     Files.save(file, json);
                 }
                 setFManagerOnRedis(fManager);
-            }
-        }else if(sqlEnable)
-        {
-            if(FriendsBG.fManagers.containsKey(uuid))
-            {
-                // Get FriendsManager on plugin cache
-                fManager = FriendsBG.fManagers.get(uuid);
-            }else {
-                // Get FriendsManager on Mysql server
-                fManager = getFManagerOnMySQL();
-            }
-
-            if(fManager == null)
-            {
-                if(FriendsBG.fManagers.containsKey(uuid))
-                {
-                    // Get FriendsManager on plugin cache
-                    fManager = FriendsBG.fManagers.get(uuid);
-                }else
-                {
-                    if(file.exists())
-                    {
-                        // Get FriendsManager on Json files or create new profile by default values
-                        final String json = Files.loadFile(file);
-                        fManager = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
-                    }else {
-                        fManager = getFManagerOnMySQL();
-                        final String json = serManager.serialize(fManager);
-                        Files.save(file, json);
-                    }
-                }
             }
         }else
         {
@@ -162,8 +167,9 @@ public class ProfileProvider
                 {
                     final String json = Files.loadFile(file);
                     fManager = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
+                    FriendsBG.fManagers.put(uuid, fManager);
                 }else {
-                    fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>());
+                    fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>(), new HashSet<>());
                     final String json = serManager.serialize(fManager);
                     Files.save(file, json);
                 }
@@ -177,27 +183,23 @@ public class ProfileProvider
      */
     public void save(ProfileManager friendsManager)
     {
-        // Save FriendsManager on Redis server
-        if(redisEnable) {setFManagerOnRedis(friendsManager);return;}
-
-        if(sqlEnable)
+        if(redisEnable)
         {
+            setFManagerOnRedis(friendsManager);
+        }else {
             if(FriendsBG.fManagers.containsKey(uuid))
             {
-                FriendsBG.fManagers.replace(uuid, friendsManager);
+                FriendsBG.fManagers.remove(uuid);
+                FriendsBG.fManagers.put(uuid, friendsManager);
             }else {
                 FriendsBG.fManagers.put(uuid, friendsManager);
             }
-            return;
         }
+    }
 
-        // Save FriendsManager on plugin cache and Json file for security
-        if(FriendsBG.fManagers.containsKey(uuid))
-        {
-            FriendsBG.fManagers.replace(uuid, friendsManager);
-        }else {
-            FriendsBG.fManagers.put(uuid, friendsManager);
-        }
+    public void saveOnJson(ProfileManager friendsManager)
+    {
+        // Save FriendsManager on Json file
         final File file = new File(saveDirectory, uuid.toString()+".json");
         final SerializationManager serManager = plugin.getSerializationManager();
         final String json = serManager.serialize(friendsManager);
@@ -205,7 +207,7 @@ public class ProfileProvider
     }
 
     /**
-     * Function to save FriendsManager on Mysql server
+     * Functions to save FriendsManager on Mysql server
      */
     public void updateDB()
     {
@@ -221,7 +223,7 @@ public class ProfileProvider
             // Init DB connection
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
             // Init PreparedStatement n°1 and set values
-            ps1 = connection.prepareStatement("UPDATE " + prefixTables+profilesTable + " SET name = ?, displayName = ?, fAllow = ?, msgAllow = ?, gpAllow = ?, teamsAllow = ?, teamId = ?, rankInTeam = ? WHERE uuid = ?");
+            ps1 = connection.prepareStatement("UPDATE " + prefixTables+profilesTable + " SET name = ?, displayName = ?, fAllow = ?, msgAllow = ?, gpAllow = ?, teamsAllow = ?, teamId = ?, rankInTeam = ?, opts = ? WHERE uuid = ?");
             ps1.setString(1, name);
             ps1.setString(2, displayName);
             ps1.setInt(3, fManager.fAllow()?1:0);
@@ -235,7 +237,8 @@ public class ProfileProvider
                 ps1.setString(7, fManager.getTeamId().toString());
             }
             ps1.setString(8, fManager.getRankInTeam());
-            ps1.setString(9, uuid.toString());
+            ps1.setString(9, Arrays.toString(new HashSet[]{fManager.getOpts()}));
+            ps1.setString(10, uuid.toString());
             // Execute PreparedStatement n°1 and close
             ps1.executeUpdate();
             ps1.close();
@@ -248,14 +251,16 @@ public class ProfileProvider
 
             List<UUID> fUUIDList = new ArrayList<>();
 
+            // Get friend list on db
             while(rs2.next())
             {
                 fUUIDList.add(UUID.fromString(rs2.getString("friendUUID")));
             }
 
+            // Add/Update friends in db
             for(String fName : fManager.getFriendsMap().keySet())
             {
-                // Add new friends in DB
+                // Add new friends in db
                 if(!fUUIDList.contains(fManager.getFriendsMap().get(fName)))
                 {
                     PreparedStatement ps = connection.prepareStatement("INSERT INTO "+prefixTables+friendsTable+" (uuid, friendUUID, friendName) VALUES (?, ?, ?)");
@@ -264,11 +269,8 @@ public class ProfileProvider
                     ps.setString(3, fName);
                     ps.executeUpdate();
                     ps.close();
-                    return;
                 }
             }
-
-            // Ajoutter la suppression des anciens amis
 
             ps2.close();
             connection.close();
@@ -332,7 +334,8 @@ public class ProfileProvider
                     teamId = UUID.fromString(rs1.getString("teamId"));
                 }
                 String rankInTeam = rs1.getString("rankInTeam");
-                fManager = new ProfileManager(uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, rankInTeam, null, teamId, fList);
+                HashSet<String> opts = new HashSet<>(Collections.singleton(rs1.getString("opts")));
+                fManager = new ProfileManager(uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, rankInTeam, null, teamId, fList, opts);
             }else {
                 fManager = createFManager();
             }
@@ -349,8 +352,8 @@ public class ProfileProvider
         PreparedStatement ps;
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+profilesTable+" (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, rankInTeam) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            ProfileManager fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>());
+            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+profilesTable+" (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, rankInTeam, opts) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            ProfileManager fManager = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>(), new HashSet<>());
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
             ps.setString(3, displayName);
@@ -360,6 +363,7 @@ public class ProfileProvider
             ps.setInt(7, 1);
             ps.setString(8, null);
             ps.setString(9, null);
+            ps.setString(10, Arrays.toString(new HashSet[]{fManager.getOpts()}));
             ps.executeUpdate();
             ps.close();
             connection.close();
@@ -381,7 +385,7 @@ public class ProfileProvider
             {
                 createFManager();
             }else {
-                ps = connection.prepareStatement("INSERT INTO " + prefixTables + profilesTable + " (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, rankInTeam) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                ps = connection.prepareStatement("INSERT INTO " + prefixTables + profilesTable + " (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, rankInTeam, opts) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 ps.setString(1, uuid.toString());
                 ps.setString(2, name);
                 ps.setString(3, fManager.getDisplayName());
@@ -396,6 +400,7 @@ public class ProfileProvider
                     ps.setString(8, fManager.getTeamId().toString());
                 }
                 ps.setString(9, fManager.getRankInTeam());
+                ps.setString(10, Arrays.toString(new HashSet[]{fManager.getOpts()}));
                 ps.executeUpdate();
                 ps.close();
                 connection.close();

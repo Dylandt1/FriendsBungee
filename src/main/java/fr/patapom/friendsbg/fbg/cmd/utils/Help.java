@@ -5,6 +5,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * This file is part of FriendsBungee, a BungeeCord friends plugin system.
  *
@@ -27,6 +30,7 @@ public class Help
     /**
      * Vars :
      */
+    private final String helpMsg;
 
     // Help /friends
     private final String friendsTop;
@@ -53,6 +57,8 @@ public class Help
     private final String tpHP;
     private final String listHP;
     private final String ownercmdHP;
+    private final String enableHP;
+    private final String disableHP;
 
     // Help /msg | /r
     private final String msgTop;
@@ -62,69 +68,67 @@ public class Help
     private final String cmdRHMSG;
     private final String cmdEnableHMSG;
     private final String cmdDisableHMSG;
+    private final String cmdReportHMSG;
+
+    private final Configuration config;
 
     public Help()
     {
-        final Configuration config = FriendsBG.getInstance().getConfig();
-        final String helpmsg = "helpmsg.";
+        this.helpMsg = "helpMsg.";
+        this.config = FriendsBG.getInstance().getConfig();
 
         // Help /friends
-        this.friendsTop = config.getString(helpmsg+"helpFriends.top").replace("&", "§");
-        this.friendsBottom = config.getString(helpmsg+"helpFriends.bottom").replace("&", "§");
-        this.suffixHF = config.getString(helpmsg+"helpFriends.sHelp").replace("&", "§");
-        this.enableHF = config.getString(helpmsg+"helpFriends.enable").replace("&", "§");
-        this.disableHF = config.getString(helpmsg+"helpFriends.disable").replace("&", "§");
-        this.acceptHF = config.getString(helpmsg+"helpFriends.accept").replace("&", "§");
-        this.refuseHF = config.getString(helpmsg+"helpFriends.refuse").replace("&", "§");
-        this.addHF = config.getString(helpmsg+"helpFriends.add").replace("&", "§");
-        this.removeHF = config.getString(helpmsg+"helpFriends.remove").replace("&", "§");
-        this.listHF = config.getString(helpmsg+"helpFriends.list").replace("&", "§");
+        this.friendsTop = config.getString(helpMsg+"helpFriends.top").replace("&", "§");
+        this.friendsBottom = config.getString(helpMsg+"helpFriends.bottom").replace("&", "§");
+        this.suffixHF = config.getString(helpMsg+"helpFriends.sHelp").replace("&", "§");
+        this.enableHF = config.getString(helpMsg+"helpFriends.enable").replace("&", "§");
+        this.disableHF = config.getString(helpMsg+"helpFriends.disable").replace("&", "§");
+        this.acceptHF = config.getString(helpMsg+"helpFriends.accept").replace("&", "§");
+        this.refuseHF = config.getString(helpMsg+"helpFriends.refuse").replace("&", "§");
+        this.addHF = config.getString(helpMsg+"helpFriends.add").replace("&", "§");
+        this.removeHF = config.getString(helpMsg+"helpFriends.remove").replace("&", "§");
+        this.listHF = config.getString(helpMsg+"helpFriends.list").replace("&", "§");
 
         // Help /party
-        this.partyTop = config.getString(helpmsg+"helpParty.top").replace("&", "§");
-        this.partyBottom = config.getString(helpmsg+"helpParty.bottom").replace("&", "§");
-        this.suffixHP = config.getString(helpmsg+"helpParty.sHelp").replace("&", "§");
-        this.createHP = config.getString(helpmsg+"helpParty.create").replace("&", "§");
-        this.deleteHP = config.getString(helpmsg+"helpParty.delete").replace("&", "§");
-        this.acceptHP = config.getString(helpmsg+"helpParty.accept").replace("&", "§");
-        this.refuseHP = config.getString(helpmsg+"helpParty.refuse").replace("&", "§");
-        this.addHP = config.getString(helpmsg+"helpParty.add").replace("&", "§");
-        this.removeHP = config.getString(helpmsg+"helpParty.remove").replace("&", "§");
-        this.tpHP = config.getString(helpmsg+"helpParty.tp").replace("&", "§");
-        this.listHP = config.getString(helpmsg+"helpParty.list").replace("&", "§");
-        this.ownercmdHP = config.getString(helpmsg+"helpParty.owner").replace("&", "§");
+        this.partyTop = config.getString(helpMsg+"helpParty.top").replace("&", "§");
+        this.partyBottom = config.getString(helpMsg+"helpParty.bottom").replace("&", "§");
+        this.suffixHP = config.getString(helpMsg+"helpParty.sHelp").replace("&", "§");
+        this.createHP = config.getString(helpMsg+"helpParty.create").replace("&", "§");
+        this.deleteHP = config.getString(helpMsg+"helpParty.delete").replace("&", "§");
+        this.acceptHP = config.getString(helpMsg+"helpParty.accept").replace("&", "§");
+        this.refuseHP = config.getString(helpMsg+"helpParty.refuse").replace("&", "§");
+        this.addHP = config.getString(helpMsg+"helpParty.add").replace("&", "§");
+        this.removeHP = config.getString(helpMsg+"helpParty.remove").replace("&", "§");
+        this.tpHP = config.getString(helpMsg+"helpParty.tp").replace("&", "§");
+        this.listHP = config.getString(helpMsg+"helpParty.list").replace("&", "§");
+        this.ownercmdHP = config.getString(helpMsg+"helpParty.owner").replace("&", "§");
+        this.enableHP = config.getString(helpMsg+"helpParty.enable").replace("&", "§");
+        this.disableHP = config.getString(helpMsg+"helpParty.disable").replace("&", "§");
 
         // Help /msg | /r
-        this.msgTop = config.getString(helpmsg+"helpPvMsg.top").replace("&", "§");
-        this.msgBottom = config.getString(helpmsg+"helpPvMsg.bottom").replace("&", "§");
-        this.suffixHMSG = config.getString(helpmsg+"helpPvMsg.sHelp").replace("&", "§");
-        this.cmdMsgHMSG = config.getString(helpmsg+"helpPvMsg.cmdMsg").replace("&", "§");
-        this.cmdRHMSG = config.getString(helpmsg+"helpPvMsg.cmdR").replace("&", "§");
-        this.cmdEnableHMSG = config.getString(helpmsg+"helpPvMsg.cmdEnable").replace("&", "§");
-        this.cmdDisableHMSG = config.getString(helpmsg+"helpPvMsg.cmdDisable").replace("&", "§");
+        this.msgTop = config.getString(helpMsg+"helpPvMsg.top").replace("&", "§");
+        this.msgBottom = config.getString(helpMsg+"helpPvMsg.bottom").replace("&", "§");
+        this.suffixHMSG = config.getString(helpMsg+"helpPvMsg.sHelp").replace("&", "§");
+        this.cmdMsgHMSG = config.getString(helpMsg+"helpPvMsg.cmdMsg").replace("&", "§");
+        this.cmdRHMSG = config.getString(helpMsg+"helpPvMsg.cmdR").replace("&", "§");
+        this.cmdEnableHMSG = config.getString(helpMsg+"helpPvMsg.cmdEnable").replace("&", "§");
+        this.cmdDisableHMSG = config.getString(helpMsg+"helpPvMsg.cmdDisable").replace("&", "§");
+        this.cmdReportHMSG = config.getString(helpMsg+"helpPvMsg.cmdReport").replace("&", "§");
     }
 
     public void helpFriends(ProxiedPlayer p)
     {
         sendMessage(p, " ");
         sendMessage(p, friendsTop);
-        sendMessage(p, " ");
         sendMessage(p, " §6§l? §7§nHelp§f : ");
         sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §fenable "+suffixHF+" "+enableHF);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §fdisable "+suffixHF+" "+disableHF);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §faccept "+suffixHF+" "+acceptHF);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §frefuse "+suffixHF+" "+refuseHF);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §fadd §7<§6player§7> "+suffixHF+" "+addHF);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §fremove §7<§6player§7> "+suffixHF+" "+removeHF);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bf §flist "+suffixHF+" "+listHF);
-        sendMessage(p, " ");
+        sendMessage(p, enableHF);
+        sendMessage(p, disableHF);
+        sendMessage(p, acceptHF);
+        sendMessage(p, refuseHF);
+        sendMessage(p, addHF);
+        sendMessage(p, removeHF);
+        sendMessage(p, listHF);
         sendMessage(p, friendsBottom);
     }
 
@@ -132,27 +136,19 @@ public class Help
     {
         sendMessage(p, " ");
         sendMessage(p, partyTop);
-        sendMessage(p, " ");
         sendMessage(p, "§6§l? §7§nHelp§f : ");
         sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §fcreate "+suffixHP+" "+createHP);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §fdelete "+suffixHP+" "+deleteHP);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §faccept "+suffixHP+" "+acceptHP);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §frefuse "+suffixHP+" "+refuseHP);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §fadd §7<§6player§7> "+suffixHP+" "+addHP);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §fremove §7<§6player§7> "+suffixHP+" "+removeHP);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §ftp §7<§aenable §f| §cdisable §7> "+suffixHP+" "+tpHP);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §fowner §7<§6player§7> "+suffixHP+" "+ownercmdHP);
-        sendMessage(p, " ");
-        sendMessage(p, "§c- §f/§bparty §flist "+suffixHP+" "+listHP);
-        sendMessage(p, " ");
+        sendMessage(p, enableHP);
+        sendMessage(p, disableHP);
+        sendMessage(p, createHP);
+        sendMessage(p, deleteHP);
+        sendMessage(p, acceptHP);
+        sendMessage(p, refuseHP);
+        sendMessage(p, addHP);
+        sendMessage(p, removeHP);
+        sendMessage(p, tpHP);
+        sendMessage(p, ownercmdHP);
+        sendMessage(p, listHP);
         sendMessage(p, partyBottom);
     }
 
@@ -160,17 +156,13 @@ public class Help
     {
         sendMessage(p, " ");
         sendMessage(p, msgTop);
-        sendMessage(p, " ");
         sendMessage(p, " §6§l? §7§nHelp§f : ");
         sendMessage(p, " ");
-        sendMessage(p, "§f/§bmp §7<§6player§7> §7<§fmessage§7> "+suffixHMSG+" "+cmdMsgHMSG);
-        sendMessage(p, " ");
-        sendMessage(p, "§f/§br §7<§fmessage§7> "+suffixHMSG+" "+cmdRHMSG);
-        sendMessage(p, " ");
-        sendMessage(p, "§f/§bmp enable "+suffixHMSG+" "+cmdEnableHMSG);
-        sendMessage(p, " ");
-        sendMessage(p, "§f/§bmp disable "+suffixHMSG+" "+cmdDisableHMSG);
-        sendMessage(p, " ");
+        sendMessage(p, cmdMsgHMSG);
+        sendMessage(p, cmdRHMSG);
+        sendMessage(p, cmdEnableHMSG);
+        sendMessage(p, cmdDisableHMSG);
+        sendMessage(p, cmdReportHMSG);
         sendMessage(p, msgBottom);
     }
 

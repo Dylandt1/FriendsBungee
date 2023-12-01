@@ -38,6 +38,8 @@ public class CmdResend extends Command implements TabExecutor
     private final Help H = new Help();
 
     private final Configuration config;
+    private final String prefix;
+    private final String suffix;
     private final String playerOffline;
     private final String cmdNotUsable;
     private final String noMessage;
@@ -65,9 +67,10 @@ public class CmdResend extends Command implements TabExecutor
 
     public CmdResend()
     {
-        super("resend", null, String.valueOf(
-                FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.resend")));
+        super("resend", null, FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.resend").toArray(new String[0]));
         this.config = FriendsBG.getInstance().getConfig();
+        this.prefix = config.getString("prefix").replace("&", "§");
+        this.suffix = config.getString("suffix").replace("&", "§");
         this.playerOffline = config.getString("msg.playerOffline").replace("&", "§");
         this.cmdNotUsable = config.getString("msg.cmdNotUsable").replace("&", "§");
         this.noMessage = config.getString("msg.noMessage").replace("&", "§");
@@ -115,9 +118,8 @@ public class CmdResend extends Command implements TabExecutor
     @Override
     public void execute(CommandSender sender, String[] args)
     {
-        if(!(sender instanceof ProxiedPlayer)) {sendDeniedUsage(sender);return;}
+        if(!(sender instanceof ProxiedPlayer p)) {sendDeniedUsage(sender);return;}
 
-        ProxiedPlayer p = (ProxiedPlayer) sender;
         ProfileProvider provider = new ProfileProvider(p.getUniqueId());
         ProfileManager profile;
         try {
@@ -131,11 +133,19 @@ public class CmdResend extends Command implements TabExecutor
         if(args.length == 0)
         {
             H.helpMsg(p);
-        }else
+        }else if(args.length == 1 && args[0].equalsIgnoreCase("opt"))
         {
+            if(!profile.opt() && !profile.getOpts().contains("R"))
+            {
+                profile.addOpts("R");
+                provider.save(profile);
+                sendMessage(p, prefix+suffix+"§6OPTs §f: §2"+profile.getOpts().size()+"§f/§24");
+            }
+        }else {
             if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/msg enable"));return;}
             if(!FriendsBG.messages.containsKey(p)) {sendMessage(p, noMessage);return;}
             if(!FriendsBG.messages.get(p).isConnected()) {sendMessage(p, playerOffline);return;}
+
 
             ProxiedPlayer targetPl = FriendsBG.messages.get(p);
             ProfileProvider targetProvider = new ProfileProvider(targetPl.getUniqueId());
@@ -174,10 +184,10 @@ public class CmdResend extends Command implements TabExecutor
                 msg.append(args[i].replace("&", "§")).append(" ");
             }
 
-            final String part1 = sPrefix+" "+sSuffix+" ";
-            final String part2 = sdPrefix.replace("%targetPlayer%", targetPl.getName())+" "+sdSuffix+" ";
+            final String part1 = sPrefix+sSuffix;
+            final String part2 = sdPrefix.replace("%targetPlayer%", targetPl.getName())+sdSuffix;
             p.sendMessage(new TextComponent(part1+part2+msgColor+msg));
-            targetPl.sendMessage(new TextComponent(tPrefix.replace("%player%", p.getName())+" "+tSuffix+" "+msgColor+msg));
+            targetPl.sendMessage(new TextComponent(tPrefix.replace("%player%", p.getName())+tSuffix+msgColor+msg));
 
             FriendsBG.messages.remove(p);
             FriendsBG.messages.remove(targetPl);

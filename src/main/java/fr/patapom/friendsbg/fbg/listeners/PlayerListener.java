@@ -5,10 +5,13 @@ import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.common.groups.GroupManager;
 import fr.patapom.friendsbg.common.groups.GroupProvider;
+import fr.tmmods.tmapi.data.manager.Files;
+import fr.tmmods.tmapi.data.manager.Json.SerializationManager;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -17,6 +20,7 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
+import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +57,7 @@ public class PlayerListener implements Listener
         final ProxiedPlayer p = e.getPlayer();
 
         try {
-            ProfileProvider fProvider = new ProfileProvider(p.getUniqueId());
+            ProfileProvider fProvider = new ProfileProvider(p);
             ProfileManager fManager = fProvider.getFManager();
 
             ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), ()-> {
@@ -98,7 +102,7 @@ public class PlayerListener implements Listener
         final ProxiedPlayer p = e.getPlayer();
 
         try {
-            ProfileProvider fProvider = new ProfileProvider(p.getUniqueId());
+            ProfileProvider fProvider = new ProfileProvider(p);
             ProfileManager fManager = fProvider.getFManager();
 
             // Send connected message to all friends
@@ -148,7 +152,7 @@ public class PlayerListener implements Listener
 
             if(FriendsBG.getInstance().sqlEnable) {fProvider.updateDB();return;}
 
-            fProvider.save(fManager);
+            fProvider.saveOnJson(fManager);
         } catch (ManagerNotFoundException ex1) {
             throw new RuntimeException(ex1);
         }
@@ -160,7 +164,7 @@ public class PlayerListener implements Listener
         ProxiedPlayer p = e.getPlayer();
 
         try {
-            ProfileProvider fProvider = new ProfileProvider(p.getUniqueId());
+            ProfileProvider fProvider = new ProfileProvider(p);
             ProfileManager fManager = fProvider.getFManager();
             if(fManager.isInGroup())
             {

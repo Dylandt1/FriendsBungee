@@ -1,0 +1,19 @@
+# Package Files #
+*.class
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+### JetBrains template
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion
+
+*.iml
+
+## Directory-based project format:
+/.idea/
+/target/
+/src/main/java/fr/patapom/friendsbg/common/teams/TeamManager.java
+/src/main/java/fr/patapom/friendsbg/common/teams/TeamProvider.java

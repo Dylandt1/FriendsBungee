@@ -1,16 +1,16 @@
 package fr.patapom.friendsbg.fbg;
 
+import com.google.common.reflect.TypeToken;
 import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.groups.GroupManager;
+import fr.patapom.friendsbg.common.teams.TeamManager;
+import fr.patapom.friendsbg.fbg.cmd.*;
 import fr.patapom.friendsbg.fbg.listeners.PlayerListener;
-import fr.patapom.friendsbg.fbg.cmd.CmdFriends;
-import fr.patapom.friendsbg.fbg.cmd.CmdMsg;
-import fr.patapom.friendsbg.fbg.cmd.CmdGroup;
-import fr.patapom.friendsbg.fbg.cmd.CmdResend;
 import fr.tmmods.tmapi.bungee.TMBungeeAPI;
 import fr.tmmods.tmapi.bungee.config.ConfigsManager;
 import fr.tmmods.tmapi.bungee.data.manager.DBManager;
 import fr.tmmods.tmapi.bungee.data.manager.RedisManager;
+import fr.tmmods.tmapi.data.manager.Files;
 import fr.tmmods.tmapi.data.manager.Json.SerializationManager;
 import fr.tmmods.tmapi.data.manager.UpdateChecker;
 import net.md_5.bungee.api.ProxyServer;
@@ -18,6 +18,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
+
+import java.io.File;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -41,6 +44,8 @@ public class FriendsBG extends Plugin
 {
     private final int pluginId = 17971;
 
+    private boolean upToDate;
+
     private final String console = "[FriendsBungee] -> ";
 
     private static FriendsBG INSTANCE;
@@ -59,27 +64,40 @@ public class FriendsBG extends Plugin
 
     public static Map<UUID, ProfileManager> fManagers = new HashMap<>();
     public static Map<UUID, GroupManager> parties = new HashMap<>();
+    public static Map<UUID, TeamManager> teams = new HashMap<>();
     public static Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
+    public static Map<UUID, String> reports = new HashMap<>();
 
     public HashMap<UUID, Long> cooldown = new HashMap<>();
 
     @Override
     public void onLoad()
     {
+        getLogger().info(console + " ");
         getLogger().info(console + "Loading in progress...");
+        getLogger().info(console + " ");
 
         // UpdateChecker added by TM-API free software
-        getLogger().info(console + "Checking for update");
+        getLogger().info(console + "# ----------{ UpdateChecker }---------- #");
+        getLogger().info(console + " ");
+        getLogger().info(console + "Version : "+this.getDescription().getVersion());
+        getLogger().info(console + " ");
         new UpdateChecker(pluginId).getVersion(version -> {
-            if (this.getDescription().getVersion().equals(version)) {
+            if(this.getDescription().getVersion().equals(version)) {
+                this.upToDate = true;
                 getLogger().info(console + "Up to date !");
-            } else {
-                getLogger().info(console + "New update is available !");
+            }else {
+                this.upToDate = false;
+                getLogger().info(console + "New update is available : "+version);
             }
+            getLogger().info(console + " ");
+            getLogger().info(console + "# ---------- --------------- ---------- #");
         });
 
         //Config Files
+        getLogger().info(console + " ");
         getLogger().info(console + "Loading config files...");
+        getLogger().info(console + " ");
         this.config = ConfigsManager.getConfig("config", this);
         this.serManager = new SerializationManager();
         this.prefix = config.getString("prefix").replace("&", "§");
@@ -92,7 +110,9 @@ public class FriendsBG extends Plugin
     @Override
     public void onEnable()
     {
+        getLogger().info(console + " ");
         getLogger().info(console + "Loading plugin parts...");
+        getLogger().info(console + " ");
         INSTANCE = this;
         pm = ProxyServer.getInstance().getPluginManager();
 
@@ -100,8 +120,18 @@ public class FriendsBG extends Plugin
         pm.registerCommand(this, new CmdGroup());
         pm.registerCommand(this, new CmdMsg());
         pm.registerCommand(this, new CmdResend());
+        pm.registerCommand(this, new CmdReport());
+        pm.registerCommand(this, new CmdDebug());
 
         pm.registerListener(this, new PlayerListener());
+
+        final File file = new File("./", "reports.json");
+        if(file.exists())
+        {
+            final String json = Files.loadFile(file);
+            Type type = new TypeToken<Map<UUID, String>>() {}.getType();
+            reports = (Map<UUID, String>) serManager.deserializeByType(json.replace("?", "§"), type);
+        }
 
         getLogger().info(console + "Ready to use !");
     }
@@ -114,17 +144,34 @@ public class FriendsBG extends Plugin
     @Override
     public void onDisable()
     {
+        getLogger().info(console + " ");
         getLogger().info(console + "Disabling in progress...");
+        getLogger().info(console + " ");
         if(sqlEnable)
         {
             DBManager.closeAllConnections();
             getLogger().info(console + "Database connections closed !");
+            getLogger().info(console + " ");
         }
         if(redisEnable)
         {
             RedisManager.closeAllConnections();
             getLogger().info(console + "Redis connections closed !");
+            getLogger().info(console + " ");
         }
+
+        getLogger().info("Saving data in progress...");
+        getLogger().info(console + " ");
+        if(!reports.isEmpty())
+        {
+            // Save reports on Json file
+            final File file = new File("./", "reports.json");
+            final String json = serManager.serialize(reports);
+            Files.save(file, json);
+            getLogger().info(console + "Reports saved !");
+            getLogger().info(console + " ");
+        }
+
         getLogger().info(console + "Goodbye !");
     }
 }

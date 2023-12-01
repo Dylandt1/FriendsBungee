@@ -68,15 +68,17 @@ public class GroupProvider
     public GroupManager getPManager() throws ManagerNotFoundException
     {
         GroupManager pManager;
-        int partyLength = config.getInt("groups.levels.default");
+        // Maximum members allowed in group
+        int partyLength = config.getInt("groups.lengths.default");
+
         if(redisEnable)
         {
             pManager = getPManagerOnRedis();
             if(pManager == null)
             {
-                for(String s : config.getStringList("groups.levels"))
+                for(String s : config.getStringList("groups.lengths"))
                 {
-                    if(player.hasPermission("fgb.group."+s)) {partyLength = config.getInt("groups.levels."+s);}
+                    if(player.hasPermission("fgb.group."+s)) {partyLength = config.getInt("groups.lengths."+s);}
                 }
                 pManager = new GroupManager(player , groupId, partyLength);
                 setPManagerOnRedis(pManager);
@@ -97,14 +99,20 @@ public class GroupProvider
     public void save(GroupManager groupManager)
     {
         if(redisEnable) {setPManagerOnRedis(groupManager);return;}
-        FriendsBG.parties.replace(groupId, groupManager);
+        FriendsBG.parties.remove(groupId);
+        FriendsBG.parties.put(groupId, groupManager);
     }
 
     public void delete()
     {
-        final RedissonClient redisCli = redisAccess.getRedisCli();
-        final RBucket<GroupManager> pBucket = redisCli.getBucket(REDIS_KEY);
-        pBucket.delete();
+        if(redisEnable)
+        {
+            final RedissonClient redisCli = redisAccess.getRedisCli();
+            final RBucket<GroupManager> pBucket = redisCli.getBucket(REDIS_KEY);
+            pBucket.delete();
+        }else {
+            FriendsBG.parties.remove(groupId);
+        }
     }
 
     public boolean gExist()

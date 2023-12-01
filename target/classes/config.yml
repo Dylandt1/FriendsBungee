@@ -26,8 +26,8 @@
 # ################################################################################################### #
 
 # Prefix and suffix of plugin's messages :
-prefix: "&f[&3Friends&f-&6Bungee&f]"
-suffix: "&f&l->&f"
+prefix: "&f[&3Friends&f-&6Bungee&f] "
+suffix: "&f&l->&f "
 
 # Message unable to create configuration file :
 fileNotCreate: "&cUnable to create configuration file !"
@@ -57,6 +57,11 @@ unableSave: "&cConfiguration file not backed up !"
 friends:                                                                                #
 # ------------------------------------------------------------------------------------- #
 
+  # Alias of friends commands
+  cmdAlias:
+    - f
+    - friend
+
   # Prefix and suffix of all friends messages
   prefix: "&f[&6Friends&f] "
   suffix: "&f&l->&f "
@@ -84,15 +89,6 @@ friends:                                                                        
 
   # Message if target deny friend requests :
   targetRequestsDeny: "&b%targetPlayer% &cdoes not accept friend requests !"
-
-  # Message no friends in list :
-  noFriendsInList: "&cYou don't have any friends on this server !"
-
-  # Message list friends online :
-  friendsOnline: "&aFriends online &f:"
-
-  # Message list friends offline :
-  friendsOffline: "&cFriends offline &f:"
 
   # Message already friends :
   alreadyFriends: "&6You are already friends with &b%targetPlayer% &c!"
@@ -139,6 +135,11 @@ friends:                                                                        
   # Message refuse friend request for target :
   refuseFriendTarget: "&b%player% &crefused your friend request !"
 
+  # Display friends size in list (/f list) :
+  noFriendsInList: "&cYou don't have any friends on this server !"
+  friendsOnline: "&aFriends online &f: %nbFriends%\n"
+  friendsOffline: "&cFriends offline &f: %nbFriends%\n"
+
   # Message friend is connected/disconnected
   friendConnected: "&aYour friend &b%player% &ais now connected &c!"
   friendDisconnected: "&6Your friend &b%player% &6is now disconnected &c!"
@@ -161,35 +162,41 @@ friends:                                                                        
 groups:                                                                                 #
 # ------------------------------------------------------------------------------------- #
 
+  # Alias of group commands
+  cmdAlias:
+    - gp
+    - party
+
   # Prefix and suffix for plugin messages :
-  prefix: "&f[&2Groups&f]"
-  suffix: "&f&l->&f"
+  prefix: "&f[&2Groups&f] "
+  suffix: "&f&l->&f "
 
   # Timing to teleport players in group list :
   timingTP: 1000 # in milliseconds
 
-  # Groups members ranks labels, just for group private chat (Not available in 2.0-SNAPSHOT :
+  # Groups members ranks labels, just for group private chat (Not available in 2.0-SNAPSHOT) :
   ranks:
     default:
-      # Rank name
+      # Rank name :
       name: "&1Member"
-      # Rank label shown in game
+      # Rank label shown in pravet chat :
       label: "&f[&2%groupLabel%&f] (%rankName%&f) "
-      # Color of player name for this rank
+      # Color of player name for this rank :
       color: "&f"
     chief:
       name: "&cChief"
       label: "&f[&2%groupLabel%&f] (%rankName%&f) "
       color: "&b"
 
-  # Level groups length (permissions : fgb.group.lv1 to fbg.group.lv5) :
+  # Level groups length (permissions example : fgb.group.lv1 to fbg.group.lvX) :
   lengths:
-    default: 10 #Default group members length
-    lv1: 15
-    lv2: 20
-    lv3: 30
-    lv4: 40
-    lv5: 50
+    default: 5 #Default group members length, bypass permission.
+    lv1: 10
+    lv2: 15
+    lv3: 20
+    lv4: 25
+    lv5: 30
+  #  custom_entries: custom_integer
 
   # Message for using commands in the console :
   cmdNotUsable: "&cThis command is only available in game !"
@@ -291,10 +298,52 @@ groups:                                                                         
   tpAlreadyDisabled: "&6Auto-tp is already disabled &c!"
 
   # Message if sender deny group requests :
-  senderRequestsDeny: "&cYou do not accept friend requests ! &2/&bgp §aenable§c, to enable friend requests &c!"
+  senderRequestsDeny: "&cYou do not accept group requests ! &2/&bgp §aenable§c, to enable friend requests &c!"
 
   # Message if target deny group requests :
-  targetRequestsDeny: "&b%targetPlayer% &cdoes not accept friend requests !"
+  targetRequestsDeny: "&b%targetPlayer% &cdoes not accept group requests !"
+
+  # Message for friend requests enabled :
+  requestsAllow: "&aGroup requests enabled &c!"
+
+  # Message for friend requests already enabled :
+  requestsAlreadyEnabled: "&6Group requests already &aenabled &c!"
+
+  # Message for friend requests disabled :
+  requestsDeny: "&cGroup requests disabled !"
+
+  # Message for friend requests already disabled :
+  requestsAlreadyDisabled: "&6Group requests already &cdisabled !"
+
+  # Display group size in list (/gp list) :
+  msgGroupList: "&aMembers &f: %nbMembers%\n"
+
+  # Private groups messages configuration :
+  msg:
+    # Sender part :
+    sender:
+      # Message prefix. If 2ndPrefix = "", is not used and you can make 2ndSuffix = "" :
+      prefix: "&7[&cme&7] "
+      2ndPrefix: "&7[&c%targetPlayer%&7] "
+
+      # Message suffix. suffix is after prefix and 2ndSuffix is after 2ndPrefix.
+      # If 2ndPrefix = "", for good rendering, you can make 2ndSuffix = "" :
+      suffix: "&f&l->&f "
+      2ndSuffix: "&f: "
+
+    # Target part :
+    target:
+      # Message prefix :
+      prefix: "&7[&c%player%&7] "
+
+      # Message suffix :
+      suffix: "&f&l->&f "
+
+    # Private messages color :
+    messageColor: "&a"
+
+    # Message if player message is too long :
+    tooLong: "&cYour message is too long !"
 
 
 # ##################################################################################### #
@@ -325,6 +374,9 @@ msg:                                                                            
     # Alias for reply last message
     resend:
       - r
+    # Alias for send report
+    report:
+      - rpt
 
   # Anti spam :
   antiSpam:
@@ -337,26 +389,40 @@ msg:                                                                            
     # AntiSpam message :
     message: "&cYou have to wait another &6%cooldown% &cseconds to send a message."
 
+  # Report part (Permission: frb.report.admin) :
+  report:
+    # Prefix and suffix of report messages for admins
+    prefix: "&7[&cReport&7] "
+    suffix: "&f&l-> "
+    # Message to admins when player send report
+    admMessage: "&cNew report send by &b%sender% &c!"
+    # Confirmation message to sender
+    reportConfirmation: "&cYour report has been saved, an admin will respond to it as soon as possible."
+    # Message when player have already report in progress
+    alreadySend: "&cYou have already send report, wait admin response to send another report !"
+    # Message when admin delete report
+    reportDeleted: "&cReport &f(%report%&f) &chas been deleted !"
+
   # Sender part :
   sender:
 
     # Message prefix. If 2ndPrefix = "", is not used and you can make 2ndSuffix = "" :
-    prefix: "&7[&cme&7]"
-    2ndPrefix: "&7[&c%targetPlayer%&7]"
+    prefix: "&7[&cme&7] "
+    2ndPrefix: "&7[&c%targetPlayer%&7] "
 
     # Message suffix. suffix is after prefix and 2ndSuffix is after 2ndPrefix.
     # If 2ndPrefix = "", for good rendering, you can make 2ndSuffix = "" :
-    suffix: "&f&l->&f"
-    2ndSuffix: "&f:"
+    suffix: "&f&l->&f "
+    2ndSuffix: "&f: "
 
   # Target part :
   target:
 
     # Message prefix :
-    prefix: "&7[&c%player%&7]"
+    prefix: "&7[&c%player%&7] "
 
     # Message suffix :
-    suffix: "&f&l->&f"
+    suffix: "&f&l->&f "
 
   # Private messages color :
   messageColor: "&a"
@@ -408,67 +474,67 @@ msg:                                                                            
 #                                                                                       #
 # This part allows you to configure the framing and help messages of FriendsBG commands #
 #                                                                                       #
-helpmsg:                                                                                #
+helpMsg:                                                                                #
 # ------------------------------------------------------------------------------------- #
 
   # /friends Help message config :
   helpFriends:
-    # Top framing of help message :
-    top: "§6#&f-------------------- [&3Friends&f-&6BG&f] -------------------&6#"
-    # Bottom framing of help message :
-    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
 
-    # Suffix of all entries of the Help command. Default : &f&l->
-    sHelp: "&f&l->&f"
+    # Top framing of help message :
+    top: "§6#&f------------------ [&3Friends&f-&6Bungee&f] ------------------&6#"
 
     # Entries of the help command, after suffix :
-    enable: "&fTo enable friend requests&c;"
-    disable: "&fTo disable friends requests&c;"
-    accept: "&fTo accept friend request in progress&c;"
-    refuse: "&fTo refuse friend request in progress&c;"
-    add: "&fTo send friend request to target player&c;"
-    remove: "&fTo remove target player of your friends list&c;"
-    list: "&fTo see your friends list&c."
+    enable: "&c- &f/&bf &fenable &f&l-> &fTo enable friend requests&c;\n"
+    disable: "&c- &f/&bf &fdisable &f&l-> &fTo disable friends requests&c;\n"
+    accept: "&c- &f/&bf &faccept &f&l-> &fTo accept friend request in progress&c;\n"
+    refuse: "&c- &f/&bf &frefuse &f&l-> &fTo refuse friend request in progress&c;\n"
+    add: "&c- &f/&bf &fadd &7<&fplayer&7> &f&l-> &fTo send friend request to target player&c;\n"
+    remove: "&c- &f/&bf &fremove &7<&fplayer&7> &f&l-> &fTo remove target player of your friends list&c;\n"
+    list: "&c- &f/&bf &flist &f&l-> &fTo see your friends list&c.\n"
+
+    # Bottom framing of help message :
+    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
 
   # /party help message config :
   helpParty:
     # Top framing of help message :
-    top: "&6#&f-------------------- [&3Friends&f-&6BG&f] -------------------&6#"
-    # Bottom framing of help message :
-    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
-
-    # Suffix of all entries of the Help command. Default : &f&l->
-    sHelp: "&f&l->&f"
+    top: "&6#&f------------------ [&3Friends&f-&6Bungee&f] ------------------&6#\n"
 
     # Entries of the help command, after suffix :
-    create: "&fTo create new group&c;"
-    delete: "&fTo remove your group&c;"
-    accept: "&fTo accept group request in progress&c;"
-    refuse: "&fTo refuse group request in progress&c;"
-    add: "&fTo send group request to target player&c;"
-    remove: "&fTo remove target player of your group list&c;"
-    tp: "&fTo enable or disable auto tp for group members&c;"
-    owner: "&fTo change the group leader&c;"
-    list: "&fTo see the list of players in the group&c."
+    enable: "&c- &f/&bgroup &fenable &f&l-> &fTo enable group requests&c;\n"
+    disable: "&c- &f/&bgroup &fdisable &f&l-> &fTo disable group requests&c;\n"
+    create: "&c- &f/&bgroup &fcreate &f&l-> &fTo create new group&c;\n"
+    delete: "&c- &f/&bgroup &fdelete &f&l-> &fTo remove your group&c;\n"
+    accept: "&c- &f/&bgroup &faccept &f&l-> &fTo accept group request in progress&c;\n"
+    refuse: "&c- &f/&bgroup &frefuse &f&l-> &fTo refuse group request in progress&c;\n"
+    add: "&c- &f/&bgroup &fadd &7<&fplayer&7> &f&l-> &fTo send group request to target player&c;\n"
+    remove: "&c- &f/&bgroup &fremove &7<&fplayer&7> &f&l-> &fTo remove target player of your group list&c;\n"
+    tp: "&c- &f/&bgroup §ftp &7<&aenable &f| &cdisable &7> &f&l-> &fTo enable or disable auto tp for group members&c;\n"
+    owner: "&c- &f/&bgroup &fowner &7<&fnewOwner&7> &f&l-> &fTo change the group leader&c;\n"
+    list: "&c- &f/&bgroup &flist &f&l-> &fTo see the list of players in the group&c.\n"
 
-  # /mp | /r Help message config :
-  helpPvMsg:
-    # Top framing of help message :
-    top: "&6#&f-------------------- [&3Friends&f-&6BG&f] -------------------&6#"
     # Bottom framing of help message :
     bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
 
-    # Suffix of all entries of the Help command. Default : &f&l->
-    sHelp: "&f&l->&f"
+  # /mp | /r | report Help message config :
+  helpPvMsg:
+    # Top framing of help message :
+    top: "&6#&f------------------ [&3Friends&f-&6Bungee&f] ------------------&6#\n"
 
     # Entries of the help command, after sHelp :
-    cmdMsg: "&fTo send a private message to target player&c;"
-    cmdR: "&fTo reply to the last private message&c;"
-    cmdEnable: "&fTo enable private messages&c;"
-    cmdDisable: "&fTo disable private messages&c."
+    cmdMsg: "&c- &f/&bmp &7<&ftarget_player&7> &7<&fmessage&7> &f&l-> &fTo send a private message to target player&c;\n"
+    cmdR: "&c- &f/&br &f&l-> &fTo reply to the last private message&c;\n"
+    cmdEnable: "&c- &f/&bmp &fenable &f&l-> &fTo enable private messages&c;\n"
+    cmdDisable: "&c- &f/&bmp &fdisable &f&l-> &fTo disable private messages&c;\n"
+    cmdReport: "&c- &f/&breport &7<&freason&7> &7<&fdescription&7> &f&l-> &fTo send report message&c.\n"
 
-    # Report command label (exemple: /report <conditions>) :
-    reportCmd: "/report <message>"
+    # Bottom framing of help message :
+    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
+
+    reportReasons:
+      - bug
+      - claim
+      - lag
 
 
 # ##################################################################################### #
@@ -479,11 +545,16 @@ helpmsg:                                                                        
 updates:                                                                                #
 # ##################################################################################### #
 
-  # Turn to true for enable plugin updates checker (Available) :
+  # Turn to true/false for enable/disable plugin updates checker (Available) :
   checker: true
 
-  # Turn to true for enable auto-updates (Not available in 2.0-SNAPSHOT) :
-  autoUpdate: false
-
+  # Send message to admins (not available)
+  adminMsg:
+    # Turn to true to enable update warning
+    use: false
+    # Message design
+    prefix: "&f[&6UpdateChecker&f] "
+    suffix: "&f&l->&f "
+    message: "&6New update is available !"
 
 # #################### Plugin made by PataPom - Licensed under GPL3 License. #################### #

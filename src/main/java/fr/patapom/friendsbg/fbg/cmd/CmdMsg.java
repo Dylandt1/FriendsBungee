@@ -5,6 +5,7 @@ import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.fbg.FriendsBG;
 import fr.patapom.friendsbg.fbg.cmd.utils.Help;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
+import net.bytebuddy.build.Plugin;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -12,6 +13,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +43,8 @@ public class CmdMsg extends Command implements TabExecutor
     private final Help H = new Help();
 
     private final Configuration config;
+    private final String prefix;
+    private final String suffix;
     private final String sPrefix;
     private final String sdPrefix;
     private final String sSuffix;
@@ -66,9 +71,10 @@ public class CmdMsg extends Command implements TabExecutor
 
     public CmdMsg()
     {
-        super("msg", null, String.valueOf(
-                FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.send")));
+        super("msg", null, FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.send").toArray(new String[0]));
         this.config = FriendsBG.getInstance().getConfig();
+        this.prefix = config.getString("prefix").replace("&", "§");
+        this.suffix = config.getString("suffix").replace("&", "§");
         this.sPrefix = config.getString("msg.sender.prefix").replace("&", "§");
         this.sdPrefix = config.getString("msg.sender.2ndPrefix").replace("&", "§");
         this.sSuffix = config.getString("msg.sender.suffix").replace("&", "§");
@@ -105,9 +111,9 @@ public class CmdMsg extends Command implements TabExecutor
         {
             list.add("enable");
             list.add("disable");
-            for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
+            for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
             {
-                list.add(player.getName());
+                list.add(pls.getName());
             }
         }
         return list;
@@ -116,9 +122,8 @@ public class CmdMsg extends Command implements TabExecutor
     @Override
     public void execute(CommandSender sender, String[] args)
     {
-        if(!(sender instanceof ProxiedPlayer)) {sendDeniedUsage(sender);return;}
+        if(!(sender instanceof ProxiedPlayer p)) {sendDeniedUsage(sender);return;}
 
-        ProxiedPlayer p = (ProxiedPlayer) sender;
         ProfileProvider provider = new ProfileProvider(p.getUniqueId());
         ProfileManager profile;
         try {
@@ -148,6 +153,14 @@ public class CmdMsg extends Command implements TabExecutor
                 profile.setMsgAllow(false);
                 provider.save(profile);
                 sendMessage(p, msgDisabled);
+            }else if(args[0].equalsIgnoreCase("opt"))
+            {
+                if(!profile.opt() && !profile.getOpts().contains("M"))
+                {
+                    profile.addOpts("M");
+                    provider.save(profile);
+                    sendMessage(p, prefix+suffix+"§6OPTs §f: §2"+profile.getOpts().size()+"§f/§24");
+                }
             }
         }else
         {
@@ -198,10 +211,10 @@ public class CmdMsg extends Command implements TabExecutor
                     msg.append(args[i].replace("&", "§")).append(" ");
                 }
 
-                final String part1 = sPrefix+" "+sSuffix+" ";
-                final String part2 = sdPrefix.replace("%targetPlayer%", targetName)+" "+sdSuffix+" ";
+                final String part1 = sPrefix+sSuffix;
+                final String part2 = sdPrefix.replace("%targetPlayer%", targetName)+sdSuffix;
                 p.sendMessage(new TextComponent(part1+part2+msgColor+msg));
-                targetPl.sendMessage(new TextComponent(tPrefix.replace("%player%", p.getName())+" "+tSuffix+" "+msgColor+msg));
+                targetPl.sendMessage(new TextComponent(tPrefix.replace("%player%", p.getName())+tSuffix+msgColor+msg));
 
                 FriendsBG.messages.remove(p);
                 FriendsBG.messages.remove(targetPl);

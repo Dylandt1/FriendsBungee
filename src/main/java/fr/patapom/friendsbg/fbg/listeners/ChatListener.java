@@ -18,20 +18,44 @@ public class ChatListener implements Listener
     public void onChat(ChatEvent e)
     {
         ProxiedPlayer p = (ProxiedPlayer) e.getSender();
+        String msg = e.getMessage();
 
-        if(antiSpam && antiSpamLevel == 2 || antiSpamLevel == 3)
+        if(antiSpam)
         {
-            if(!FriendsBG.getInstance().cooldown.containsKey(p.getUniqueId()))
+            if(!e.isCommand() && antiSpamLevel == 2 || antiSpamLevel == 3)
             {
-                FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
-            }else if(System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()) > cool_down)
+                if(!FriendsBG.getInstance().cooldown.containsKey(p.getUniqueId()))
+                {
+                    FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
+                }else if(System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()) > cool_down)
+                {
+                    FriendsBG.getInstance().cooldown.remove(p.getUniqueId());
+                    FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
+                }else {
+                    e.setCancelled(true);
+                    sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf((cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()))) / 1000)));
+                }
+            }else if(e.isCommand() && antiSpamLevel == 4 || antiSpamLevel == 5)
             {
-                FriendsBG.getInstance().cooldown.remove(p.getUniqueId());
-                FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
-            }
-            else {
-                e.setCancelled(true);
-                sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf((cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()))) / 1000)));
+                if(msg.startsWith("/group") || msg.startsWith("/gp")
+                        || msg.startsWith("/party") || msg.startsWith("/f")
+                        || msg.startsWith("/friends") || msg.startsWith("/friend")
+                        || msg.startsWith("/mp") || msg.startsWith("/msg")
+                        || msg.startsWith("/message") || msg.startsWith("/tell")
+                        || msg.startsWith("/w") || msg.startsWith("/r")
+                        || msg.startsWith("/resend")) {return;}
+
+                if(!FriendsBG.getInstance().cooldown.containsKey(p.getUniqueId()))
+                {
+                    FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
+                }else if(System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()) > cool_down)
+                {
+                    FriendsBG.getInstance().cooldown.remove(p.getUniqueId());
+                    FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
+                }else {
+                    e.setCancelled(true);
+                    sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf((cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()))) / 1000)));
+                }
             }
         }
     }

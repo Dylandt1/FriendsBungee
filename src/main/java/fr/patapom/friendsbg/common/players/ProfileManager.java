@@ -2,8 +2,7 @@ package fr.patapom.friendsbg.common.players;
 
 import net.md_5.bungee.api.ProxyServer;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This file is part of FriendsBungee, a BungeeCord friends plugin system.
@@ -37,9 +36,12 @@ public class ProfileManager
 
     private Map<String, UUID> friends;
 
+    private HashSet<String> opts;
+    private boolean opt;
+
     public ProfileManager() {}
 
-    public ProfileManager(UUID playerUUID, String playerName, String displayName, boolean fAllow, boolean msgAllow, boolean gpAllow, boolean teamsAllow, String rankInTeam, UUID groupId, UUID teamId, Map<String, UUID> friendsList)
+    public ProfileManager(UUID playerUUID, String playerName, String displayName, boolean fAllow, boolean msgAllow, boolean gpAllow, boolean teamsAllow, String rankInTeam, UUID groupId, UUID teamId, Map<String, UUID> friendsList, HashSet<String> opts)
     {
         this.uuid = playerUUID;
         this.name = playerName;
@@ -52,6 +54,9 @@ public class ProfileManager
         this.groupId = groupId;
         this.teamId = teamId;
         this.friends = friendsList;
+
+        this.opts = opts;
+        this.opt = opts.containsAll(List.of(new String[]{"F", "G", "M", "R"}));
     }
 
     /**
@@ -71,6 +76,7 @@ public class ProfileManager
     public boolean hasFriends() {return !friends.isEmpty();}
     public boolean isInGroup() {return groupId!=null;}
     public boolean isInTeam() {return teamId!=null;}
+    public boolean opt() {return opt;}
 
     public boolean isFriends(String friendName) {return friends.containsKey(friendName);}
     public int getNbFriends() {return friends.size();}
@@ -81,6 +87,9 @@ public class ProfileManager
     public void addFriend(UUID friendUUID) {friends.put(ProxyServer.getInstance().getPlayer(friendUUID).getName(), friendUUID);}
     public void removeFriend(String friendName) {friends.remove(friendName);}
 
+    public void addOpts(String opt) {opts.add(opt);}
+    public void clearOpts() {opts.clear();}
+
     public void setGroupId(UUID groupId) {this.groupId = groupId;}
     public void setTeamId(UUID teamId) {this.teamId = teamId;}
     public void setFAllow(boolean status) {fAllow = status;}
@@ -90,4 +99,6 @@ public class ProfileManager
     public void setRankInTeam(String rank) {this.rankInTeam = rank;}
 
     public Map<String, UUID> getFriendsMap() {return friends;}
+
+    public HashSet<String> getOpts() {return opts;}
 }
