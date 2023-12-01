@@ -8,7 +8,6 @@ fr\patapom\friendsbg\common\players\ProfileProvider.class
 fr\patapom\friendsbg\common\teams\TeamProvider.class
 fr\patapom\friendsbg\fbg\cmd\utils\Help.class
 fr\patapom\friendsbg\common\groups\GroupManager.class
-fr\patapom\friendsbg\fbg\cmd\CmdDebug.class
 fr\patapom\friendsbg\fbg\FriendsBG$1.class
 fr\patapom\friendsbg\fbg\cmd\CmdFriends.class
 fr\patapom\friendsbg\fbg\cmd\CmdResend.class

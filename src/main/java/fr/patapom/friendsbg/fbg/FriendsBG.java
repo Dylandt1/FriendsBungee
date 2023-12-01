@@ -121,7 +121,6 @@ public class FriendsBG extends Plugin
         pm.registerCommand(this, new CmdMsg());
         pm.registerCommand(this, new CmdResend());
         pm.registerCommand(this, new CmdReport());
-        pm.registerCommand(this, new CmdDebug());
 
         pm.registerListener(this, new PlayerListener());
 
