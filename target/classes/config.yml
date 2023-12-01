@@ -85,7 +85,7 @@ friends:                                                                        
   requestsAlreadyDisabled: "&6Friend requests already &cdisabled !"
 
   # Message sender deny friend requests :
-  senderRequestsDeny: "&cYou do not accept friend requests ! &2/&bf §aenable§c, &fto enable friend requests &c!"
+  senderRequestsDeny: "&cYou do not accept friend requests ! &f/&bf §aenable§c, &fto enable friend requests &c!"
 
   # Message if target deny friend requests :
   targetRequestsDeny: "&b%targetPlayer% &cdoes not accept friend requests !"
@@ -232,7 +232,7 @@ groups:                                                                         
   scrollTargetRequest: "&aAccept"
 
   # Message group request target :
-  requestTarget: "&b%player% &asent you a group request, click or use &f/&bp &faccept &ato accept this request &c!"
+  requestTarget: "&b%player% &asent you a group request, click or use &f/&bgroup &faccept &ato accept this request &c!"
 
   # Message new player in group for sender :
   newGroupSender: "&b%targetPlayer% &ais now in your group &c!"
@@ -298,7 +298,7 @@ groups:                                                                         
   tpAlreadyDisabled: "&6Auto-tp is already disabled &c!"
 
   # Message if sender deny group requests :
-  senderRequestsDeny: "&cYou do not accept group requests ! &2/&bgp §aenable§c, to enable friend requests &c!"
+  senderRequestsDeny: "&cYou do not accept group requests ! &f/&bgp §aenable§c, &fto enable group requests &c!"
 
   # Message if target deny group requests :
   targetRequestsDeny: "&b%targetPlayer% &cdoes not accept group requests !"
