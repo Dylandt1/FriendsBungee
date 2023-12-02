@@ -152,11 +152,19 @@ public class GroupManager
     {
         for(ProxiedPlayer player : getPlayersInGroup())
         {
+            ProfileProvider fProvider = new ProfileProvider(player.getUniqueId());
+            try {
+                ProfileManager fManager = fProvider.getFManager();
+                fManager.setGroupId(null);
+                fProvider.save(fManager);
+            } catch (ManagerNotFoundException e) {
+                e.printStackTrace();
+            }
             Configuration config = FriendsBG.getInstance().getConfig();
             String prefix = config.getString("groups.prefix").replace("&", "§");
             String suffix = config.getString("groups.suffix").replace("&", "§");
             String groupDeletedTarget = config.getString("groups.groupDeletedTargets").replace("&", "§");
-            sendMessage(player, prefix+" "+suffix+" "+groupDeletedTarget);
+            sendMessage(player, prefix+suffix+groupDeletedTarget);
         }
         if(FriendsBG.getInstance().redisEnable)
         {

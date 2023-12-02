@@ -4,7 +4,6 @@ import fr.patapom.friendsbg.fbg.FriendsBG;
 import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.fbg.cmd.utils.Help;
-import fr.patapom.friendsbg.fbg.utils.Constants;
 import fr.tmmods.tmapi.bungee.data.manager.DBManager;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.CommandSender;
@@ -40,11 +39,8 @@ public class CmdFriends extends Command implements TabExecutor
 {
     private Map<ProxiedPlayer, ProxiedPlayer> requestFriend = new HashMap<>();
 
-    private final Constants vars = new Constants();
-
     private final Help H = new Help();
 
-    private final Configuration config;
     private final String prefix;
     private final String suffix;
     private final String mainPrefix;
@@ -75,12 +71,11 @@ public class CmdFriends extends Command implements TabExecutor
     private final String noRequest;
     private final String refuseFriendSender;
     private final String refuseFriendTarget;
-    private final String noRequestTarget;
 
     public CmdFriends()
     {
         super("friend", null, FriendsBG.getInstance().getConfig().getStringList("friends.cmdAlias").toArray(new String[0]));
-        this.config = FriendsBG.getInstance().getConfig();
+        Configuration config = FriendsBG.getInstance().getConfig();
         this.prefix = config.getString("friends.prefix").replace("&", "§");
         this.suffix = config.getString("friends.suffix").replace("&", "§");
         this.mainPrefix = config.getString("prefix").replace("&", "§");
@@ -111,7 +106,6 @@ public class CmdFriends extends Command implements TabExecutor
         this.noRequest = config.getString("friends.noRequest").replace("&", "§");
         this.refuseFriendSender = config.getString("friends.refuseFriendSender").replace("&", "§");
         this.refuseFriendTarget = config.getString("friends.refuseFriendTarget").replace("&", "§");
-        this.noRequestTarget = config.getString("friends.noRequestTarget").replace("&", "§");
     }
 
     @Override
@@ -122,14 +116,14 @@ public class CmdFriends extends Command implements TabExecutor
         if(args.length == 1)
         {
             List<String> list = new ArrayList<>();
-            list.add(vars.cmdFriendsComp1);
-            list.add(vars.cmdFriendsComp2);
-            list.add(vars.cmdFriendsComp3);
-            list.add(vars.cmdFriendsComp4);
-            list.add(vars.cmdFriendsComp5);
-            list.add(vars.cmdFriendsComp6);
-            list.add(vars.cmdFriendsComp7);
-            list.add(vars.cmdFriendsComp8);
+            list.add("help");
+            list.add("enable");
+            list.add("disable");
+            list.add("accept");
+            list.add("refuse");
+            list.add("add");
+            list.add("remove");
+            list.add("list");
             return list;
         }else if(args.length == 2)
         {
