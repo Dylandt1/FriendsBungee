@@ -86,12 +86,8 @@ public class CmdGroup extends Command implements TabExecutor
     private final String msgGroupList;
 
     // Private chat constants
-    private final String sPrefix;
-    private final String sdPrefix;
-    private final String sSuffix;
-    private final String sdSuffix;
-    private final String tPrefix;
-    private final String tSuffix;
+    private final String mpPrefix;
+    private final String mpSuffix;
     private final String msgColor;
     private final String tooLong;
 
@@ -144,12 +140,8 @@ public class CmdGroup extends Command implements TabExecutor
         this.msgGroupList = config.getString("groups.msgGroupList").replace("&", "§");
 
         // Set private chat constants
-        this.sPrefix = config.getString("groups.msg.sender.prefix").replace("&", "§");
-        this.sdPrefix = config.getString("groups.msg.sender.2ndPrefix").replace("&", "§");
-        this.sSuffix = config.getString("groups.msg.sender.suffix").replace("&", "§");
-        this.sdSuffix = config.getString("groups.msg.sender.2ndSuffix").replace("&", "§");
-        this.tPrefix = config.getString("groups.msg.target.prefix").replace("&", "§");
-        this.tSuffix = config.getString("groups.msg.target.suffix").replace("&", "§");
+        this.mpPrefix = config.getString("groups.msg.mpPrefix").replace("&", "§");
+        this.mpSuffix = config.getString("groups.msg.mpSuffix").replace("&", "§");
         this.msgColor = config.getString("groups.msg.messageColor").replace("&", "§");
         this.tooLong = config.getString("groups.msg.tooLong").replace("&", "§");
     }
@@ -159,10 +151,10 @@ public class CmdGroup extends Command implements TabExecutor
     {
         if(!(sender instanceof ProxiedPlayer p)) {return null;}
 
-        ProfileProvider provider = new ProfileProvider(p.getUniqueId());
+        ProfileProvider profileProvider = new ProfileProvider(p.getUniqueId());
         ProfileManager profile;
         try {
-            profile = provider.getFManager();
+            profile = profileProvider.getPManager();
         } catch (ManagerNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -176,13 +168,13 @@ public class CmdGroup extends Command implements TabExecutor
             list.add("delete");
             list.add("accept");
             list.add("refuse");
+            list.add("mp");
+            list.add("list");
             list.add("quit");
             list.add("add");
             list.add("remove");
             list.add("tp");
-            list.add("list");
             list.add("owner");
-            list.add("mp");
             return list;
         }else if(args.length == 2)
         {
@@ -197,22 +189,22 @@ public class CmdGroup extends Command implements TabExecutor
             {
                 if (profile.isInGroup())
                 {
-                    GroupProvider pProvider = new GroupProvider(profile.getGroupId());
+                    GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
 
-                    if(!pProvider.gExist())
+                    if(!groupProvider.gExist())
                     {
                         profile.setGroupId(null);
-                        provider.save(profile);
+                        profileProvider.save(profile);
                         return null;
                     }
 
-                    GroupManager party;
+                    GroupManager group;
                     try {
-                        party = pProvider.getPManager();
+                        group = groupProvider.getGManager();
                     } catch (ManagerNotFoundException e) {
                         throw new RuntimeException(e);
                     }
-                    for (ProxiedPlayer pls : party.getPlayersInGroup())
+                    for (ProxiedPlayer pls : group.getPlayersInGroup())
                     {
                         list.add(pls.getName());
                     }
@@ -236,10 +228,10 @@ public class CmdGroup extends Command implements TabExecutor
             return;
         }
 
-        ProfileProvider provider = new ProfileProvider(p.getUniqueId());
+        ProfileProvider profileProvider = new ProfileProvider(p.getUniqueId());
         ProfileManager profile;
         try {
-            profile = provider.getFManager();
+            profile = profileProvider.getPManager();
         } catch (ManagerNotFoundException e)
         {
             e.printStackTrace();
@@ -258,15 +250,15 @@ public class CmdGroup extends Command implements TabExecutor
             {
                 if(!profile.isInGroup())
                 {
-                    GroupProvider pProvider = new GroupProvider(p);
-                    GroupManager party;
+                    GroupProvider groupProvider = new GroupProvider(p);
+                    GroupManager group;
                     try {
-                        party = pProvider.getPManager();
+                        group = groupProvider.getGManager();
                     } catch (ManagerNotFoundException e) {
                         throw new RuntimeException(e);
                     }
-                    profile.setGroupId(party.getGroupId());
-                    provider.save(profile);
+                    profile.setGroupId(group.getGroupId());
+                    profileProvider.save(profile);
                     sendMessage(p, prefix+suffix+groupCreated);
                 }else {
                     sendMessage(p, prefix+suffix+alreadyInGroup);
@@ -276,7 +268,7 @@ public class CmdGroup extends Command implements TabExecutor
                 if (profile.gpAllow()) {sendMessage(p, prefix+suffix+requestsAlreadyEnabled);return;}
 
                 profile.setGpAllow(true);
-                provider.save(profile);
+                profileProvider.save(profile);
                 sendMessage(p, prefix+suffix+requestsAllow);
 
             }else if (args[0].equalsIgnoreCase("disable"))
@@ -284,7 +276,7 @@ public class CmdGroup extends Command implements TabExecutor
                 if (!profile.gpAllow()) {sendMessage(p, prefix+suffix+requestsAlreadyDisabled);return;}
 
                 profile.setGpAllow(false);
-                provider.save(profile);
+                profileProvider.save(profile);
                 sendMessage(p, prefix+suffix+requestsDeny);
 
             }else if (args[0].equalsIgnoreCase("accept"))
@@ -304,20 +296,20 @@ public class CmdGroup extends Command implements TabExecutor
 
                 ProxiedPlayer target = ProxyServer.getInstance().getPlayer(requestGp.get(p.getUniqueId()));
                 ProfileProvider targetProvider = new ProfileProvider(target.getUniqueId());
-                ProfileManager targetManager;
+                ProfileManager targetProfile;
                 try {
-                    targetManager = targetProvider.getFManager();
+                    targetProfile = targetProvider.getPManager();
                 } catch (ManagerNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                GroupProvider partyProvider = new GroupProvider(targetManager.getGroupId());
-                GroupManager party;
+                GroupProvider groupProvider = new GroupProvider(targetProfile.getGroupId());
+                GroupManager group;
                 try {
-                    party = partyProvider.getPManager();
+                    group = groupProvider.getGManager();
                 } catch (ManagerNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                if(party == null)
+                if(group == null)
                 {
                     sendMessage(p, prefix+suffix+errorAdd);
                     requestGp.remove(p.getUniqueId());
@@ -328,35 +320,35 @@ public class CmdGroup extends Command implements TabExecutor
                 sendMessage(target, prefix+suffix+newGroupSender.replace("%targetPlayer%", p.getName()));
 
                 requestGp.remove(p.getUniqueId());
-                party.addPlayerInGroup(p);
-                partyProvider.save(party);
+                group.addPlayerInGroup(p);
+                groupProvider.save(group);
             }else if(args[0].equalsIgnoreCase("quit"))
             {
                 if(profile.isInGroup())
                 {
-                    GroupProvider pProvider = new GroupProvider(profile.getGroupId());
+                    GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
 
-                    if(!pProvider.gExist())
+                    if(!groupProvider.gExist())
                     {
                         profile.setGroupId(null);
-                        provider.save(profile);
+                        profileProvider.save(profile);
                         sendMessage(p, prefix+suffix+notInGroup);
                         return;
                     }
 
-                    GroupManager party;
+                    GroupManager group;
                     try {
-                        party = pProvider.getPManager();
+                        group = groupProvider.getGManager();
                     } catch (ManagerNotFoundException e) {
                         throw new RuntimeException(e);
                     }
 
-                    if(party.isOwner(p.getUniqueId())) {party.onQuit();return;}
+                    if(group.isOwner(p.getUniqueId())) {group.onQuit();return;}
 
-                    party.removePlayerInGroup(p);
-                    pProvider.save(party);
+                    group.removePlayerInGroup(p);
+                    groupProvider.save(group);
                     sendMessage(p, prefix+suffix+quitGroupSender);
-                    for(ProxiedPlayer pls : party.getPlayersInGroup())
+                    for(ProxiedPlayer pls : group.getPlayersInGroup())
                     {
                         sendMessage(pls, prefix+suffix+quitGroupPlayers.replace("%player%", p.getName()));
                     }
@@ -388,34 +380,34 @@ public class CmdGroup extends Command implements TabExecutor
             {
                 if(profile.isInGroup())
                 {
-                    GroupProvider pProvider = new GroupProvider(profile.getGroupId());
+                    GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
 
-                    if(!pProvider.gExist())
+                    if(!groupProvider.gExist())
                     {
                         profile.setGroupId(null);
-                        provider.save(profile);
+                        profileProvider.save(profile);
                         sendMessage(p, prefix+suffix+notInGroup);
                         return;
                     }
 
-                    GroupManager party;
+                    GroupManager group;
                     try {
-                        party = pProvider.getPManager();
+                        group = groupProvider.getGManager();
                     } catch (ManagerNotFoundException e) {
                         throw new RuntimeException(e);
                     }
 
-                    if (party.getPlayersInGroup().size() == 0 )
+                    if (group.getPlayersInGroup().size() == 0 )
                     {
                         sendMessage(p, prefix+suffix+noPlayersInGroup);
                     }else {
                         List<String> membersOnline = new ArrayList<>();
-                        for (ProxiedPlayer playersInGroup : party.getPlayersInGroup())
+                        for (ProxiedPlayer playersInGroup : group.getPlayersInGroup())
                         {
                             membersOnline.add(playersInGroup.getName());
                         }
 
-                        int i = party.getGroupLenght();
+                        int i = group.getGroupLenght();
 
                         sendMessage(p, " ");
                         sendMessage(p, "§6#§f-------------------- §2Group §f(§3"+i+"§f) --------------------§6#");
@@ -439,24 +431,24 @@ public class CmdGroup extends Command implements TabExecutor
             {
                 if(profile.isInGroup())
                 {
-                    GroupProvider pProvider = new GroupProvider(profile.getGroupId());
+                    GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
 
-                    if(!pProvider.gExist())
+                    if(!groupProvider.gExist())
                     {
                         profile.setGroupId(null);
-                        provider.save(profile);
+                        profileProvider.save(profile);
                         sendMessage(p, prefix+suffix+notInGroup);
                         return;
                     }
 
                     try {
-                        GroupManager party = pProvider.getPManager();
+                        GroupManager group = groupProvider.getGManager();
 
-                        if(party.isOwner(p.getUniqueId()))
+                        if(group.isOwner(p.getUniqueId()))
                         {
                             sendMessage(p, prefix+suffix+groupDeletedSender);
-                            party.removePlayerInGroup(p);
-                            party.delete();
+                            group.removePlayerInGroup(p);
+                            group.delete();
                         }else {
                             sendMessage(p, prefix+suffix+ownerGroup);
                         }
@@ -466,14 +458,6 @@ public class CmdGroup extends Command implements TabExecutor
                 }else {
                     sendMessage(p, prefix+suffix+notInGroup);
                 }
-            }else if(args[0].equalsIgnoreCase("opt"))
-            {
-                if(!profile.opt() && !profile.getOpts().contains("G"))
-                {
-                    profile.addOpts("G");
-                    provider.save(profile);
-                    sendMessage(p, mainPrefix+mainSuffix+"§6OPTs §f: §2"+profile.getOpts().size()+"§f/§24");
-                }
             }else {
                 H.helpGroup(p);
             }
@@ -482,19 +466,19 @@ public class CmdGroup extends Command implements TabExecutor
             if(!profile.isInGroup()) {sendMessage(p, prefix+suffix+notInGroup);return;}
             if(!profile.gpAllow()) {sendMessage(p, prefix+suffix+senderRequestsDeny);return;}
 
-            GroupProvider partyProvider = new GroupProvider(profile.getGroupId());
+            GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
 
-            if(!partyProvider.gExist())
+            if(!groupProvider.gExist())
             {
                 profile.setGroupId(null);
-                provider.save(profile);
+                profileProvider.save(profile);
                 sendMessage(p, prefix+suffix+notInGroup);
                 return;
             }
 
-            GroupManager party;
+            GroupManager group;
             try {
-                party = partyProvider.getPManager();
+                group = groupProvider.getGManager();
             } catch (ManagerNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -512,18 +496,18 @@ public class CmdGroup extends Command implements TabExecutor
 
                 ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
 
-                if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+suffix+ownerGroup);return;}
+                if(!group.isOwner(p.getUniqueId())) {sendMessage(p, prefix+suffix+ownerGroup);return;}
                 if (targetPl == p) {sendMessage(p, prefix+suffix+alreadyInGroup);return;}
-                if (party.getPlayersInGroup().size() == party.getGroupLenght())
+                if (group.getPlayersInGroup().size() == group.getGroupLenght())
                 {
-                    sendMessage(p, prefix+suffix+groupLimit.replace("%groupSize%", String.valueOf(party.getGroupLenght())));
+                    sendMessage(p, prefix+suffix+groupLimit.replace("%groupSize%", String.valueOf(group.getGroupLenght())));
                     return;
                 }
 
                 ProfileProvider targetProvider = new ProfileProvider(targetPl.getUniqueId());
                 ProfileManager targetProfile;
                 try {
-                    targetProfile = targetProvider.getFManager();
+                    targetProfile = targetProvider.getPManager();
                 } catch (ManagerNotFoundException e) {
                     throw new RuntimeException(e);
                 }
@@ -548,15 +532,15 @@ public class CmdGroup extends Command implements TabExecutor
 
                 ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
 
-                if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+suffix+ownerGroup);return;}
+                if(!group.isOwner(p.getUniqueId())) {sendMessage(p, prefix+suffix+ownerGroup);return;}
                 if (targetPl == p) {sendMessage(p, prefix+suffix+yourselfCantGetOut);return;}
-                if (!party.getPlayersInGroup().contains(targetPl))
+                if (!group.getPlayersInGroup().contains(targetPl))
                 {
                     sendMessage(p, prefix+suffix+targetNotInGroup.replace("%targetPlayer%", targetName));
                     return;
                 }
 
-                party.removePlayerInGroup(targetPl);
+                group.removePlayerInGroup(targetPl);
                 sendMessage(p, prefix+suffix+targetDeleted.replace("%targetPlayer%", targetName));
             }else if (args[0].equalsIgnoreCase("owner"))
             {
@@ -568,13 +552,13 @@ public class CmdGroup extends Command implements TabExecutor
 
                 ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
 
-                if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+suffix+ownerGroup);return;}
+                if(!group.isOwner(p.getUniqueId())) {sendMessage(p, prefix+suffix+ownerGroup);return;}
                 if (targetPl == p) {sendMessage(p, prefix+suffix+alreadyOwner);return;}
-                if (!party.getPlayersInGroup().contains(targetPl)) {
+                if (!group.getPlayersInGroup().contains(targetPl)) {
                     sendMessage(p, prefix+suffix+justMemberToOwner);return;
                 }
 
-                for (ProxiedPlayer players : party.getPlayersInGroup())
+                for (ProxiedPlayer players : group.getPlayersInGroup())
                 {
                     if (players != targetPl)
                     {
@@ -582,25 +566,25 @@ public class CmdGroup extends Command implements TabExecutor
                     }
                 }
                 sendMessage(targetPl, prefix+suffix+newOwnerTarget);
-                party.changeOwnerGroup(targetPl);
+                group.changeOwnerGroup(targetPl);
             }else if(args[0].equalsIgnoreCase("tp"))
             {
-                if(!party.isOwner(p.getUniqueId())) {sendMessage(p, prefix+suffix+ownerGroup);return;}
+                if(!group.isOwner(p.getUniqueId())) {sendMessage(p, prefix+suffix+ownerGroup);return;}
 
                 if(args[1].equalsIgnoreCase("enable"))
                 {
-                    if(!party.tp())
+                    if(!group.tp())
                     {
-                        party.setTp(true);
+                        group.setTp(true);
                         sendMessage(p, prefix+suffix+tpEnabled);
                         return;
                     }
                     sendMessage(p, prefix+suffix+tpAlreadyEnabled);
                 }else if(args[1].equalsIgnoreCase("disable"))
                 {
-                    if(party.tp())
+                    if(group.tp())
                     {
-                        party.setTp(false);
+                        group.setTp(false);
                         sendMessage(p, prefix+suffix+tpDisabled);
                         return;
                     }
@@ -614,7 +598,33 @@ public class CmdGroup extends Command implements TabExecutor
         }else {
             if(args[0].equalsIgnoreCase("mp"))
             {
+                if(profile.isInGroup())
+                {
+                    GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
+                    GroupManager group;
+                    try {
+                        group = groupProvider.getGManager();
+                    } catch (ManagerNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
 
+                    StringBuilder msg = new StringBuilder();
+
+                    if(args.length > msg.capacity()) {sendMessage(p, tooLong);return;}
+
+                    for(int i = 1; i != args.length; i++)
+                    {
+                        msg.append(args[i].replace("&", "§")).append(" ");
+                    }
+
+                    final String part1 = prefix+"| ";
+                    final String part2 = mpPrefix.replace("%player%", p.getName())+mpSuffix;
+
+                    for(ProxiedPlayer pl : group.getPlayersInGroup())
+                    {
+                        if(!pl.equals(p)) sendMessage(pl, part1+part2+msgColor+msg);
+                    }
+                }
             }else {
                 H.helpGroup(p);
             }

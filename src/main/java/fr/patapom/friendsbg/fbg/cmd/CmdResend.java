@@ -51,11 +51,6 @@ public class CmdResend extends Command implements TabExecutor
     private final String tSuffix;
     private final String msgColor;
     private final String tooLong;
-    private final String suffixH;
-    private final String cmdMsg;
-    private final String cmdR;
-    private final String cmdEnable;
-    private final String cmdDisable;
     private final String msgSenderDisabled;
     private final String msgTargetDisabled;
     private final String errorMsg;
@@ -82,11 +77,6 @@ public class CmdResend extends Command implements TabExecutor
         this.tSuffix = config.getString("msg.target.suffix").replace("&", "§");
         this.msgColor = config.getString("msg.messageColor").replace("&", "§");
         this.tooLong = config.getString("msg.tooLong").replace("&", "§");
-        this.suffixH = config.getString("msg.sHelp").replace("&", "§");
-        this.cmdMsg = config.getString("msg.cmdMsg").replace("&", "§");
-        this.cmdR = config.getString("msg.cmdR").replace("&", "§");
-        this.cmdEnable = config.getString("msg.cmdEnable").replace("&", "§");
-        this.cmdDisable = config.getString("msg.cmdDisable").replace("&", "§");
         this.msgSenderDisabled = config.getString("msg.msgSenderDisabled").replace("&", "§");
         this.msgTargetDisabled = config.getString("msg.msgTargetDisabled").replace("&", "§");
         this.errorMsg = config.getString("msg.errorMsg").replace("&", "§");
@@ -120,10 +110,10 @@ public class CmdResend extends Command implements TabExecutor
     {
         if(!(sender instanceof ProxiedPlayer p)) {sendDeniedUsage(sender);return;}
 
-        ProfileProvider provider = new ProfileProvider(p.getUniqueId());
+        ProfileProvider profileProvider = new ProfileProvider(p.getUniqueId());
         ProfileManager profile;
         try {
-            profile = provider.getFManager();
+            profile = profileProvider.getPManager();
         } catch (ManagerNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -133,14 +123,6 @@ public class CmdResend extends Command implements TabExecutor
         if(args.length == 0)
         {
             H.helpMsg(p);
-        }else if(args.length == 1 && args[0].equalsIgnoreCase("opt"))
-        {
-            if(!profile.opt() && !profile.getOpts().contains("R"))
-            {
-                profile.addOpts("R");
-                provider.save(profile);
-                sendMessage(p, prefix+suffix+"§6OPTs §f: §2"+profile.getOpts().size()+"§f/§24");
-            }
         }else {
             if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/msg enable"));return;}
             if(!FriendsBG.messages.containsKey(p)) {sendMessage(p, noMessage);return;}
@@ -151,7 +133,7 @@ public class CmdResend extends Command implements TabExecutor
             ProfileProvider targetProvider = new ProfileProvider(targetPl.getUniqueId());
             ProfileManager targetProfile;
             try {
-                targetProfile = targetProvider.getFManager();
+                targetProfile = targetProvider.getPManager();
             } catch (ManagerNotFoundException e) {
                 throw new RuntimeException(e);
             }

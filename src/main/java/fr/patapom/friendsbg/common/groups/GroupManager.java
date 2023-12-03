@@ -35,26 +35,26 @@ public class GroupManager
     private UUID ownerUUID;
     private UUID groupId;
     private boolean autoTp;
-    private int partyLength;
+    private int groupLength;
 
     private Map<String, UUID> playersInGroup;
 
     public GroupManager() {}
 
     // New party :
-    public GroupManager(ProxiedPlayer owner, UUID groupId, int partyLength)
+    public GroupManager(ProxiedPlayer owner, UUID groupId, int groupLength)
     {
         this.ownerUUID = owner.getUniqueId();
         this.groupId = groupId;
         this.autoTp = true;
-        this.partyLength = partyLength;
+        this.groupLength = groupLength;
         this.playersInGroup = new HashMap<>();
         this.playersInGroup.put(owner.getName(), ownerUUID);
     }
 
     public UUID getOwnerUUID() {return ownerUUID;}
     public UUID getGroupId() {return groupId;}
-    public int getGroupLenght() {return partyLength;}
+    public int getGroupLenght() {return groupLength;}
     public void changeOwnerGroup(ProxiedPlayer newOwner) {this.ownerUUID = newOwner.getUniqueId();}
     public List<ProxiedPlayer> getPlayersInGroup()
     {
@@ -75,11 +75,11 @@ public class GroupManager
     {
         if(!playersInGroup.containsValue(player.getUniqueId()))
         {
-            ProfileProvider fProvider = new ProfileProvider(player.getUniqueId());
+            ProfileProvider profileProvider = new ProfileProvider(player.getUniqueId());
             try {
-                ProfileManager fManager = fProvider.getFManager();
-                fManager.setGroupId(groupId);
-                fProvider.save(fManager);
+                ProfileManager profile = profileProvider.getPManager();
+                profile.setGroupId(groupId);
+                profileProvider.save(profile);
             } catch (ManagerNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -92,11 +92,11 @@ public class GroupManager
     {
         if(playersInGroup.containsValue(player.getUniqueId()))
         {
-            ProfileProvider provider = new ProfileProvider(player.getUniqueId());
+            ProfileProvider profileProvider = new ProfileProvider(player.getUniqueId());
             try {
-                ProfileManager fManager = provider.getFManager();
-                fManager.setGroupId(null);
-                provider.save(fManager);
+                ProfileManager profile = profileProvider.getPManager();
+                profile.setGroupId(null);
+                profileProvider.save(profile);
             } catch (ManagerNotFoundException e) {
                 e.printStackTrace();
             }
@@ -129,11 +129,11 @@ public class GroupManager
         final String ownerOffline = config.getString("groups.ownerOffline").replace("&", "§");
         for(ProxiedPlayer pls : getPlayersInGroup())
         {
-            ProfileProvider fProvider = new ProfileProvider(pls.getUniqueId());
+            ProfileProvider profileProvider = new ProfileProvider(pls.getUniqueId());
             try {
-                ProfileManager fManager = fProvider.getFManager();
-                fManager.setGroupId(null);
-                fProvider.save(fManager);
+                ProfileManager profile = profileProvider.getPManager();
+                profile.setGroupId(null);
+                profileProvider.save(profile);
             } catch (ManagerNotFoundException e) {
                 e.printStackTrace();
             }
@@ -145,18 +145,18 @@ public class GroupManager
             provider.delete();
             return;
         }
-        FriendsBG.parties.remove(groupId);
+        FriendsBG.groups.remove(groupId);
     }
 
     public void delete()
     {
         for(ProxiedPlayer player : getPlayersInGroup())
         {
-            ProfileProvider fProvider = new ProfileProvider(player.getUniqueId());
+            ProfileProvider profileProvider = new ProfileProvider(player.getUniqueId());
             try {
-                ProfileManager fManager = fProvider.getFManager();
-                fManager.setGroupId(null);
-                fProvider.save(fManager);
+                ProfileManager profile = profileProvider.getPManager();
+                profile.setGroupId(null);
+                profileProvider.save(profile);
             } catch (ManagerNotFoundException e) {
                 e.printStackTrace();
             }
@@ -172,7 +172,7 @@ public class GroupManager
             provider.delete();
             return;
         }
-        FriendsBG.parties.remove(groupId);
+        FriendsBG.groups.remove(groupId);
     }
 
     private void sendMessage(ProxiedPlayer p, String s) {

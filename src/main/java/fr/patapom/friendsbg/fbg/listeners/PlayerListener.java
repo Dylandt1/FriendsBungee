@@ -5,13 +5,10 @@ import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.common.groups.GroupManager;
 import fr.patapom.friendsbg.common.groups.GroupProvider;
-import fr.tmmods.tmapi.data.manager.Files;
-import fr.tmmods.tmapi.data.manager.Json.SerializationManager;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -20,7 +17,6 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -57,13 +53,42 @@ public class PlayerListener implements Listener
         final ProxiedPlayer p = e.getPlayer();
 
         try {
-            ProfileProvider fProvider = new ProfileProvider(p);
-            ProfileManager fManager = fProvider.getFManager();
+            ProfileProvider profileProvider = new ProfileProvider(p);
+            ProfileManager profile = profileProvider.getPManager();
 
-            ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), ()-> {
-                if(fManager.hasFriends())
+            if(!profile.getName().equalsIgnoreCase(p.getName()))
+            {
+                profile.setName(p.getName());
+                profileProvider.save(profile);
+
+                if(profile.hasFriends())
                 {
-                    for(UUID plsUUID : fManager.getFriendsMap().values())
+                    ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), () -> {
+                        for (UUID plsUUID : profile.getFriendsMap().values()) {
+                            ProfileProvider targetProvider = new ProfileProvider(plsUUID);
+                            ProfileManager targetProfile;
+                            try {
+                                targetProfile = targetProvider.getPManager();
+                            } catch (ManagerNotFoundException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                            if (targetProfile.getFriendsMap().containsValue(p.getUniqueId()))
+                            {
+                                targetProfile.removeFriend(profile.getLastName());
+                                targetProfile.addFriend(p.getName(), p.getUniqueId());
+                            } else {
+                                profile.removeFriend(targetProfile.getName());
+                            }
+                        }
+                    });
+                }
+            }
+
+            if(profile.hasFriends())
+            {
+                ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), ()-> {
+                    for(UUID plsUUID : profile.getFriendsMap().values())
                     {
                         if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
                         {
@@ -71,23 +96,7 @@ public class PlayerListener implements Listener
                             sendMessage(onlineFriend, fPrefix+fSuffix+friendConnected.replace("%player%", p.getDisplayName()));
                         }
                     }
-                }
-            });
-
-            if(fManager.isInGroup())
-            {
-                GroupProvider pProvider = new GroupProvider(fManager.getGroupId());
-
-                if(!pProvider.gExist())
-                {
-                    fManager.setGroupId(null);
-                    fProvider.save(fManager);
-                    return;
-                }
-
-                GroupManager pManager = pProvider.getPManager();
-                pManager.addPlayerInGroup(p);
-                pProvider.save(pManager);
+                });
             }
 
         }catch (ManagerNotFoundException ex){
@@ -102,14 +111,14 @@ public class PlayerListener implements Listener
         final ProxiedPlayer p = e.getPlayer();
 
         try {
-            ProfileProvider fProvider = new ProfileProvider(p);
-            ProfileManager fManager = fProvider.getFManager();
+            ProfileProvider profileProvider = new ProfileProvider(p);
+            ProfileManager profile = profileProvider.getPManager();
 
-            // Send connected message to all friends
+            // Send disconnected message to all friends
             ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), ()-> {
-                if(fManager.hasFriends())
+                if(profile.hasFriends())
                 {
-                    for(UUID plsUUID : fManager.getFriendsMap().values())
+                    for(UUID plsUUID : profile.getFriendsMap().values())
                     {
                         if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
                         {
@@ -120,39 +129,39 @@ public class PlayerListener implements Listener
                 }
             });
 
-            if(fManager.isInGroup())
+            if(profile.isInGroup())
             {
-                GroupProvider pProvider = new GroupProvider(fManager.getGroupId());
+                GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
 
-                if(!pProvider.gExist())
+                if(!groupProvider.gExist())
                 {
-                    fManager.setGroupId(null);
-                    fProvider.save(fManager);
+                    profile.setGroupId(null);
+                    profileProvider.save(profile);
                     return;
                 }
 
-                GroupManager pManager;
+                GroupManager group;
                 try {
-                    pManager = pProvider.getPManager();
+                    group = groupProvider.getGManager();
                 } catch (ManagerNotFoundException ex2) {
                     throw new RuntimeException(ex2);
                 }
 
-                if(pManager.isOwner(p.getUniqueId()))
+                if(group.isOwner(p.getUniqueId()))
                 {
                     // Eject all group members and send message
-                    pManager.removePlayerInGroup(e.getPlayer());
-                    ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), pManager::onQuit);
+                    group.removePlayerInGroup(e.getPlayer());
+                    ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), group::onQuit);
                 }else {
                     // Eject player from group and send message
-                    pManager.removePlayerInGroup(e.getPlayer());
-                    pProvider.save(pManager);
+                    group.removePlayerInGroup(e.getPlayer());
+                    groupProvider.save(group);
                 }
             }
 
-            if(FriendsBG.getInstance().sqlEnable) {fProvider.updateDB();return;}
+            if(FriendsBG.getInstance().sqlEnable) {profileProvider.updateDB();return;}
 
-            fProvider.saveOnJson(fManager);
+            profileProvider.saveOnJson(profile);
         } catch (ManagerNotFoundException ex1) {
             throw new RuntimeException(ex1);
         }
@@ -164,28 +173,28 @@ public class PlayerListener implements Listener
         ProxiedPlayer p = e.getPlayer();
 
         try {
-            ProfileProvider fProvider = new ProfileProvider(p);
-            ProfileManager fManager = fProvider.getFManager();
-            if(fManager.isInGroup())
+            ProfileProvider profileProvider = new ProfileProvider(p);
+            ProfileManager profile = profileProvider.getPManager();
+            if(profile.isInGroup())
             {
-                GroupProvider pProvider = new GroupProvider(fManager.getGroupId());
+                GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
 
-                if(!pProvider.gExist())
+                if(!groupProvider.gExist())
                 {
-                    fManager.setGroupId(null);
-                    fProvider.save(fManager);
+                    profile.setGroupId(null);
+                    profileProvider.save(profile);
                     return;
                 }
 
-                GroupManager pManager;
+                GroupManager group;
                 try {
-                    pManager = pProvider.getPManager();
+                    group = groupProvider.getGManager();
                 } catch (ManagerNotFoundException ex2) {
                     throw new RuntimeException(ex2);
                 }
-                if(pManager.isOwner(p.getUniqueId()))
+                if(group.isOwner(p.getUniqueId()))
                 {
-                    ProxyServer.getInstance().getScheduler().schedule(FriendsBG.getInstance(), pManager::onTeleport, timing, TimeUnit.MILLISECONDS);
+                    ProxyServer.getInstance().getScheduler().schedule(FriendsBG.getInstance(), group::onTeleport, timing, TimeUnit.MILLISECONDS);
                 }
             }
         } catch (ManagerNotFoundException ex1) {

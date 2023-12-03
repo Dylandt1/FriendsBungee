@@ -124,10 +124,10 @@ public class CmdMsg extends Command implements TabExecutor
     {
         if(!(sender instanceof ProxiedPlayer p)) {sendDeniedUsage(sender);return;}
 
-        ProfileProvider provider = new ProfileProvider(p.getUniqueId());
+        ProfileProvider profileProvider = new ProfileProvider(p.getUniqueId());
         ProfileManager profile;
         try {
-            profile = provider.getFManager();
+            profile = profileProvider.getPManager();
         } catch (ManagerNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -144,23 +144,15 @@ public class CmdMsg extends Command implements TabExecutor
                 if(profile.msgAllow()) {sendMessage(p, msgAlreadyEnabled);return;}
 
                 profile.setMsgAllow(true);
-                provider.save(profile);
+                profileProvider.save(profile);
                 sendMessage(p, msgEnabled);
             }else if(args[0].equalsIgnoreCase("disable"))
             {
                 if(!profile.msgAllow()) {sendMessage(p, msgAlreadyDisabled);return;}
 
                 profile.setMsgAllow(false);
-                provider.save(profile);
+                profileProvider.save(profile);
                 sendMessage(p, msgDisabled);
-            }else if(args[0].equalsIgnoreCase("opt"))
-            {
-                if(!profile.opt() && !profile.getOpts().contains("M"))
-                {
-                    profile.addOpts("M");
-                    provider.save(profile);
-                    sendMessage(p, prefix+suffix+"§6OPTs §f: §2"+profile.getOpts().size()+"§f/§24");
-                }
             }
         }else
         {
@@ -173,7 +165,7 @@ public class CmdMsg extends Command implements TabExecutor
             ProfileProvider targetProvider = new ProfileProvider(targetPl.getUniqueId());
             ProfileManager targetProfile;
             try {
-                targetProfile = targetProvider.getFManager();
+                targetProfile = targetProvider.getPManager();
             } catch (ManagerNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -213,8 +205,8 @@ public class CmdMsg extends Command implements TabExecutor
 
                 final String part1 = sPrefix+sSuffix;
                 final String part2 = sdPrefix.replace("%targetPlayer%", targetName)+sdSuffix;
-                p.sendMessage(new TextComponent(part1+part2+msgColor+msg));
-                targetPl.sendMessage(new TextComponent(tPrefix.replace("%player%", p.getName())+tSuffix+msgColor+msg));
+                sendMessage(p, part1+part2+msgColor+msg);
+                sendMessage(targetPl, tPrefix.replace("%player%", p.getName())+tSuffix+msgColor+msg);
 
                 FriendsBG.messages.remove(p);
                 FriendsBG.messages.remove(targetPl);

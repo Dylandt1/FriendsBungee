@@ -38,7 +38,7 @@ public class GroupProvider
 
     private final boolean redisEnable = FriendsBG.getInstance().redisEnable;
     private RedisAccess redisAccess;
-    private String REDIS_KEY = "pManager:";
+    private String REDIS_KEY = "group:";
 
     /**
      * Public methods :
@@ -65,42 +65,42 @@ public class GroupProvider
         }
     }
 
-    public GroupManager getPManager() throws ManagerNotFoundException
+    public GroupManager getGManager() throws ManagerNotFoundException
     {
-        GroupManager pManager;
+        GroupManager group;
         // Maximum members allowed in group
-        int partyLength = config.getInt("groups.lengths.default");
+        int groupLength = config.getInt("groups.lengths.default");
 
         if(redisEnable)
         {
-            pManager = getPManagerOnRedis();
-            if(pManager == null)
+            group = getPManagerOnRedis();
+            if(group == null)
             {
                 for(String s : config.getStringList("groups.lengths"))
                 {
-                    if(player.hasPermission("fgb.group."+s)) {partyLength = config.getInt("groups.lengths."+s);}
+                    if(player.hasPermission("fgb.group."+s)) {groupLength = config.getInt("groups.lengths."+s);}
                 }
-                pManager = new GroupManager(player , groupId, partyLength);
-                setPManagerOnRedis(pManager);
+                group = new GroupManager(player , groupId, groupLength);
+                setPManagerOnRedis(group);
             }
         }else
         {
-            if(FriendsBG.parties.containsKey(groupId))
+            if(FriendsBG.groups.containsKey(groupId))
             {
-                pManager = FriendsBG.parties.get(groupId);
+                group = FriendsBG.groups.get(groupId);
             }else {
-                pManager = new GroupManager(player , groupId, partyLength);
-                FriendsBG.parties.put(groupId, pManager);
+                group = new GroupManager(player , groupId, groupLength);
+                FriendsBG.groups.put(groupId, group);
             }
         }
-        return pManager;
+        return group;
     }
 
     public void save(GroupManager groupManager)
     {
         if(redisEnable) {setPManagerOnRedis(groupManager);return;}
-        FriendsBG.parties.remove(groupId);
-        FriendsBG.parties.put(groupId, groupManager);
+        FriendsBG.groups.remove(groupId);
+        FriendsBG.groups.put(groupId, groupManager);
     }
 
     public void delete()
@@ -111,14 +111,14 @@ public class GroupProvider
             final RBucket<GroupManager> pBucket = redisCli.getBucket(REDIS_KEY);
             pBucket.delete();
         }else {
-            FriendsBG.parties.remove(groupId);
+            FriendsBG.groups.remove(groupId);
         }
     }
 
     public boolean gExist()
     {
         if(redisEnable) {return getPManagerOnRedis() != null;}
-        return FriendsBG.parties.containsKey(groupId);
+        return FriendsBG.groups.containsKey(groupId);
     }
 
     /**

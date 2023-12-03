@@ -1,7 +1,9 @@
 package fr.patapom.friendsbg.common.players;
 
+import fr.patapom.friendsbg.fbg.FriendsBG;
 import net.md_5.bungee.api.ProxyServer;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -26,22 +28,25 @@ public class ProfileManager
     private UUID uuid;
     private UUID groupId;
     private UUID teamId;
+
     private String name;
+    private String lastName;
     private String displayName;
     private String rankInTeam;
+
     private boolean fAllow;
     private boolean msgAllow;
     private boolean gpAllow;
     private boolean teamsAllow;
 
-    private Map<String, UUID> friends;
+    private Timestamp lastJoin;
+    private Timestamp firstJoin;
 
-    private HashSet<String> opts;
-    private boolean opt;
+    private Map<String, UUID> friends;
 
     public ProfileManager() {}
 
-    public ProfileManager(UUID playerUUID, String playerName, String displayName, boolean fAllow, boolean msgAllow, boolean gpAllow, boolean teamsAllow, String rankInTeam, UUID groupId, UUID teamId, Map<String, UUID> friendsList, HashSet<String> opts)
+    public ProfileManager(UUID playerUUID, String playerName, String displayName, boolean fAllow, boolean msgAllow, boolean gpAllow, boolean teamsAllow, String rankInTeam, UUID groupId, UUID teamId, Map<String, UUID> friendsList, Timestamp lastJoin, Timestamp firstJoin)
     {
         this.uuid = playerUUID;
         this.name = playerName;
@@ -54,9 +59,8 @@ public class ProfileManager
         this.groupId = groupId;
         this.teamId = teamId;
         this.friends = friendsList;
-
-        this.opts = opts;
-        this.opt = opts.containsAll(List.of(new String[]{"F", "G", "M", "R"}));
+        this.lastJoin = lastJoin;
+        this.firstJoin = firstJoin;
     }
 
     /**
@@ -65,7 +69,9 @@ public class ProfileManager
     public UUID getUUID() {return uuid;}
     public UUID getGroupId() {return groupId;}
     public UUID getTeamId() {return teamId;}
+
     public String getName() {return name;}
+    public String getLastName() {return lastName;}
     public String getDisplayName() {return displayName;}
     public String getRankInTeam() {return rankInTeam;}
 
@@ -76,20 +82,22 @@ public class ProfileManager
     public boolean hasFriends() {return !friends.isEmpty();}
     public boolean isInGroup() {return groupId!=null;}
     public boolean isInTeam() {return teamId!=null;}
-    public boolean opt() {return opt;}
 
     public boolean isFriends(String friendName) {return friends.containsKey(friendName);}
+
     public int getNbFriends() {return friends.size();}
+
+    public Timestamp getLastJoin() {return lastJoin;}
+    public Timestamp getFirstJoin() {return firstJoin;}
 
     /**
      * Setters
      */
-    public void addFriend(UUID friendUUID) {friends.put(ProxyServer.getInstance().getPlayer(friendUUID).getName(), friendUUID);}
+    public void addFriend(String playerName, UUID friendUUID) {friends.put(playerName, friendUUID);}
     public void removeFriend(String friendName) {friends.remove(friendName);}
 
-    public void addOpts(String opt) {opts.add(opt);}
-    public void clearOpts() {opts.clear();}
-
+    public void setName(String name) {this.name = name;}
+    public void setLastName(String lastName) {this.lastName = lastName;}
     public void setGroupId(UUID groupId) {this.groupId = groupId;}
     public void setTeamId(UUID teamId) {this.teamId = teamId;}
     public void setFAllow(boolean status) {fAllow = status;}
@@ -98,7 +106,8 @@ public class ProfileManager
     public void setTeamsAllow(boolean status) {this.teamsAllow = status;}
     public void setRankInTeam(String rank) {this.rankInTeam = rank;}
 
-    public Map<String, UUID> getFriendsMap() {return friends;}
+    public void setLastJoin(Timestamp lastJoin) {this.lastJoin = lastJoin;}
+    public void setFirstJoin(Timestamp firstJoin) {this.firstJoin = firstJoin;}
 
-    public HashSet<String> getOpts() {return opts;}
+    public Map<String, UUID> getFriendsMap() {return friends;}
 }

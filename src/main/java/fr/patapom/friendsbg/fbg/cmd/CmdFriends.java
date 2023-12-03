@@ -135,9 +135,9 @@ public class CmdFriends extends Command implements TabExecutor
                     list.add(pls.getName());
                 }
             }else if(args[0].equalsIgnoreCase("remove")){
-                ProfileProvider provider = new ProfileProvider(p.getUniqueId());
+                ProfileProvider profileProvider = new ProfileProvider(p.getUniqueId());
                 try {
-                    ProfileManager profile = provider.getFManager();
+                    ProfileManager profile = profileProvider.getPManager();
                     list.addAll(profile.getFriendsMap().keySet());
                 } catch (ManagerNotFoundException e) {
                     e.printStackTrace();
@@ -166,8 +166,8 @@ public class CmdFriends extends Command implements TabExecutor
         }
 
         try {
-            ProfileProvider provider = new ProfileProvider(p.getUniqueId());
-            ProfileManager profile = provider.getFManager();
+            ProfileProvider profileProvider = new ProfileProvider(p.getUniqueId());
+            ProfileManager profile = profileProvider.getPManager();
 
             if (args.length == 1)
             {
@@ -179,13 +179,13 @@ public class CmdFriends extends Command implements TabExecutor
                     if (profile.fAllow()) {sendMessage(p, prefix+suffix+requestsAlreadyEnabled);return;}
 
                     profile.setFAllow(true);
-                    provider.save(profile);
+                    profileProvider.save(profile);
                     sendMessage(p, prefix+suffix+requestsAllow);
                 }else if (args[0].equalsIgnoreCase("disable")) {
                     if (!profile.fAllow()) {sendMessage(p, prefix+suffix+requestsAlreadyDisabled);return;}
 
                     profile.setFAllow(false);
-                    provider.save(profile);
+                    profileProvider.save(profile);
                     sendMessage(p, prefix+suffix+requestsDeny);
                 }else if (args[0].equalsIgnoreCase("accept"))
                 {
@@ -197,18 +197,18 @@ public class CmdFriends extends Command implements TabExecutor
                     if (profile.isFriends(targetName)) {sendMessage(p, prefix+suffix+alreadyFriends);return;}
 
                     ProfileProvider targetProvider = new ProfileProvider(targetUUID);
-                    ProfileManager targetManager;
+                    ProfileManager targetProfile;
                     try {
-                        targetManager = targetProvider.getFManager();
+                        targetProfile = targetProvider.getPManager();
                     } catch (ManagerNotFoundException e) {
                         e.printStackTrace();
                         return;
                     }
 
-                    profile.addFriend(targetUUID);
-                    targetManager.addFriend(p.getUniqueId());
-                    provider.save(profile);
-                    targetProvider.save(targetManager);
+                    profile.addFriend(targetName, targetUUID);
+                    targetProfile.addFriend(p.getName(), p.getUniqueId());
+                    profileProvider.save(profile);
+                    targetProvider.save(targetProfile);
 
                     sendMessage(p, prefix+suffix+newFriendSender.replace("%targetPlayer%", targetName));
                     sendMessage(requestFriend.get(p), prefix+suffix+newFriendTarget.replace("%player%", p.getName()));
@@ -279,13 +279,6 @@ public class CmdFriends extends Command implements TabExecutor
                         }
                         sendMessage(p, "§6#§f---------------------------------------------------§6#");
                     }
-                }else if(args[0].equalsIgnoreCase("opt")) {
-                    if(!profile.opt() && !profile.getOpts().contains("F"))
-                    {
-                        profile.addOpts("F");
-                        provider.save(profile);
-                        sendMessage(p, mainPrefix+mainSuffix+"§6OPTs §f: §2"+profile.getOpts().size()+"§f/§24");
-                    }
                 }
             }else if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("add"))
@@ -306,16 +299,16 @@ public class CmdFriends extends Command implements TabExecutor
                     }
 
                     ProfileProvider targetProvider = new ProfileProvider(targetUUID);
-                    ProfileManager targetManager;
+                    ProfileManager targetProfile;
                     try {
-                        targetManager = targetProvider.getFManager();
+                        targetProfile = targetProvider.getPManager();
                     } catch (ManagerNotFoundException e) {
                         e.printStackTrace();
                         return;
                     }
 
                     if (!profile.fAllow()) {sendMessage(p, prefix+suffix+senderRequestsDeny);return;}
-                    if (!targetManager.fAllow())
+                    if (!targetProfile.fAllow())
                     {
                         sendMessage(p, prefix+suffix+targetRequestsDeny.replace("%targetPlayer%", targetName));
                         return;
@@ -347,19 +340,19 @@ public class CmdFriends extends Command implements TabExecutor
 
                     UUID targerUUID = profile.getFriendsMap().get(targetName);
                     ProfileProvider targetProvider = new ProfileProvider(targerUUID);
-                    ProfileManager targetManager;
+                    ProfileManager targetProfile;
                     try {
-                        targetManager = targetProvider.getFManager();
+                        targetProfile = targetProvider.getPManager();
                     } catch (ManagerNotFoundException e) {
                         e.printStackTrace();
                         return;
                     }
 
                     profile.removeFriend(targetName);
-                    provider.save(profile);
+                    profileProvider.save(profile);
 
-                    targetManager.removeFriend(p.getName());
-                    targetProvider.save(targetManager);
+                    targetProfile.removeFriend(p.getName());
+                    targetProvider.save(targetProfile);
 
                     if(FriendsBG.getInstance().sqlEnable)
                     {

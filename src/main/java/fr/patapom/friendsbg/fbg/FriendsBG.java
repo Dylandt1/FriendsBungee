@@ -21,6 +21,7 @@ import net.md_5.bungee.config.Configuration;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This file is part of FriendsBungee, a BungeeCord friends plugin system.
@@ -42,24 +43,21 @@ import java.util.*;
 public class FriendsBG extends Plugin
 {
     private final int pluginId = 17971;
-
     private boolean upToDate;
-
-    private final String console = "[FriendsBungee] -> ";
 
     private static FriendsBG INSTANCE;
     private static PluginManager pm;
+    private final String console = "[FriendsBungee] -> ";
 
     private Configuration config;
     private SerializationManager serManager;
 
     public boolean redisEnable;
     public boolean sqlEnable;
-
     public int antiSpamLevel;
 
-    public static Map<UUID, ProfileManager> fManagers = new HashMap<>();
-    public static Map<UUID, GroupManager> parties = new HashMap<>();
+    public static Map<UUID, ProfileManager> profiles = new HashMap<>();
+    public static Map<UUID, GroupManager> groups = new HashMap<>();
     public static Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
     public static Map<Integer, String> reports = new HashMap<>();
 
@@ -68,31 +66,31 @@ public class FriendsBG extends Plugin
     @Override
     public void onLoad()
     {
-        getLogger().info(console + " ");
-        getLogger().info(console + "Loading in progress...");
-        getLogger().info(console + " ");
+        log(console + " ");
+        log(console + "Loading in progress...");
+        log(console + " ");
 
         // UpdateChecker added by TM-API free software
-        getLogger().info(console + "# ----------{ UpdateChecker }---------- #");
-        getLogger().info(console + " ");
-        getLogger().info(console + "Version : "+this.getDescription().getVersion());
-        getLogger().info(console + " ");
+        log(console + "# ----------{ UpdateChecker }---------- #");
+        log(console + " ");
+        log(console + "Version : "+this.getDescription().getVersion());
+        log(console + " ");
         new UpdateChecker(pluginId).getVersion(version -> {
             if(this.getDescription().getVersion().equals(version)) {
                 this.upToDate = true;
-                getLogger().info(console + "Up to date !");
+                log(console + "Up to date !");
             }else {
                 this.upToDate = false;
-                getLogger().info(console + "New update is available : "+version);
+                log(console + "New update is available : "+version);
             }
-            getLogger().info(console + " ");
-            getLogger().info(console + "# ---------- --------------- ---------- #");
+            log(console + " ");
+            log(console + "# ---------- --------------- ---------- #");
         });
 
         //Config Files
-        getLogger().info(console + " ");
-        getLogger().info(console + "Loading config files...");
-        getLogger().info(console + " ");
+        log(console + " ");
+        log(console + "Loading config files...");
+        log(console + " ");
         this.config = ConfigsManager.getConfig("config", this);
         this.serManager = new SerializationManager();
         this.redisEnable = TMBungeeAPI.redisEnable;
@@ -103,9 +101,9 @@ public class FriendsBG extends Plugin
     @Override
     public void onEnable()
     {
-        getLogger().info(console + " ");
-        getLogger().info(console + "Loading plugin parts...");
-        getLogger().info(console + " ");
+        log(console + " ");
+        log(console + "Loading plugin parts...");
+        log(console + " ");
         INSTANCE = this;
         pm = ProxyServer.getInstance().getPluginManager();
 
@@ -125,45 +123,46 @@ public class FriendsBG extends Plugin
             reports = (Map<Integer, String>) serManager.deserializeByType(json.replace("?", "§"), type);
         }
 
-        getLogger().info(console + "Ready to use !");
+        log(console + "Ready to use !");
     }
 
     public static FriendsBG getInstance() { return INSTANCE; }
     public int getPluginId() { return pluginId; }
     public Configuration getConfig() {return config;}
     public SerializationManager getSerializationManager() {return serManager;}
+    public void log(String log) {getLogger().info(log);}
 
     @Override
     public void onDisable()
     {
-        getLogger().info(console + " ");
-        getLogger().info(console + "Disabling in progress...");
-        getLogger().info(console + " ");
+        log(console + " ");
+        log(console + "Disabling in progress...");
+        log(console + " ");
         if(sqlEnable)
         {
             DBManager.closeAllConnections();
-            getLogger().info(console + "Database connections closed !");
-            getLogger().info(console + " ");
+            log(console + "Database connections closed !");
+            log(console + " ");
         }
         if(redisEnable)
         {
             RedisManager.closeAllConnections();
-            getLogger().info(console + "Redis connections closed !");
-            getLogger().info(console + " ");
+            log(console + "Redis connections closed !");
+            log(console + " ");
         }
 
-        getLogger().info("Saving data in progress...");
-        getLogger().info(console + " ");
+        log("Saving data in progress...");
+        log(console + " ");
         if(!reports.isEmpty())
         {
             // Save reports on Json file
             final File file = new File("./", "reports.json");
             final String json = serManager.serialize(reports);
             Files.save(file, json);
-            getLogger().info(console + "Reports saved !");
-            getLogger().info(console + " ");
+            log(console + "Reports saved !");
+            log(console + " ");
         }
 
-        getLogger().info(console + "Goodbye !");
+        log(console + "Goodbye !");
     }
 }

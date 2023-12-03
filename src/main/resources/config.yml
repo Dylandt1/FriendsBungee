@@ -325,26 +325,11 @@ groups:                                                                         
 
   # Private groups messages configuration :
   msg:
-    # Sender part :
-    sender:
-      # Message prefix. If 2ndPrefix = "", is not used and you can make 2ndSuffix = "" :
-      prefix: "&7[&cme&7] "
-      2ndPrefix: "&7[&c%targetPlayer%&7] "
+    # Group messages prefix/suffix
+    mpPrefix: "&7(&b%player%&7) "
+    mpSuffix: "&f&l-> "
 
-      # Message suffix. suffix is after prefix and 2ndSuffix is after 2ndPrefix.
-      # If 2ndPrefix = "", for good rendering, you can make 2ndSuffix = "" :
-      suffix: "&f&l->&f "
-      2ndSuffix: "&f: "
-
-    # Target part :
-    target:
-      # Message prefix :
-      prefix: "&7[&c%player%&7] "
-
-      # Message suffix :
-      suffix: "&f&l->&f "
-
-    # Private messages color :
+    # Group messages color :
     messageColor: "&a"
 
     # Message if player message is too long :
