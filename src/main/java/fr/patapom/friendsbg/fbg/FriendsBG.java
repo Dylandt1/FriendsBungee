@@ -99,11 +99,6 @@ public class FriendsBG extends Plugin
         log(console + "Loading config files...");
         log(" ");
         this.config = ConfigsManager.getConfig("config", this);
-        try {
-            this.sqlManager = new SqlManager(DBManager.FBG_DATABASE.getDbAccess().getConnection());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
         this.serManager = new SerializationManager();
         this.redisEnable = config.getBoolean("redis.use");
         this.sqlEnable = config.getBoolean("mysql.use");
@@ -137,6 +132,11 @@ public class FriendsBG extends Plugin
             getLogger().info(console + "Connecting to databases...");
             getLogger().info(" ");
             DBManager.initAllConnections();
+            try {
+                this.sqlManager = new SqlManager(DBManager.FBG_DATABASE.getDbAccess().getConnection());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             createTables();
         }
 
