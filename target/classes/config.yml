@@ -577,9 +577,21 @@ helpMsg:                                                                        
 # !! Colors does not work in mysql !!                                                   #
 #                                                                                       #
 mysql:                                                                                  #
-# ------------------------------------------------------------------------------------- #
+  # ------------------------------------------------------------------------------------- #
 
-  # Change to true for use DataBase connection (To use this option, make sure mysql is enabled in TM-API config) :
+  # Prefix and suffix MySQL console and chat messages :
+  prefix: "&f[&3MySQL&f] "
+  suffix: "&f&l->&f "
+
+  # Message success connect/disconnect :
+  connectSuccess: "&2Successful connection &c!"
+  disconnectSuccess: "&2Successful disconnection &c!"
+
+  # Message failed connect/disconnect :
+  connectFail: "&cConnection failed !"
+  disconnectFail: "&cDisconnection failed !"
+
+  # Change to true for use DataBase connection :
   use: false
 
   # Name of the database to connect to, use the name of your database so that you don't have an error.
@@ -589,10 +601,31 @@ mysql:                                                                          
   # Database tables prefix, leave blank so as not to use it :
   prefixTables: "tm_"
 
-  # Names of database tables, these store all server :
+  # Tables automatically added by plugin in your database:
   profilesTable: "profiles"
   friendsTable: "friends"
   teamsTable: "teams"
+
+  # DataBase login, use your DataBase logins for connect this plugin to your DataBase :
+  host: "localhost"
+  port: 3306
+  user: "user"
+  password: "password"
+
+  # This is number of pool connexions established by the plugin (Default : 10)
+  maxPoolSize: 16 # Default Redis-server config
+
+  # This is max life time of pools in ms :
+  maxLifeTime: 600000 # Default = 10 minutes -> 600 000 ms
+
+  # This is time out for pools not used :
+  poolTimeout: 300000 # Default = 5 minutes -> 300 000 ms
+
+  # This is time to detect data leak :
+  dataLeak: 300000 # Default = 5 minutes -> 300 000 ms
+
+  # This is time out for no pool available :
+  timeout: 10000 # Default = 10 seconds -> 10 000 ms
 
 
 # ##################################################################################### #
@@ -608,10 +641,25 @@ mysql:                                                                          
 # !! Colors does not work in redis !!                                                   #
 #                                                                                       #
 redis:                                                                                  #
-# ------------------------------------------------------------------------------------- #
+  # ------------------------------------------------------------------------------------- #
 
-  # Change to true for use redis connection (To use this option, make sure redis is enabled in TM-API config) :
+  # Change to true for use redis connection :
   use: false
+
+  # Redisson login, use your Redisson logins for connect this plugin to your Redis server :
+  host: "localhost"
+  port: 6379
+  password: "password"
+  clientName: "friendsBG"
+
+  # DataBase connection pool used for get and set information :
+  dataBase: 1 # Default = 1
+
+  # This is number of allocated threads to redis server :
+  threads: 1 # Default = 1
+
+  # This is number of allocated Netty threads to redis server :
+  nettyThreads: 1 # Default = 1
 
 
 # ##################################################################################### #

@@ -1,8 +1,8 @@
 package fr.patapom.friendsbg.common.players;
 
 import fr.patapom.friendsbg.fbg.FriendsBG;
-import fr.tmmods.tmapi.bungee.data.manager.DBManager;
-import fr.tmmods.tmapi.bungee.data.manager.RedisManager;
+import fr.patapom.friendsbg.fbg.data.manager.DBManager;
+import fr.patapom.friendsbg.fbg.data.manager.RedisManager;
 import fr.tmmods.tmapi.data.manager.Files;
 import fr.tmmods.tmapi.data.manager.Json.SerializationManager;
 import fr.tmmods.tmapi.data.manager.redis.RedisAccess;

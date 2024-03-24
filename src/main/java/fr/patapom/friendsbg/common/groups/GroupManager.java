@@ -4,7 +4,6 @@ import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.fbg.FriendsBG;
 import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
-import fr.tmmods.tmapi.spigot.data.manager.RedisManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;

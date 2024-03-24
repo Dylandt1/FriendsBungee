@@ -1,6 +1,8 @@
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\groups\GroupProvider.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\listeners\ChatListener.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\data\manager\DBManager.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\players\ProfileManager.java
+F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\data\manager\RedisManager.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\cmd\utils\Help.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\FriendsBG.java
 F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\common\players\ProfileProvider.java

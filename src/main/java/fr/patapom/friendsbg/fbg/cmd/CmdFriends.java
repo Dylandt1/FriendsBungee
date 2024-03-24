@@ -1,12 +1,10 @@
 package fr.patapom.friendsbg.fbg.cmd;
 
-import fr.patapom.friendsbg.common.groups.GroupManager;
 import fr.patapom.friendsbg.fbg.FriendsBG;
 import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.fbg.cmd.utils.Help;
-import fr.tmmods.tmapi.bungee.data.manager.DBManager;
-import fr.tmmods.tmapi.bungee.data.manager.RedisManager;
+import fr.patapom.friendsbg.fbg.data.manager.DBManager;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -15,8 +13,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.md_5.bungee.config.Configuration;
-import org.redisson.api.RBucket;
-import org.redisson.api.RedissonClient;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

@@ -6,6 +6,8 @@ fr\patapom\friendsbg\common\players\ProfileManager.class
 fr\patapom\friendsbg\fbg\cmd\CmdReport.class
 fr\patapom\friendsbg\common\players\ProfileProvider.class
 fr\patapom\friendsbg\fbg\cmd\utils\Help.class
+fr\patapom\friendsbg\fbg\data\manager\DBManager.class
+fr\patapom\friendsbg\fbg\data\manager\RedisManager.class
 fr\patapom\friendsbg\common\groups\GroupManager.class
 fr\patapom\friendsbg\fbg\FriendsBG$1.class
 fr\patapom\friendsbg\fbg\cmd\CmdFriends.class
