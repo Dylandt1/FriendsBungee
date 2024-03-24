@@ -67,10 +67,10 @@ public class ProfileProvider
             this.redisAccess = RedisManager.FBG_REDIS.getRedisAccess();
             this.REDIS_KEY = REDIS_KEY+uuid.toString();
         }
-        this.prefixTables = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getPrefixTables();
-        this.profilesTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getProfilesTable();
-        this.friendsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getFriendsTable();
-        this.teamsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getTeamsTable();
+        this.prefixTables = FriendsBG.getInstance().prefixTables;
+        this.profilesTable = FriendsBG.getInstance().profilesTable;
+        this.friendsTable = FriendsBG.getInstance().friendsTable;
+        this.teamsTable = FriendsBG.getInstance().teamsTable;
     }
 
     public ProfileProvider(UUID playerUUID)
@@ -86,10 +86,10 @@ public class ProfileProvider
             this.redisAccess = RedisManager.FBG_REDIS.getRedisAccess();
             this.REDIS_KEY = REDIS_KEY+uuid.toString();
         }
-        this.prefixTables = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getPrefixTables();
-        this.profilesTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getProfilesTable();
-        this.friendsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getFriendsTable();
-        this.teamsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getTeamsTable();
+        this.prefixTables = FriendsBG.getInstance().prefixTables;
+        this.profilesTable = FriendsBG.getInstance().profilesTable;
+        this.friendsTable = FriendsBG.getInstance().friendsTable;
+        this.teamsTable = FriendsBG.getInstance().teamsTable;
     }
 
     /**
@@ -216,6 +216,13 @@ public class ProfileProvider
             ProfileManager profile = getPManager();
             // Init DB connection
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
+
+            // Verify if profile exist in db
+            PreparedStatement pst = connection.prepareStatement("SELECT * FROM "+prefixTables+profilesTable+" WHERE uuid = ?");
+            pst.setString(1, uuid.toString());
+            ResultSet rst = pst.executeQuery();
+            if(!rst.next()) {insertPManager(profile);return;}
+
             // Init PreparedStatement n°1 and set values
             ps1 = connection.prepareStatement("UPDATE " + prefixTables+profilesTable + " SET name = ?, displayName = ?, fAllow = ?, msgAllow = ?, gpAllow = ?, teamsAllow = ?, teamId = ?, groupId = ?, rankInTeam = ?, lastJoin = ? WHERE uuid = ?");
             ps1.setString(1, name);
@@ -258,7 +265,16 @@ public class ProfileProvider
             // Get friend list on db
             while(rs2.next())
             {
-                fUUIDList.add(UUID.fromString(rs2.getString("friendUUID")));
+                if(!profile.getFriendsMap().containsValue(UUID.fromString(rs2.getString("friendUUID"))))
+                {
+                    PreparedStatement ps = connection.prepareStatement("DELETE FROM "+prefixTables+friendsTable+" WHERE uuid = ? and friendUUID = ?");
+                    ps.setString(1, uuid.toString());
+                    ps.setString(2, rs2.getString("friendUUID"));
+                    ps.executeUpdate();
+                    ps.close();
+                }else {
+                    fUUIDList.add(UUID.fromString(rs2.getString("friendUUID")));
+                }
             }
 
             // Add/Update friends in db
@@ -377,8 +393,8 @@ public class ProfileProvider
             ps.setString(8, null);
             ps.setString(9, null);
             ps.setString(10, null);
-            ps.setString(11, null);
-            ps.setString(12, null);
+            ps.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
+            ps.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
             ps.executeUpdate();
             ps.close();
             connection.close();
@@ -387,5 +403,45 @@ public class ProfileProvider
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void insertPManager(ProfileManager profile)
+    {
+        PreparedStatement ps;
+        try {
+            Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
+            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+profilesTable+" (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, groupId, rankInTeam, lastJoin, firstJoin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            ps.setString(1, uuid.toString());
+            ps.setString(2, name);
+            ps.setString(3, profile.getDisplayName());
+            ps.setInt(4, profile.fAllow()?0:1);
+            ps.setInt(5, profile.msgAllow()?0:1);
+            ps.setInt(6, profile.gpAllow()?0:1);
+            ps.setInt(7, profile.teamsAllow()?0:1);
+
+            // teamId
+            if(profile.getTeamId() == null)
+            {
+                ps.setString(8, null);
+            }else {
+                ps.setString(8, profile.getTeamId().toString());
+            }
+            // groupId
+            if(profile.getGroupId() == null)
+            {
+                ps.setString(9, null);
+            }else {
+                ps.setString(9, profile.getTeamId().toString());
+            }
+
+            ps.setString(10, profile.getRankInTeam());
+            ps.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
+            ps.setTimestamp(12, profile.getFirstJoin());
+            ps.executeUpdate();
+            ps.close();
+            connection.close();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

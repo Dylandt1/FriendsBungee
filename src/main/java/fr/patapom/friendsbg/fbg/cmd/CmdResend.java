@@ -101,6 +101,9 @@ public class CmdResend extends Command implements TabExecutor
                 list.add(player.getName());
             }
             return list;
+        }else if(args.length == 2)
+        {
+            list.add("<message>");
         }
         return new ArrayList<>();
     }
@@ -126,8 +129,11 @@ public class CmdResend extends Command implements TabExecutor
         }else {
             if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/msg enable"));return;}
             if(!FriendsBG.messages.containsKey(p)) {sendMessage(p, noMessage);return;}
-            if(!FriendsBG.messages.get(p).isConnected()) {sendMessage(p, playerOffline);return;}
-
+            if(!FriendsBG.messages.get(p).isConnected())
+            {
+                sendMessage(p, playerOffline.replace("targetPlayer", FriendsBG.messages.get(p).getName()));
+                return;
+            }
 
             ProxiedPlayer targetPl = FriendsBG.messages.get(p);
             ProfileProvider targetProvider = new ProfileProvider(targetPl.getUniqueId());

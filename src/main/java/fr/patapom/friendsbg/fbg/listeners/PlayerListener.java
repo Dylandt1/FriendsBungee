@@ -56,7 +56,7 @@ public class PlayerListener implements Listener
             ProfileProvider profileProvider = new ProfileProvider(p);
             ProfileManager profile = profileProvider.getPManager();
 
-            if(!profile.getName().equalsIgnoreCase(p.getName()))
+            if(profile.getName() == null || !profile.getName().equalsIgnoreCase(p.getName()))
             {
                 profile.setName(p.getName());
                 profileProvider.save(profile);

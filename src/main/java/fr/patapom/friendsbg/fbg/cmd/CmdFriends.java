@@ -1,10 +1,12 @@
 package fr.patapom.friendsbg.fbg.cmd;
 
+import fr.patapom.friendsbg.common.groups.GroupManager;
 import fr.patapom.friendsbg.fbg.FriendsBG;
 import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.fbg.cmd.utils.Help;
 import fr.tmmods.tmapi.bungee.data.manager.DBManager;
+import fr.tmmods.tmapi.bungee.data.manager.RedisManager;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -13,6 +15,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.md_5.bungee.config.Configuration;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -128,6 +132,7 @@ public class CmdFriends extends Command implements TabExecutor
         }else if(args.length == 2)
         {
             List<String> list = new ArrayList<>();
+
             if(args[0].equalsIgnoreCase("add"))
             {
                 for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
@@ -163,6 +168,9 @@ public class CmdFriends extends Command implements TabExecutor
         {
             H.helpFriends(p);
             return;
+        }else if(args.length == 1)
+        {
+
         }
 
         try {
@@ -357,8 +365,8 @@ public class CmdFriends extends Command implements TabExecutor
                     if(FriendsBG.getInstance().sqlEnable)
                     {
                         try {
-                            String prefixTables = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getPrefixTables();
-                            String friendsTable = DBManager.FBG_DATABASE.getDbAccess().getCredentials().getFriendsTable();
+                            String prefixTables = FriendsBG.getInstance().prefixTables;
+                            String friendsTable = FriendsBG.getInstance().friendsTable;
 
                             PreparedStatement ps1 = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("DELETE FROM "+prefixTables+friendsTable+" WHERE uuid = ? AND friendUUID = ?");
                             ps1.setString(1, p.getUniqueId().toString());

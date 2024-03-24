@@ -461,7 +461,7 @@ msg:                                                                            
   playerNotFound: "&b%targetPlayer% &cis not found !"
 
   # Message if player is offline when use /r command :
-  playerOffline: "&cThis player is not liked online !"
+  playerOffline: "&c%targetPlayer% is not liked online !"
 
   # Message for using command in console :
   cmdNotUsable: "&cThis command is only available in game !"
@@ -567,6 +567,54 @@ helpMsg:                                                                        
 
 
 # ##################################################################################### #
+#                                    ╔╦╗╦ ╦╔═╗╔═╗ ╦                                     #
+#                                    ║║║╚╦╝╚═╗║═╬╗║                                     #
+#                                    ╩ ╩ ╩ ╚═╝╚═╝╚╩═╝                                   #
+#                                                                                       #
+# For the connection to work you just need to create an empty database and configure    #
+# the fields that the plugin must take into account and it will take care of the rest!  #
+#                                                                                       #
+# !! Colors does not work in mysql !!                                                   #
+#                                                                                       #
+mysql:                                                                                  #
+# ------------------------------------------------------------------------------------- #
+
+  # Change to true for use DataBase connection (To use this option, make sure mysql is enabled in TM-API config) :
+  use: false
+
+  # Name of the database to connect to, use the name of your database so that you don't have an error.
+  # This parameter is the only one that requires you to intervene in your dataBase :
+  dbName: "friendsBG"
+
+  # Database tables prefix, leave blank so as not to use it :
+  prefixTables: "tm_"
+
+  # Names of database tables, these store all server :
+  profilesTable: "profiles"
+  friendsTable: "friends"
+  teamsTable: "teams"
+
+
+# ##################################################################################### #
+#                                     ╦═╗╔═╗╔╦╗╦╔═╗                                     #
+#                                     ╠╦╝║╣  ║║║╚═╗                                     #
+#                                     ╩╚═╚═╝═╩╝╩╚═╝                                     #
+#                                                                                       #
+# For use this, you need to install and configure Redis-server on GNU/LINUX or Windows  #
+# server. This software is an in-memory database system.                                #
+#                                                                                       #
+# It can be used as an alternative to MariaDB/MySQL servers.                            #
+#                                                                                       #
+# !! Colors does not work in redis !!                                                   #
+#                                                                                       #
+redis:                                                                                  #
+# ------------------------------------------------------------------------------------- #
+
+  # Change to true for use redis connection (To use this option, make sure redis is enabled in TM-API config) :
+  use: false
+
+
+# ##################################################################################### #
 #                                 ╦ ╦╔═╗╔╦╗╔═╗╔╦╗╔═╗╔═╗                                 #
 #                                 ║ ║╠═╝ ║║╠═╣ ║ ║╣ ╚═╗                                 #
 #                                 ╚═╝╩  ═╩╝╩ ╩ ╩ ╚═╝╚═╝                                 #
@@ -585,5 +633,6 @@ updates:                                                                        
     prefix: "&f[&6UpdateChecker&f] "
     suffix: "&f&l->&f "
     message: "&6New update is available !"
+
 
 # #################### Plugin made by PataPom - Licensed under GPL3 License. #################### #

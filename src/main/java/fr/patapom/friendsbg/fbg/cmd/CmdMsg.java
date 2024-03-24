@@ -115,6 +115,9 @@ public class CmdMsg extends Command implements TabExecutor
             {
                 list.add(pls.getName());
             }
+        }else if(args.length == 2)
+        {
+            list.add("<message>");
         }
         return list;
     }
@@ -153,13 +156,15 @@ public class CmdMsg extends Command implements TabExecutor
                 profile.setMsgAllow(false);
                 profileProvider.save(profile);
                 sendMessage(p, msgDisabled);
+            }else {
+                H.helpMsg(p);
             }
         }else
         {
             if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/mp enable"));return;}
 
             String targetName = args[0];
-            if(ProxyServer.getInstance().getPlayer(targetName) == null) {sendMessage(p, playerNotFound);return;}
+            if(ProxyServer.getInstance().getPlayer(targetName) == null) {sendMessage(p, playerNotFound.replace("%targetPlayer%", targetName));return;}
 
             ProxiedPlayer targetPl = ProxyServer.getInstance().getPlayer(targetName);
             ProfileProvider targetProvider = new ProfileProvider(targetPl.getUniqueId());

@@ -108,8 +108,8 @@ public class GroupProvider
         if(redisEnable)
         {
             final RedissonClient redisCli = redisAccess.getRedisCli();
-            final RBucket<GroupManager> pBucket = redisCli.getBucket(REDIS_KEY);
-            pBucket.delete();
+            final RBucket<GroupManager> gBucket = redisCli.getBucket(REDIS_KEY);
+            gBucket.delete();
         }else {
             FriendsBG.groups.remove(groupId);
         }
@@ -128,14 +128,14 @@ public class GroupProvider
     private void setPManagerOnRedis(GroupManager groupManager)
     {
         final RedissonClient redisCli = redisAccess.getRedisCli();
-        final RBucket<GroupManager> pBucket = redisCli.getBucket(REDIS_KEY);
-        pBucket.set(groupManager);
+        final RBucket<GroupManager> gBucket = redisCli.getBucket(REDIS_KEY);
+        gBucket.set(groupManager);
     }
 
     private GroupManager getPManagerOnRedis()
     {
         final RedissonClient redisCli = redisAccess.getRedisCli();
-        final RBucket<GroupManager> pBucket = redisCli.getBucket(REDIS_KEY);
-        return pBucket.get();
+        final RBucket<GroupManager> gBucket = redisCli.getBucket(REDIS_KEY);
+        return gBucket.get();
     }
 }

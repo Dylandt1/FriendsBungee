@@ -12,7 +12,6 @@ import net.md_5.bungee.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class CmdReport extends Command implements TabExecutor
 {
@@ -72,6 +71,8 @@ public class CmdReport extends Command implements TabExecutor
 
         }else if(args.length == 2)
         {
+            list.add("<message>");
+
             if(p.hasPermission(admPerm))
             {
                 if(args[0].equalsIgnoreCase("remove"))
