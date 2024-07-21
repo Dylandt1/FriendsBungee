@@ -61,7 +61,6 @@ public class FriendsBG extends Plugin
     public String prefixTables;
     public String profilesTable;
     public String friendsTable;
-    public String teamsTable;
 
     public static Map<UUID, ProfileManager> profiles = new HashMap<>();
     public static Map<UUID, GroupManager> groups = new HashMap<>();
@@ -106,7 +105,6 @@ public class FriendsBG extends Plugin
         this.prefixTables = config.getString("mysql.prefixTables");
         this.profilesTable = config.getString("mysql.profilesTable");
         this.friendsTable = config.getString("mysql.friendsTable");
-        this.teamsTable = config.getString("mysql.teamsTable");
     }
 
     @Override
@@ -246,7 +244,6 @@ public class FriendsBG extends Plugin
 
         tables.put(profilesTable, listProfilesTable);
         tables.put(friendsTable, listFriendsTable);
-        tables.put(teamsTable, listTeamsTable);
 
         sqlManager.createTables(prefixTables, tables);
     }

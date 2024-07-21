@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="FriendsBungee" />
         <module name="FriendsBungee_1.19" />
+        <module name="friendsbg" />
       </profile>
     </annotationProcessing>
   </component>
