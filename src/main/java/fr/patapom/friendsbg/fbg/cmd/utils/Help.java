@@ -77,49 +77,49 @@ public class Help
     public Help()
     {
         this.helpMsg = "helpMsg.";
-        Configuration config = FriendsBG.getInstance().getConfig();
+        Configuration msgConfig = FriendsBG.getInstance().getMsgConfig();
 
         // Help /friends
-        this.friendsTop = config.getString(helpMsg+"helpFriends.top").replace("&", "§");
-        this.friendsBottom = config.getString(helpMsg+"helpFriends.bottom").replace("&", "§");
-        this.enableHF = config.getString(helpMsg+"helpFriends.enable").replace("&", "§");
-        this.disableHF = config.getString(helpMsg+"helpFriends.disable").replace("&", "§");
-        this.acceptHF = config.getString(helpMsg+"helpFriends.accept").replace("&", "§");
-        this.refuseHF = config.getString(helpMsg+"helpFriends.refuse").replace("&", "§");
-        this.addHF = config.getString(helpMsg+"helpFriends.add").replace("&", "§");
-        this.removeHF = config.getString(helpMsg+"helpFriends.remove").replace("&", "§");
-        this.listHF = config.getString(helpMsg+"helpFriends.list").replace("&", "§");
+        this.friendsTop = msgConfig.getString(helpMsg+"helpFriends.top").replace("&", "§");
+        this.friendsBottom = msgConfig.getString(helpMsg+"helpFriends.bottom").replace("&", "§");
+        this.enableHF = msgConfig.getString(helpMsg+"helpFriends.enable").replace("&", "§");
+        this.disableHF = msgConfig.getString(helpMsg+"helpFriends.disable").replace("&", "§");
+        this.acceptHF = msgConfig.getString(helpMsg+"helpFriends.accept").replace("&", "§");
+        this.refuseHF = msgConfig.getString(helpMsg+"helpFriends.refuse").replace("&", "§");
+        this.addHF = msgConfig.getString(helpMsg+"helpFriends.add").replace("&", "§");
+        this.removeHF = msgConfig.getString(helpMsg+"helpFriends.remove").replace("&", "§");
+        this.listHF = msgConfig.getString(helpMsg+"helpFriends.list").replace("&", "§");
 
         // Help /group
-        this.groupTop = config.getString(helpMsg+"helpGroup.top").replace("&", "§");
-        this.groupBottom = config.getString(helpMsg+"helpGroup.bottom").replace("&", "§");
-        this.createHG = config.getString(helpMsg+"helpGroup.create").replace("&", "§");
-        this.deleteHG = config.getString(helpMsg+"helpGroup.delete").replace("&", "§");
-        this.acceptHG = config.getString(helpMsg+"helpGroup.accept").replace("&", "§");
-        this.refuseHG = config.getString(helpMsg+"helpGroup.refuse").replace("&", "§");
-        this.addHG = config.getString(helpMsg+"helpGroup.add").replace("&", "§");
-        this.removeHG = config.getString(helpMsg+"helpGroup.remove").replace("&", "§");
-        this.tpHG = config.getString(helpMsg+"helpGroup.tp").replace("&", "§");
-        this.listHG = config.getString(helpMsg+"helpGroup.list").replace("&", "§");
-        this.ownerHG = config.getString(helpMsg+"helpGroup.owner").replace("&", "§");
-        this.enableHG = config.getString(helpMsg+"helpGroup.enable").replace("&", "§");
-        this.disableHG = config.getString(helpMsg+"helpGroup.disable").replace("&", "§");
+        this.groupTop = msgConfig.getString(helpMsg+"helpGroup.top").replace("&", "§");
+        this.groupBottom = msgConfig.getString(helpMsg+"helpGroup.bottom").replace("&", "§");
+        this.createHG = msgConfig.getString(helpMsg+"helpGroup.create").replace("&", "§");
+        this.deleteHG = msgConfig.getString(helpMsg+"helpGroup.delete").replace("&", "§");
+        this.acceptHG = msgConfig.getString(helpMsg+"helpGroup.accept").replace("&", "§");
+        this.refuseHG = msgConfig.getString(helpMsg+"helpGroup.refuse").replace("&", "§");
+        this.addHG = msgConfig.getString(helpMsg+"helpGroup.add").replace("&", "§");
+        this.removeHG = msgConfig.getString(helpMsg+"helpGroup.remove").replace("&", "§");
+        this.tpHG = msgConfig.getString(helpMsg+"helpGroup.tp").replace("&", "§");
+        this.listHG = msgConfig.getString(helpMsg+"helpGroup.list").replace("&", "§");
+        this.ownerHG = msgConfig.getString(helpMsg+"helpGroup.owner").replace("&", "§");
+        this.enableHG = msgConfig.getString(helpMsg+"helpGroup.enable").replace("&", "§");
+        this.disableHG = msgConfig.getString(helpMsg+"helpGroup.disable").replace("&", "§");
 
         // Help /msg | /r
-        this.msgTop = config.getString(helpMsg+"helpPvMsg.top").replace("&", "§");
-        this.msgBottom = config.getString(helpMsg+"helpPvMsg.bottom").replace("&", "§");
-        this.mpHMSG = config.getString(helpMsg+"helpPvMsg.mp").replace("&", "§");
-        this.rHMSG = config.getString(helpMsg+"helpPvMsg.r").replace("&", "§");
-        this.enableHMSG = config.getString(helpMsg+"helpPvMsg.enable").replace("&", "§");
-        this.disableHMSG = config.getString(helpMsg+"helpPvMsg.disable").replace("&", "§");
+        this.msgTop = msgConfig.getString(helpMsg+"helpPvMsg.top").replace("&", "§");
+        this.msgBottom = msgConfig.getString(helpMsg+"helpPvMsg.bottom").replace("&", "§");
+        this.mpHMSG = msgConfig.getString(helpMsg+"helpPvMsg.mp").replace("&", "§");
+        this.rHMSG = msgConfig.getString(helpMsg+"helpPvMsg.r").replace("&", "§");
+        this.enableHMSG = msgConfig.getString(helpMsg+"helpPvMsg.enable").replace("&", "§");
+        this.disableHMSG = msgConfig.getString(helpMsg+"helpPvMsg.disable").replace("&", "§");
 
         // Help /report
-        this.reportAdm = config.getString("msg.report.admPerm");
-        this.reportTop = config.getString(helpMsg+"helpReport.top").replace("&", "§");
-        this.reportBottom = config.getString(helpMsg+"helpReport.bottom").replace("&", "§");
-        this.reportHRPT = config.getString(helpMsg+"helpReport.report").replace("&", "§");
-        this.listHRPT = config.getString(helpMsg+"helpReport.list").replace("&", "§");
-        this.removeHRPT = config.getString(helpMsg+"helpReport.remove").replace("&", "§");
+        this.reportAdm = FriendsBG.getInstance().getConfig().getString("msg.report.admPerm");
+        this.reportTop = msgConfig.getString(helpMsg+"helpReport.top").replace("&", "§");
+        this.reportBottom = msgConfig.getString(helpMsg+"helpReport.bottom").replace("&", "§");
+        this.reportHRPT = msgConfig.getString(helpMsg+"helpReport.report").replace("&", "§");
+        this.listHRPT = msgConfig.getString(helpMsg+"helpReport.list").replace("&", "§");
+        this.removeHRPT = msgConfig.getString(helpMsg+"helpReport.remove").replace("&", "§");
     }
 
     public void helpFriends(ProxiedPlayer p)

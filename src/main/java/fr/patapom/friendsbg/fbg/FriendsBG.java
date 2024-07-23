@@ -52,6 +52,7 @@ public class FriendsBG extends Plugin
     private SqlManager sqlManager;
 
     private Configuration config;
+    private Configuration msgConfig;
     private SerializationManager serManager;
 
     public boolean redisEnable;
@@ -68,6 +69,8 @@ public class FriendsBG extends Plugin
     public static Map<Integer, String> reports = new HashMap<>();
 
     public HashMap<UUID, Long> cooldown = new HashMap<>();
+
+    public List<String> cmdAliases = new ArrayList<>();
 
     @Override
     public void onLoad()
@@ -98,6 +101,7 @@ public class FriendsBG extends Plugin
         log(console + "Loading config files...");
         log(" ");
         this.config = ConfigsManager.getConfig("config", this);
+        this.msgConfig = ConfigsManager.getConfig("msg", this);
         this.serManager = new SerializationManager();
         this.redisEnable = config.getBoolean("redis.use");
         this.sqlEnable = config.getBoolean("mysql.use");
@@ -105,6 +109,12 @@ public class FriendsBG extends Plugin
         this.prefixTables = config.getString("mysql.prefixTables");
         this.profilesTable = config.getString("mysql.profilesTable");
         this.friendsTable = config.getString("mysql.friendsTable");
+        this.cmdAliases.add("friends");
+        this.cmdAliases.add("group");
+        this.cmdAliases.add("report");
+        this.cmdAliases.addAll(config.getStringList("friends.cmdAlias"));
+        this.cmdAliases.addAll(config.getStringList("groups.cmdAlias"));
+        this.cmdAliases.addAll(config.getStringList("msg.cmdAlias.report"));
     }
 
     @Override
@@ -161,6 +171,7 @@ public class FriendsBG extends Plugin
     public static FriendsBG getInstance() { return INSTANCE; }
     public int getPluginId() { return pluginId; }
     public Configuration getConfig() {return config;}
+    public Configuration getMsgConfig() {return msgConfig;}
     public SerializationManager getSerializationManager() {return serManager;}
     public void log(String log) {getLogger().info(log);}
 

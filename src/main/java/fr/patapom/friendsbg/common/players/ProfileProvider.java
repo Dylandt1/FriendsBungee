@@ -49,7 +49,6 @@ public class ProfileProvider
     private final String prefixTables;
     private final String profilesTable;
     private final String friendsTable;
-    private final String teamsTable;
 
     /**
      * FriendsProvider initiator
@@ -70,7 +69,6 @@ public class ProfileProvider
         this.prefixTables = FriendsBG.getInstance().prefixTables;
         this.profilesTable = FriendsBG.getInstance().profilesTable;
         this.friendsTable = FriendsBG.getInstance().friendsTable;
-        this.teamsTable = FriendsBG.getInstance().teamsTable;
     }
 
     public ProfileProvider(UUID playerUUID)
@@ -89,7 +87,6 @@ public class ProfileProvider
         this.prefixTables = FriendsBG.getInstance().prefixTables;
         this.profilesTable = FriendsBG.getInstance().profilesTable;
         this.friendsTable = FriendsBG.getInstance().friendsTable;
-        this.teamsTable = FriendsBG.getInstance().teamsTable;
     }
 
     /**

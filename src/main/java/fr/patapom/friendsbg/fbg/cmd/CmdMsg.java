@@ -42,9 +42,6 @@ public class CmdMsg extends Command implements TabExecutor
 {
     private final Help H = new Help();
 
-    private final Configuration config;
-    private final String prefix;
-    private final String suffix;
     private final String sPrefix;
     private final String sdPrefix;
     private final String sSuffix;
@@ -64,40 +61,30 @@ public class CmdMsg extends Command implements TabExecutor
     private final String msgTargetDisabled;
     private final String errorMsg;
     private final String reportCmd;
-    private final boolean antiSpam;
-    private final int antiSpamLevel;
-    private final int cool_down;
-    private final String antiSpamMsg;
 
     public CmdMsg()
     {
         super("message", null, FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.send").toArray(new String[0]));
-        this.config = FriendsBG.getInstance().getConfig();
-        this.prefix = config.getString("prefix").replace("&", "§");
-        this.suffix = config.getString("suffix").replace("&", "§");
-        this.sPrefix = config.getString("msg.sender.prefix").replace("&", "§");
-        this.sdPrefix = config.getString("msg.sender.2ndPrefix").replace("&", "§");
-        this.sSuffix = config.getString("msg.sender.suffix").replace("&", "§");
-        this.sdSuffix = config.getString("msg.sender.2ndSuffix").replace("&", "§");
-        this.tPrefix = config.getString("msg.target.prefix").replace("&", "§");
-        this.tSuffix = config.getString("msg.target.suffix").replace("&", "§");
-        this.msgColor = config.getString("msg.messageColor").replace("&", "§");
-        this.sendToSender = config.getString("msg.sendToSender").replace("&", "§");
-        this.tooLong = config.getString("msg.tooLong").replace("&", "§");
-        this.playerNotFound = config.getString("msg.playerNotFound").replace("&", "§");
-        this.cmdNotUsable = config.getString("msg.cmdNotUsable").replace("&", "§");
-        this.msgEnabled = config.getString("msg.msgEnabled").replace("&", "§");
-        this.msgDisabled = config.getString("msg.msgDisabled").replace("&", "§");
-        this.msgAlreadyEnabled = config.getString("msg.msgAlreadyEnabled").replace("&", "§");
-        this.msgAlreadyDisabled = config.getString("msg.msgAlreadyDisabled").replace("&", "§");
-        this.msgSenderDisabled = config.getString("msg.msgSenderDisabled").replace("&", "§");
-        this.msgTargetDisabled = config.getString("msg.msgTargetDisabled").replace("&", "§");
-        this.errorMsg = config.getString("msg.errorMsg").replace("&", "§");
-        this.reportCmd = config.getString("msg.reportCmd").replace("&", "§");
-        this.antiSpamMsg = config.getString("msg.antiSpam.message").replace("&", "§");
-        this.antiSpam = config.getBoolean("msg.antiSpam.use");
-        this.antiSpamLevel = config.getInt("msg.antiSpam.level");
-        this.cool_down = config.getInt("msg.antiSpam.cool_down")*1000;
+        Configuration msgConfig = FriendsBG.getInstance().getMsgConfig();
+        this.sPrefix = msgConfig.getString("msg.sender.prefix").replace("&", "§");
+        this.sdPrefix = msgConfig.getString("msg.sender.2ndPrefix").replace("&", "§");
+        this.sSuffix = msgConfig.getString("msg.sender.suffix").replace("&", "§");
+        this.sdSuffix = msgConfig.getString("msg.sender.2ndSuffix").replace("&", "§");
+        this.tPrefix = msgConfig.getString("msg.target.prefix").replace("&", "§");
+        this.tSuffix = msgConfig.getString("msg.target.suffix").replace("&", "§");
+        this.msgColor = msgConfig.getString("msg.messageColor").replace("&", "§");
+        this.sendToSender = msgConfig.getString("msg.sendToSender").replace("&", "§");
+        this.tooLong = msgConfig.getString("msg.tooLong").replace("&", "§");
+        this.playerNotFound = msgConfig.getString("msg.playerNotFound").replace("&", "§");
+        this.cmdNotUsable = msgConfig.getString("msg.cmdNotUsable").replace("&", "§");
+        this.msgEnabled = msgConfig.getString("msg.msgEnabled").replace("&", "§");
+        this.msgDisabled = msgConfig.getString("msg.msgDisabled").replace("&", "§");
+        this.msgAlreadyEnabled = msgConfig.getString("msg.msgAlreadyEnabled").replace("&", "§");
+        this.msgAlreadyDisabled = msgConfig.getString("msg.msgAlreadyDisabled").replace("&", "§");
+        this.msgSenderDisabled = msgConfig.getString("msg.msgSenderDisabled").replace("&", "§");
+        this.msgTargetDisabled = msgConfig.getString("msg.msgTargetDisabled").replace("&", "§");
+        this.errorMsg = msgConfig.getString("msg.errorMsg").replace("&", "§");
+        this.reportCmd = msgConfig.getString("msg.reportCmd").replace("&", "§");
     }
 
     @Override
@@ -182,22 +169,6 @@ public class CmdMsg extends Command implements TabExecutor
                 sendMessage(p, sendToSender);
             }else {
                 if(!targetProfile.msgAllow()) {sendMessage(p, msgTargetDisabled.replace("%targetPlayer%", targetPl.getDisplayName()));return;}
-
-                if(antiSpam && antiSpamLevel == 1 || antiSpamLevel == 3)
-                {
-                    if(!FriendsBG.getInstance().cooldown.containsKey(p.getUniqueId()))
-                    {
-                        FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
-                    }else if(System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()) > cool_down)
-                    {
-                        FriendsBG.getInstance().cooldown.remove(p.getUniqueId());
-                        FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
-                    }
-                    else {
-                        sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf((cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()))) / 1000)));
-                        return;
-                    }
-                }
 
                 StringBuilder msg = new StringBuilder();
 

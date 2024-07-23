@@ -39,13 +39,13 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerListener implements Listener
 {
-    private final Configuration config = FriendsBG.getInstance().getConfig();
-    private final int timing = config.getInt("groups.timingTP");
+    private final Configuration msgConfig = FriendsBG.getInstance().getMsgConfig();
+    private final int timing = FriendsBG.getInstance().getConfig().getInt("groups.timingTP");
 
-    private final String fPrefix = config.getString("friends.prefix").replace("&", "§");
-    private final String fSuffix = config.getString("friends.suffix").replace("&", "§");
-    private final String friendConnected = config.getString("friends.friendConnected").replace("&", "§");
-    private final String friendDisconnected = config.getString("friends.friendDisconnected").replace("&", "§");
+    private final String fPrefix = msgConfig.getString("friends.prefix").replace("&", "§");
+    private final String fSuffix = msgConfig.getString("friends.suffix").replace("&", "§");
+    private final String friendConnected = msgConfig.getString("friends.friendConnected").replace("&", "§");
+    private final String friendDisconnected = msgConfig.getString("friends.friendDisconnected").replace("&", "§");
 
     @EventHandler (priority = EventPriority.HIGH)
     public void onJoin(PostLoginEvent e)
@@ -63,40 +63,36 @@ public class PlayerListener implements Listener
 
                 if(profile.hasFriends())
                 {
-                    ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), () -> {
-                        for (UUID plsUUID : profile.getFriendsMap().values()) {
-                            ProfileProvider targetProvider = new ProfileProvider(plsUUID);
-                            ProfileManager targetProfile;
-                            try {
-                                targetProfile = targetProvider.getPManager();
-                            } catch (ManagerNotFoundException ex) {
-                                throw new RuntimeException(ex);
-                            }
-
-                            if (targetProfile.getFriendsMap().containsValue(p.getUniqueId()))
-                            {
-                                targetProfile.removeFriend(profile.getLastName());
-                                targetProfile.addFriend(p.getName(), p.getUniqueId());
-                            } else {
-                                profile.removeFriend(targetProfile.getName());
-                            }
+                    for (UUID plsUUID : profile.getFriendsMap().values()) {
+                        ProfileProvider targetProvider = new ProfileProvider(plsUUID);
+                        ProfileManager targetProfile;
+                        try {
+                            targetProfile = targetProvider.getPManager();
+                        } catch (ManagerNotFoundException ex) {
+                            throw new RuntimeException(ex);
                         }
-                    });
+
+                        if (targetProfile.getFriendsMap().containsValue(p.getUniqueId()))
+                        {
+                            targetProfile.removeFriend(profile.getLastName());
+                            targetProfile.addFriend(p.getName(), p.getUniqueId());
+                        } else {
+                            profile.removeFriend(targetProfile.getName());
+                        }
+                    }
                 }
             }
 
             if(profile.hasFriends())
             {
-                ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), ()-> {
-                    for(UUID plsUUID : profile.getFriendsMap().values())
+                for(UUID plsUUID : profile.getFriendsMap().values())
+                {
+                    if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
                     {
-                        if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
-                        {
-                            ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(plsUUID);
-                            sendMessage(onlineFriend, fPrefix+fSuffix+friendConnected.replace("%player%", p.getDisplayName()));
-                        }
+                        ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(plsUUID);
+                        sendMessage(onlineFriend, fPrefix+fSuffix+friendConnected.replace("%player%", p.getDisplayName()));
                     }
-                });
+                }
             }
 
         }catch (ManagerNotFoundException ex){
@@ -115,19 +111,17 @@ public class PlayerListener implements Listener
             ProfileManager profile = profileProvider.getPManager();
 
             // Send disconnected message to all friends
-            ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), ()-> {
-                if(profile.hasFriends())
+            if(profile.hasFriends())
+            {
+                for(UUID plsUUID : profile.getFriendsMap().values())
                 {
-                    for(UUID plsUUID : profile.getFriendsMap().values())
+                    if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
                     {
-                        if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
-                        {
-                            ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(plsUUID);
-                            sendMessage(onlineFriend, fPrefix+fSuffix+friendDisconnected.replace("%player%", p.getDisplayName()));
-                        }
+                        ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(plsUUID);
+                        sendMessage(onlineFriend, fPrefix+fSuffix+friendDisconnected.replace("%player%", p.getDisplayName()));
                     }
                 }
-            });
+            }
 
             if(profile.isInGroup())
             {

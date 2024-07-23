@@ -25,32 +25,13 @@
 #                                                                                                     #
 # ################################################################################################### #
 
-# Prefix and suffix of plugin's messages :
-prefix: "&f[&3Friends&f-&6Bungee&f] "
-suffix: "&f&l->&f "
-
-# Message unable to create configuration file :
-fileNotCreate: "&cUnable to create configuration file !"
-
-# Message unable to load configuration file :
-fileNotLoad: "&cUnable to load configuration file !"
-
-# Message configuration file not found :
-fileNotFound: "&cConfiguration file not found !"
-
-# Message configuration file not found :
-unableSave: "&cConfiguration file not backed up !"
-
-# Message when command is not found :
-cmdNotFound: "&cCommand not found &f: &f/&b%cmd% &f%args% &c!"
-
 
 # ##################################################################################### #
-#                     ╔═╗╦═╗╦╔═╗╔╗╔╔╦╗╔═╗  ╔╦╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗                     #
-#                     ╠╣ ╠╦╝║║╣ ║║║ ║║╚═╗  ║║║║╣ ╚═╗╚═╗╠═╣║ ╦║╣ ╚═╗                     #
-#                     ╚  ╩╚═╩╚═╝╝╚╝═╩╝╚═╝  ╩ ╩╚═╝╚═╝╚═╝╩ ╩╚═╝╚═╝╚═╝                     #
+#                                  ╔═╗╦═╗╦╔═╗╔╗╔╔╦╗╔═╗                                  #
+#                                  ╠╣ ╠╦╝║║╣ ║║║ ║║╚═╗                                  #
+#                                  ╚  ╩╚═╩╚═╝╝╚╝═╩╝╚═╝                                  #
 #                                                                                       #
-# In this part, you can configure all plugin messages.                                  #
+# In this part, you can configure friends system.                                       #
 #                                                                                       #
 # Parameters supported :                                                                #
 #                                                                                       #
@@ -65,102 +46,13 @@ friends:                                                                        
     - f
     - friend
 
-  # Prefix and suffix of all friends messages
-  prefix: "&f[&6Friends&f] "
-  suffix: "&f&l->&f "
-
-  # Message for using commands in the console :
-  cmdNotUsable: "&cThis command is only available in game !"
-
-  # Message player not found :
-  playerNotFound: "&b%targetPlayer% &cis not found !"
-
-  # Message for friend requests enabled :
-  requestsAllow: "&aFriend requests enabled &c!"
-
-  # Message for friend requests already enabled :
-  requestsAlreadyEnabled: "&6Friend requests already &aenabled &c!"
-
-  # Message for friend requests disabled :
-  requestsDeny: "&cFriend requests disabled !"
-
-  # Message for friend requests already disabled :
-  requestsAlreadyDisabled: "&6Friend requests already &cdisabled !"
-
-  # Message sender deny friend requests :
-  senderRequestsDeny: "&cYou do not accept friend requests ! &f/&bf §aenable§c, &fto enable friend requests &c!"
-
-  # Message if target deny friend requests :
-  targetRequestsDeny: "&b%targetPlayer% &cdoes not accept friend requests !"
-
-  # Message already friends :
-  alreadyFriends: "&6You are already friends with &b%targetPlayer% &c!"
-
-  # Message already friend request in progress :
-  alreadyInProgress: "&cYou already have a friend request in progress with &b%targetPlayer% &c!"
-
-  # Message friend request sender :
-  friendRequestSender: "&aYou sent a friend request to &b%targetPlayer% &c!"
-
-  # Message friend request target :
-  friendRequestTarget: "&b%player% &asent you a friend request, click or use &f/&bf &faccept &ato accept this request &c!"
-
-  # Message scroll target request :
-  scrollTargetRequest: "&aAccept"
-
-  # Message new friend for sender :
-  newFriendSender: "&aYou are now friend with &b%targetPlayer% &c!"
-
-  # Message new friend for target :
-  newFriendTarget: "&b%player% &aaccept your friend request &c!"
-
-  # Message yourself as a friend :
-  yourSelfAsaFriend: "&cYou can’t add yourself as a friend !"
-
-  # Message can’t get out :
-  cantGetOut: "&cYou can’t get out of your friends !"
-
-  # Message not friend with target :
-  notFriends: "&cYou’re not friends with &b%targetPlayer% &c!"
-
-  # Message delete friend sender :
-  deletedFriend: "&cYou just removed &b%targetPlayer% &cfrom your friends !"
-
-  # Message error adding friend! :
-  errorAddFriend: "&cError when adding a friend !"
-
-  # Message no friend request in progress :
-  noRequest: "&cNo friend request in progress !"
-
-  # Message refuse friend request for sender :
-  refuseFriendSender: "&cYou have refused the friend request of &b%targetPlayer% &c!"
-
-  # Message refuse friend request for target :
-  refuseFriendTarget: "&b%player% &crefused your friend request !"
-
-  # Display friends size in list (/f list) :
-  noFriendsInList: "&cYou don't have any friends on this server !"
-  friendsOnline: "&aFriends online &f: %nbFriends%\n"
-  friendsOffline: "&cFriends offline &f: %nbFriends%\n"
-
-  # Message friend is connected/disconnected
-  friendConnected: "&aYour friend &b%player% &ais now connected &c!"
-  friendDisconnected: "&6Your friend &b%player% &6is now disconnected &c!"
-
 
 # ##################################################################################### #
 #                                   ╔═╗╦═╗╔═╗╦ ╦╔═╗╔═╗                                  #
 #                                   ║ ╦╠╦╝║ ║║ ║╠═╝╚═╗                                  #
 #                                   ╚═╝╩╚═╚═╝╚═╝╩  ╚═╝                                  #
 #                                                                                       #
-# In this part, you can configure all groups messages.                                  #
-#                                                                                       #
-# Parameters supported :                                                                #
-#                                                                                       #
-#   - %player% : sender                                                                 #
-#   - %targetPlayer% : target                                                           #
-#   - %groupSize% : group size limit (just for groupLimit)                              #
-#   - %playerSize% : number of players in group (just for groupLimit)                   #
+# In this part, you can configure groups system.                                        #
 #                                                                                       #
 groups:                                                                                 #
 # ------------------------------------------------------------------------------------- #
@@ -170,29 +62,8 @@ groups:                                                                         
     - gp
     - party
 
-  # Prefix and suffix for plugin messages :
-  prefix: "&f[&2Groups&f] "
-  suffix: "&f&l->&f "
-
   # Timing to teleport players in group list :
   timingTP: 1000 # in milliseconds
-
-  # Groups members ranks labels, just for group private chat (Not available in 2.0-SNAPSHOT) :
-  ranks:
-    # Default rank label (change this entrie name may cause errors) :
-    default:
-      # Rank name :
-      name: "&1Member"
-      # Rank label shown in pravet chat :
-      label: "&f[&2%groupLabel%&f] (%rankName%&f) "
-      # Color of player name for this rank :
-      color: "&f"
-
-    # Custom entries :
-    custom:
-      name: "custom"
-      label: "custom"
-      color: "&7"
 
   # Level groups length (permissions example : fgb.group.custom to fbg.group.custom) :
   lengths:
@@ -203,155 +74,16 @@ groups:                                                                         
     custom1: 15
     test: 20
 
-  # Message for using commands in the console :
-  cmdNotUsable: "&cThis command is only available in game !"
-
-  # Message player not found :
-  playerNotFound: "&b%targetPlayer% &cis not found !"
-
-  # No group message :
-  notInGroup: "&cYou are not in any group !"
-
-  # Message already in group :
-  alreadyInGroup: "&6You are already in a group &c!"
-
-  # Message group created :
-  groupCreated: "&aYour group has been recorded &c!"
-
-  # Message group deleted for sender :
-  groupDeletedSender: "&cYour group has been deleted !"
-
-  # Message group deleted for sender :
-  groupDeletedTarget: "&cOwner have been deleted group !"
-
-  # Message no player in group :
-  noPlayersInGroup: "&cYou don't have any players in your group !"
-
-  # Message group request sender :
-  requestSender: "&aYou have send group request to &b%targetPlayer% &c!"
-
-  # Message group limit :
-  groupLimit: "&cYou have reached the membership limit in your group &f(&3%playerSize%&f/&3%groupSize%&f) &c!"
-
-  # Message when target sroll on request :
-  scrollTargetRequest: "&aAccept"
-
-  # Message group request target :
-  requestTarget: "&b%player% &asent you a group request, click or use &f/&bgroup &faccept &ato accept this request &c!"
-
-  # Message new player in group for sender :
-  newGroupSender: "&b%targetPlayer% &ais now in your group &c!"
-
-  # Message new player in group for target :
-  newGroupTarget: "&aYou are now in group of %player% &c!"
-
-  # Message can't remove yourself :
-  yourselfCantGetOut: "&cYou can’t get away from your group !"
-
-  # Message target not in group :
-  targetNotInGroup: "&b%targetPlayer% &cis not in your group !"
-
-  # Message target deleted for sender :
-  targetDeleted: "&b%targetPlayer% &chas been deleted from your group !"
-
-  # Message already owner group for sender :
-  alreadyOwner: "&6You're already owner of group &c!"
-
-  # Message just owner can change to owner :
-  justMemberToOwner: "&cOnly one member can become a group owner !"
-
-  # Message new owner for all players in group :
-  newOwnerAllInGroup: "&b%targetPlayer% &ais the new group owner &c!"
-
-  # Message new owner for target :
-  newOwnerTarget: "&aYou're the new owner of group &c!"
-
-  # Message error adding in group :
-  errorAdd: "&cError when adding a new player in group !"
-
-  # Message no group request in progress :
-  noRequest: "&cNo group request in progress !"
-
-  # Message owner commands :
-  ownerGroup: "&cYou must be the group owner to execute this command !"
-
-  # Message refuse group request for sender :
-  refuseGroupSender: "&cYou have refused the group request of &b%targetPlayer% &c!"
-
-  # Message refuse group request for target :
-  refuseGroupTarget: "&b%player% &crefused your group request !"
-
-  # Message quit the group for sender :
-  quitGroupSender: "&cYou left the group !"
-
-  # Message quit the group for owner and players in the group :
-  quitGroupPlayers:  "%player% &chas left the group !"
-
-  # Message when owner quit the server :
-  ownerOffline: "&cGroup owner has left the game, your group is dissolved !"
-
-  # Message when tp is enabled :
-  tpEnabled: "&aAuto-tp is now enabled &c!"
-
-  # Message when tp is disabled :
-  tpDisabled: "&cAuto-tp is now disabled !"
-
-  # Message when tp is already enabled :
-  tpAlreadyEnabled: "&6Auto-tp is already enabled &c!"
-
-  # Message when tp is already disabled :
-  tpAlreadyDisabled: "&6Auto-tp is already disabled &c!"
-
-  # Message if sender deny group requests :
-  senderRequestsDeny: "&cYou do not accept group requests ! &f/&bgp §aenable§c, &fto enable group requests &c!"
-
-  # Message if target deny group requests :
-  targetRequestsDeny: "&b%targetPlayer% &cdoes not accept group requests !"
-
-  # Message for friend requests enabled :
-  requestsAllow: "&aGroup requests enabled &c!"
-
-  # Message for friend requests already enabled :
-  requestsAlreadyEnabled: "&6Group requests already &aenabled &c!"
-
-  # Message for friend requests disabled :
-  requestsDeny: "&cGroup requests disabled !"
-
-  # Message for friend requests already disabled :
-  requestsAlreadyDisabled: "&6Group requests already &cdisabled !"
-
-  # Display group size in list (/gp list) :
-  msgGroupList: "&aMembers &f: %nbMembers%\n"
-
-  # Private groups messages configuration :
-  msg:
-    # Group messages prefix/suffix
-    mpPrefix: "&7(&b%player%&7) "
-    mpSuffix: "&f&l-> "
-
-    # Group messages color :
-    messageColor: "&a"
-
-    # Message if player message is too long :
-    tooLong: "&cYour message is too long !"
-
 
 # ##################################################################################### #
 #                     ╔═╗╦═╗╦╦  ╦╔═╗╔╦╗╔═╗  ╔╦╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗                    #
 #                     ╠═╝╠╦╝║╚╗╔╝╠═╣ ║ ║╣   ║║║║╣ ╚═╗╚═╗╠═╣║ ╦║╣ ╚═╗                    #
 #                     ╩  ╩╚═╩ ╚╝ ╩ ╩ ╩ ╚═╝  ╩ ╩╚═╝╚═╝╚═╝╩ ╩╚═╝╚═╝╚═╝                    #
 #                                                                                       #
-# In this part, you can configure all plugin messages.                                  #
-#                                                                                       #
-# Parameters supported :                                                                #
-#                                                                                       #
-#   - %player% : message sender                                                         #
-#   - %targetPlayer% : target player                                                    #
-#   - %cmd% : command label                                                             #
-#   - %cooldown% : cool down message in seconds                                         #
+# In this part, you can configure private messages system.                              #
 #                                                                                       #
 msg:                                                                                    #
-# ##################################################################################### #
+# ------------------------------------------------------------------------------------- #
 
   # Alias of message commands :
   cmdAlias:
@@ -372,30 +104,26 @@ msg:                                                                            
 
   # Anti spam :
   antiSpam:
-    # Turn to true to enable anti spam cool down :
+    # Turn to true to enable anti-spam cool down :
     use: false
 
-    # Make cool down in seconds. Default: 2 :
-    cool_down: 2
+    # Make cool down in seconds. Default: 5 :
+    cool_down: 5
 
     # Anti Spam level :
     #
     #  - level 1: private message only
     #  - level 2: public message only
-    #  - level 3: private and public messages
-    #  - level 4: public chat only and commands
-    #  - level 5: public/commands and private chat
+    #  - level 3: commands only
+    #  - level 4: private and public messages
+    #  - level 5: private chat only and commands
+    #  - level 6: public chat only and commands
+    #  - level 7: public/priavate chat and commands
     #
-    level: 1
-
-    # AntiSpam message :
-    message: "&cYou have to wait another &6%cooldown% &cseconds to send a message."
+    level: 2
 
   # Reports part :
   report:
-    # Prefix and suffix of report messages for admins :
-    prefix: "&7[&cReport&7] "
-    suffix: "&f&l-> "
 
     # Report command admins perm :
     admPerm: "fbg.reports.admin"
@@ -411,18 +139,6 @@ msg:                                                                            
       - lags
       - complaints
       - claim
-
-    # Message to admins when player send report :
-    admMessage: "&cNew report send by &b%sender% &c!"
-
-    # Confirmation message to clear reports list :
-    allReportsDeleted: "&All reports were deleted !"
-
-    # Message when admin delete report :
-    reportDeleted: "&cReport &f(%report%&f) &chas been deleted !"
-
-    # Confirmation message to sender :
-    reportConfirmation: "&cYour report has been saved, an admin will respond to it as soon as possible."
 
   # Sender part :
   sender:
@@ -448,123 +164,6 @@ msg:                                                                            
   # Private messages color :
   messageColor: "&a"
 
-  # Message when a player sends himself a message :
-  sendToSender: "&cYou can’t send yourself a message !"
-
-  # Message if player message is too long :
-  tooLong: "&cYour message is too long !"
-
-  # Message no private message in progress :
-  noMessage: "&cYou have no message to reply to !"
-
-  # Message if target is not found :
-  playerNotFound: "&b%targetPlayer% &cis not found !"
-
-  # Message if player is offline when use /r command :
-  playerOffline: "&c%targetPlayer% is not liked online !"
-
-  # Message for using command in console :
-  cmdNotUsable: "&cThis command is only available in game !"
-
-  # Message when player disable private messages :
-  msgEnabled: "&6Private messages &aenabled &c!"
-
-  # Message when player disable private messages :
-  msgDisabled: "&6Private messages &cdisabled !"
-
-  # Message if private message option is already enabled :
-  msgAlreadyEnabled: "&cPrivate messages already enabled !"
-
-  # Message if private message option is already disabled :
-  msgAlreadyDisabled: "&cPrivate messages already disabled !"
-
-  # Message when player send message with private messages disabled option :
-  msgSenderDisabled: "&cPlease enable private messages with &6%cmd% &ccommand, to send your messages !"
-
-  # Message if target have disabled private messages option :
-  msgTargetDisabled: "&b%targetPlayer% &cdoes not accept private messages !"
-
-  # Message when an error occurs :
-  errorMsg: "&cAn error has occurred, please report this error with the &6%cmd% &ccommand and specify the conditions to reproduce this error !"
-
-
-# ##################################################################################### #
-#                                     ╦ ╦╔═╗╦  ╔═╗                                      #
-#                                     ╠═╣║╣ ║  ╠═╝                                      #
-#                                     ╩ ╩╚═╝╩═╝╩                                        #
-#                                                                                       #
-# This part allows you to configure the framing and help messages of FriendsBG commands #
-#                                                                                       #
-helpMsg:                                                                                #
-# ------------------------------------------------------------------------------------- #
-
-  # /friends help message config :
-  helpFriends:
-
-    # Top framing of help message :
-    top: "§6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#"
-
-    # Command arguments :
-    enable: "&c- &f/&bf &fenable &f&l-> &fTo enable friend requests&c;\n"
-    disable: "&c- &f/&bf &fdisable &f&l-> &fTo disable friends requests&c;\n"
-    accept: "&c- &f/&bf &faccept &f&l-> &fTo accept friend request in progress&c;\n"
-    refuse: "&c- &f/&bf &frefuse &f&l-> &fTo refuse friend request in progress&c;\n"
-    add: "&c- &f/&bf &fadd &7<&fplayer&7> &f&l-> &fTo send friend request to target player&c;\n"
-    remove: "&c- &f/&bf &fremove &7<&fplayer&7> &f&l-> &fTo remove target player of your friends list&c;\n"
-    list: "&c- &f/&bf &flist &f&l-> &fTo see your friends list&c.\n"
-
-    # Bottom framing of help message :
-    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
-
-  # /group help message config :
-  helpGroup:
-    # Top framing of help message :
-    top: "&6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#\n"
-
-    # Command arguments :
-    enable: "&c- &f/&bgroup &fenable &f&l-> &fTo enable group requests&c;\n"
-    disable: "&c- &f/&bgroup &fdisable &f&l-> &fTo disable group requests&c;\n"
-    create: "&c- &f/&bgroup &fcreate &f&l-> &fTo create new group&c;\n"
-    delete: "&c- &f/&bgroup &fdelete &f&l-> &fTo remove your group&c;\n"
-    accept: "&c- &f/&bgroup &faccept &f&l-> &fTo accept group request in progress&c;\n"
-    refuse: "&c- &f/&bgroup &frefuse &f&l-> &fTo refuse group request in progress&c;\n"
-    add: "&c- &f/&bgroup &fadd &7<&fplayer&7> &f&l-> &fTo send group request to target player&c;\n"
-    remove: "&c- &f/&bgroup &fremove &7<&fplayer&7> &f&l-> &fTo remove target player of your group list&c;\n"
-    tp: "&c- &f/&bgroup §ftp &7<&aenable &f| &cdisable &7> &f&l-> &fTo enable or disable auto tp for group members&c;\n"
-    owner: "&c- &f/&bgroup &fowner &7<&fnewOwner&7> &f&l-> &fTo change the group leader&c;\n"
-    list: "&c- &f/&bgroup &flist &f&l-> &fTo see the list of players in the group&c.\n"
-    mp: "&c- &f/&bgroup &fmp &7<&fmessage&7> &f&l-> &fTo send group message&c.\n"
-
-    # Bottom framing of help message :
-    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
-
-  # /mp help message config :
-  helpPvMsg:
-    # Top framing of help message :
-    top: "&6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#\n"
-
-    # Command arguments :
-    mp: "&c- &f/&bmp &7<&ftarget_player&7> &7<&fmessage&7> &f&l-> &fTo send a private message to target player&c;\n"
-    r: "&c- &f/&br &f&l-> &fTo reply to the last private message&c;\n"
-    enable: "&c- &f/&bmp &fenable &f&l-> &fTo enable private messages&c;\n"
-    disable: "&c- &f/&bmp &fdisable &f&l-> &fTo disable private messages&c;\n"
-
-    # Bottom framing of help message :
-    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
-
-  # /report
-  helpReport:
-    # Top framing of help message :
-    top: "&6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#\n"
-
-    # Command arguments :
-    report: "&c- &f/&breport &7<&ftarget_player or reason&7> &7<&fdescription&7> &f&l-> &fTo send report&c;\n"
-    list: "&c- &f/&breport &flist &f&l-> &fTo list all reports&c;\n"
-    remove: "&c- &f/&breport &fremove &7<&fid&7> &f&l-> &fTo remove report&c;\n"
-
-    # Bottom framing of help message :
-    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
-
 
 # ##################################################################################### #
 #                                    ╔╦╗╦ ╦╔═╗╔═╗ ╦                                     #
@@ -577,19 +176,7 @@ helpMsg:                                                                        
 # !! Colors does not work in mysql !!                                                   #
 #                                                                                       #
 mysql:                                                                                  #
-  # ------------------------------------------------------------------------------------- #
-
-  # Prefix and suffix MySQL console and chat messages :
-  prefix: "&f[&3MySQL&f] "
-  suffix: "&f&l->&f "
-
-  # Message success connect/disconnect :
-  connectSuccess: "&2Successful connection &c!"
-  disconnectSuccess: "&2Successful disconnection &c!"
-
-  # Message failed connect/disconnect :
-  connectFail: "&cConnection failed !"
-  disconnectFail: "&cDisconnection failed !"
+# ------------------------------------------------------------------------------------- #
 
   # Change to true for use DataBase connection :
   use: false
@@ -641,7 +228,7 @@ mysql:                                                                          
 # !! Colors does not work in redis !!                                                   #
 #                                                                                       #
 redis:                                                                                  #
-  # ------------------------------------------------------------------------------------- #
+# ------------------------------------------------------------------------------------- #
 
   # Change to true for use redis connection :
   use: false
@@ -668,7 +255,7 @@ redis:                                                                          
 #                                 ╚═╝╩  ═╩╝╩ ╩ ╩ ╚═╝╚═╝                                 #
 #                                                                                       #
 updates:                                                                                #
-# ##################################################################################### #
+# ------------------------------------------------------------------------------------- #
 
   # Turn to true/false for enable/disable plugin updates checker (Available) :
   checker: true

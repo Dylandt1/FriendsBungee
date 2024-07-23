@@ -162,7 +162,7 @@ public class GroupManager
             Configuration config = FriendsBG.getInstance().getConfig();
             String prefix = config.getString("groups.prefix").replace("&", "§");
             String suffix = config.getString("groups.suffix").replace("&", "§");
-            String groupDeletedTarget = config.getString("groups.groupDeletedTargets").replace("&", "§");
+            String groupDeletedTarget = config.getString("groups.groupDeletedTarget").replace("&", "§");
             sendMessage(player, prefix+suffix+groupDeletedTarget);
         }
         if(FriendsBG.getInstance().redisEnable)

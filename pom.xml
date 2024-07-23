@@ -89,7 +89,7 @@
         <dependency>
             <groupId>fr.tm-mods.1_19</groupId>
             <artifactId>tm-api</artifactId>
-            <version>3.2-SNAPSHOT</version>
+            <version>3.3-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

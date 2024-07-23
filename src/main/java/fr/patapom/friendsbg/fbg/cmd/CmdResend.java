@@ -37,9 +37,6 @@ public class CmdResend extends Command implements TabExecutor
 {
     private final Help H = new Help();
 
-    private final Configuration config;
-    private final String prefix;
-    private final String suffix;
     private final String playerOffline;
     private final String cmdNotUsable;
     private final String noMessage;
@@ -55,36 +52,26 @@ public class CmdResend extends Command implements TabExecutor
     private final String msgTargetDisabled;
     private final String errorMsg;
     private final String reportCmd;
-    private final boolean antiSpam;
-    private final int antiSpamLevel;
-    private final int cool_down;
-    private final String antiSpamMsg;
 
     public CmdResend()
     {
         super("resend", null, FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.resend").toArray(new String[0]));
-        this.config = FriendsBG.getInstance().getConfig();
-        this.prefix = config.getString("prefix").replace("&", "§");
-        this.suffix = config.getString("suffix").replace("&", "§");
-        this.playerOffline = config.getString("msg.playerOffline").replace("&", "§");
-        this.cmdNotUsable = config.getString("msg.cmdNotUsable").replace("&", "§");
-        this.noMessage = config.getString("msg.noMessage").replace("&", "§");
-        this.sPrefix = config.getString("msg.sender.prefix").replace("&", "§");
-        this.sdPrefix = config.getString("msg.sender.2ndPrefix").replace("&", "§");
-        this.sSuffix = config.getString("msg.sender.suffix").replace("&", "§");
-        this.sdSuffix = config.getString("msg.sender.2ndSuffix").replace("&", "§");
-        this.tPrefix = config.getString("msg.target.prefix").replace("&", "§");
-        this.tSuffix = config.getString("msg.target.suffix").replace("&", "§");
-        this.msgColor = config.getString("msg.messageColor").replace("&", "§");
-        this.tooLong = config.getString("msg.tooLong").replace("&", "§");
-        this.msgSenderDisabled = config.getString("msg.msgSenderDisabled").replace("&", "§");
-        this.msgTargetDisabled = config.getString("msg.msgTargetDisabled").replace("&", "§");
-        this.errorMsg = config.getString("msg.errorMsg").replace("&", "§");
-        this.reportCmd = config.getString("msg.reportCmd").replace("&", "§");
-        this.antiSpamMsg = config.getString("msg.antiSpam.message").replace("&", "§");
-        this.antiSpam = config.getBoolean("msg.antiSpam.use");
-        this.antiSpamLevel = config.getInt("msg.antiSpam.level");
-        this.cool_down = config.getInt("msg.antiSpam.cool_down")*1000;
+        Configuration msgConfig = FriendsBG.getInstance().getMsgConfig();
+        this.playerOffline = msgConfig.getString("msg.playerOffline").replace("&", "§");
+        this.cmdNotUsable = msgConfig.getString("msg.cmdNotUsable").replace("&", "§");
+        this.noMessage = msgConfig.getString("msg.noMessage").replace("&", "§");
+        this.sPrefix = msgConfig.getString("msg.sender.prefix").replace("&", "§");
+        this.sdPrefix = msgConfig.getString("msg.sender.2ndPrefix").replace("&", "§");
+        this.sSuffix = msgConfig.getString("msg.sender.suffix").replace("&", "§");
+        this.sdSuffix = msgConfig.getString("msg.sender.2ndSuffix").replace("&", "§");
+        this.tPrefix = msgConfig.getString("msg.target.prefix").replace("&", "§");
+        this.tSuffix = msgConfig.getString("msg.target.suffix").replace("&", "§");
+        this.msgColor = msgConfig.getString("msg.messageColor").replace("&", "§");
+        this.tooLong = msgConfig.getString("msg.tooLong").replace("&", "§");
+        this.msgSenderDisabled = msgConfig.getString("msg.msgSenderDisabled").replace("&", "§");
+        this.msgTargetDisabled = msgConfig.getString("msg.msgTargetDisabled").replace("&", "§");
+        this.errorMsg = msgConfig.getString("msg.errorMsg").replace("&", "§");
+        this.reportCmd = msgConfig.getString("msg.reportCmd").replace("&", "§");
     }
 
     @Override
@@ -146,22 +133,6 @@ public class CmdResend extends Command implements TabExecutor
 
             if(targetProfile == null) {sendMessage(p, errorMsg);return;}
             if(!targetProfile.msgAllow()) {sendMessage(p, msgTargetDisabled.replace("%targetPlayer%", targetPl.getName()));return;}
-
-            if(antiSpam && antiSpamLevel == 1 || antiSpamLevel == 3)
-            {
-                if(!FriendsBG.getInstance().cooldown.containsKey(p.getUniqueId()))
-                {
-                    FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
-                }else if(System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()) > cool_down)
-                {
-                    FriendsBG.getInstance().cooldown.remove(p.getUniqueId());
-                    FriendsBG.getInstance().cooldown.put(p.getUniqueId(), System.currentTimeMillis());
-                }
-                else {
-                    sendMessage(p, antiSpamMsg.replace("%cooldown%", String.valueOf((cool_down - (System.currentTimeMillis() - FriendsBG.getInstance().cooldown.get(p.getUniqueId()))) / 1000)));
-                    return;
-                }
-            }
 
             StringBuilder msg = new StringBuilder();
 

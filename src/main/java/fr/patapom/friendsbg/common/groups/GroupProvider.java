@@ -34,7 +34,6 @@ public class GroupProvider
     private final UUID groupId;
 
     private final Configuration config = FriendsBG.getInstance().getConfig();
-    private final String lvPath = config.getString("groups.levels");
 
     private final boolean redisEnable = FriendsBG.getInstance().redisEnable;
     private RedisAccess redisAccess;

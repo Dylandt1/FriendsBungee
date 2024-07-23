@@ -10,6 +10,7 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.md_5.bungee.config.Configuration;
 
+import java.io.ObjectInputFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,17 +35,18 @@ public class CmdReport extends Command implements TabExecutor
     {
         super("report", null, FriendsBG.getInstance().getConfig().getStringList("msg.cmdAlias.report").toArray(new String[0]));
         this.config = FriendsBG.getInstance().getConfig();
-        this.prefix = config.getString("msg.report.prefix").replace("&", "§");
-        this.suffix = config.getString("msg.report.suffix").replace("&", "§");
-        this.admMessage = config.getString("msg.report.admMessage").replace("&", "§");
-        this.reportConfirmation = config.getString("msg.report.reportConfirmation").replace("&", "§");
-        this.cmdNotUsable = config.getString("msg.cmdNotUsable").replace("&", "§");
-        this.tooLong = config.getString("msg.tooLong").replace("&", "§");
-        this.reportDeleted = config.getString("msg.report.reportDeleted").replace("&", "§");
-        this.cmdNotFound = config.getString("cmdNotFound").replace("&", "§");
-        this.admPerm = config.getString("msg.report.admPerm");
-        this.keyForm = config.getString("msg.report.keyForm").replace("&", "§");
-        this.allReportsDeleted = config.getString("msg.report.allReportsDeleted").replace("&", "§");
+        Configuration msgConfig = FriendsBG.getInstance().getMsgConfig();
+        this.prefix = msgConfig.getString("msg.report.prefix").replace("&", "§");
+        this.suffix = msgConfig.getString("msg.report.suffix").replace("&", "§");
+        this.admMessage = msgConfig.getString("msg.report.admMessage").replace("&", "§");
+        this.reportConfirmation = msgConfig.getString("msg.report.reportConfirmation").replace("&", "§");
+        this.cmdNotUsable = msgConfig.getString("msg.cmdNotUsable").replace("&", "§");
+        this.tooLong = msgConfig.getString("msg.tooLong").replace("&", "§");
+        this.reportDeleted = msgConfig.getString("msg.report.reportDeleted").replace("&", "§");
+        this.cmdNotFound = msgConfig.getString("cmdNotFound").replace("&", "§");
+        this.admPerm = msgConfig.getString("msg.report.admPerm");
+        this.keyForm = msgConfig.getString("msg.report.keyForm").replace("&", "§");
+        this.allReportsDeleted = msgConfig.getString("msg.report.allReportsDeleted").replace("&", "§");
     }
 
     @Override

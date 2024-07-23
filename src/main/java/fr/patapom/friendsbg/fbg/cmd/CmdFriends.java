@@ -43,8 +43,6 @@ public class CmdFriends extends Command implements TabExecutor
 
     private final String prefix;
     private final String suffix;
-    private final String mainPrefix;
-    private final String mainSuffix;
     private final String cmdNotUsable;
     private final String playerNotFound;
     private final String requestsAllow;
@@ -74,38 +72,36 @@ public class CmdFriends extends Command implements TabExecutor
 
     public CmdFriends()
     {
-        super("friend", null, FriendsBG.getInstance().getConfig().getStringList("friends.cmdAlias").toArray(new String[0]));
-        Configuration config = FriendsBG.getInstance().getConfig();
-        this.prefix = config.getString("friends.prefix").replace("&", "§");
-        this.suffix = config.getString("friends.suffix").replace("&", "§");
-        this.mainPrefix = config.getString("prefix").replace("&", "§");
-        this.mainSuffix = config.getString("suffix").replace("&", "§");
-        this.cmdNotUsable = config.getString("friends.cmdNotUsable").replace("&", "§");
-        this.playerNotFound = config.getString("friends.playerNotFound").replace("&", "§");
-        this.requestsAllow = config.getString("friends.requestsAllow").replace("&", "§");
-        this.requestsAlreadyEnabled = config.getString("friends.requestsAlreadyEnabled").replace("&", "§");
-        this.requestsDeny = config.getString("friends.requestsDeny").replace("&", "§");
-        this.requestsAlreadyDisabled = config.getString("friends.requestsAlreadyDisabled").replace("&", "§");
-        this.senderRequestsDeny = config.getString("friends.senderRequestsDeny").replace("&", "§");
-        this.targetRequestsDeny = config.getString("friends.targetRequestsDeny").replace("&", "§");
-        this.noFriendsInList = config.getString("friends.noFriendsInList").replace("&", "§");
-        this.msgFOnline = config.getString("friends.friendsOnline").replace("&", "§");
-        this.msgFOffline = config.getString("friends.friendsOffline").replace("&", "§");
-        this.alreadyFriends = config.getString("friends.alreadyFriends").replace("&", "§");
-        this.alreadyInProgress = config.getString("friends.alreadyInProgress").replace("&", "§");
-        this.friendRequestSender = config.getString("friends.friendRequestSender").replace("&", "§");
-        this.friendRequestTarget = config.getString("friends.friendRequestTarget").replace("&", "§");
-        this.scrollTargetRequest = config.getString("friends.scrollTargetRequest").replace("&", "§");
-        this.newFriendSender = config.getString("friends.newFriendSender").replace("&", "§");
-        this.newFriendTarget = config.getString("friends.newFriendTarget").replace("&", "§");
-        this.yourSelfAsaFriend = config.getString("friends.yourSelfAsaFriend").replace("&", "§");
-        this.cantGetOut = config.getString("friends.cantGetOut").replace("&", "§");
-        this.notFriends = config.getString("friends.notFriends").replace("&", "§");
-        this.deletedFriend = config.getString("friends.deletedFriend").replace("&", "§");
-        this.errorAdd = config.getString("friends.errorAddFriend").replace("&", "§");
-        this.noRequest = config.getString("friends.noRequest").replace("&", "§");
-        this.refuseFriendSender = config.getString("friends.refuseFriendSender").replace("&", "§");
-        this.refuseFriendTarget = config.getString("friends.refuseFriendTarget").replace("&", "§");
+        super("friends", null, FriendsBG.getInstance().getConfig().getStringList("friends.cmdAlias").toArray(new String[0]));
+        Configuration msgConfig = FriendsBG.getInstance().getMsgConfig();
+        this.prefix = msgConfig.getString("friends.prefix").replace("&", "§");
+        this.suffix = msgConfig.getString("friends.suffix").replace("&", "§");
+        this.cmdNotUsable = msgConfig.getString("friends.cmdNotUsable").replace("&", "§");
+        this.playerNotFound = msgConfig.getString("friends.playerNotFound").replace("&", "§");
+        this.requestsAllow = msgConfig.getString("friends.requestsAllow").replace("&", "§");
+        this.requestsAlreadyEnabled = msgConfig.getString("friends.requestsAlreadyEnabled").replace("&", "§");
+        this.requestsDeny = msgConfig.getString("friends.requestsDeny").replace("&", "§");
+        this.requestsAlreadyDisabled = msgConfig.getString("friends.requestsAlreadyDisabled").replace("&", "§");
+        this.senderRequestsDeny = msgConfig.getString("friends.senderRequestsDeny").replace("&", "§");
+        this.targetRequestsDeny = msgConfig.getString("friends.targetRequestsDeny").replace("&", "§");
+        this.noFriendsInList = msgConfig.getString("friends.noFriendsInList").replace("&", "§");
+        this.msgFOnline = msgConfig.getString("friends.friendsOnline").replace("&", "§");
+        this.msgFOffline = msgConfig.getString("friends.friendsOffline").replace("&", "§");
+        this.alreadyFriends = msgConfig.getString("friends.alreadyFriends").replace("&", "§");
+        this.alreadyInProgress = msgConfig.getString("friends.alreadyInProgress").replace("&", "§");
+        this.friendRequestSender = msgConfig.getString("friends.friendRequestSender").replace("&", "§");
+        this.friendRequestTarget = msgConfig.getString("friends.friendRequestTarget").replace("&", "§");
+        this.scrollTargetRequest = msgConfig.getString("friends.scrollTargetRequest").replace("&", "§");
+        this.newFriendSender = msgConfig.getString("friends.newFriendSender").replace("&", "§");
+        this.newFriendTarget = msgConfig.getString("friends.newFriendTarget").replace("&", "§");
+        this.yourSelfAsaFriend = msgConfig.getString("friends.yourSelfAsaFriend").replace("&", "§");
+        this.cantGetOut = msgConfig.getString("friends.cantGetOut").replace("&", "§");
+        this.notFriends = msgConfig.getString("friends.notFriends").replace("&", "§");
+        this.deletedFriend = msgConfig.getString("friends.deletedFriend").replace("&", "§");
+        this.errorAdd = msgConfig.getString("friends.errorAddFriend").replace("&", "§");
+        this.noRequest = msgConfig.getString("friends.noRequest").replace("&", "§");
+        this.refuseFriendSender = msgConfig.getString("friends.refuseFriendSender").replace("&", "§");
+        this.refuseFriendTarget = msgConfig.getString("friends.refuseFriendTarget").replace("&", "§");
     }
 
     @Override
