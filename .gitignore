@@ -1,6 +1,5 @@
 # Package Files #
 *.class
-original-*.jar
 *.war
 *.ear
 
@@ -14,6 +13,3 @@ hs_err_pid*
 
 ## Directory-based project format:
 /.idea/
-/target/
-/src/main/java/fr/patapom/friendsbg/common/teams/TeamManager.java
-/src/main/java/fr/patapom/friendsbg/common/teams/TeamProvider.java
