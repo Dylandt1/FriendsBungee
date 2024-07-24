@@ -43,7 +43,7 @@ import java.util.*;
 
 public class FriendsBG extends Plugin
 {
-    private final int pluginId = 17971;
+    private final int pluginId = 103013;
     private boolean upToDate;
 
     private static FriendsBG INSTANCE;
@@ -171,8 +171,9 @@ public class FriendsBG extends Plugin
         log(console + "Ready to use !");
     }
 
-    public static FriendsBG getInstance() { return INSTANCE; }
-    public int getPluginId() { return pluginId; }
+    public static FriendsBG getInstance() {return INSTANCE;}
+    public int getPluginId() {return pluginId;}
+    public boolean isUpToDate() {return upToDate;}
     public Configuration getConfig() {return config;}
     public Configuration getMsgConfig() {return msgConfig;}
     public SerializationManager getSerializationManager() {return serManager;}
