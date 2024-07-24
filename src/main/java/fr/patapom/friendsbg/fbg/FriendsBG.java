@@ -79,29 +79,32 @@ public class FriendsBG extends Plugin
         log(console + "Loading in progress...");
         log(" ");
 
-        // UpdateChecker added by TM-API free software
-        log(console + "# ----------{ UpdateChecker }---------- #");
-        log(" ");
-        log(console + "Version : "+this.getDescription().getVersion());
-        log(" ");
-        new UpdateChecker(pluginId).getVersion(version -> {
-            if(this.getDescription().getVersion().equals(version)) {
-                this.upToDate = true;
-                log(console + "Up to date !");
-            }else {
-                this.upToDate = false;
-                log(console + "New update is available : "+version);
-            }
-            log(" ");
-            log(console + "# ---------- --------------- ---------- #");
-        });
-
         //Config Files
-        log(" ");
         log(console + "Loading config files...");
         log(" ");
         this.config = ConfigsManager.getConfig("config", this);
         this.msgConfig = ConfigsManager.getConfig("msg", this);
+
+        if(config.getBoolean("updates.checker"))
+        {
+            // UpdateChecker added by TM-API free software
+            log(console + "# ----------{ UpdateChecker }---------- #");
+            log(" ");
+            log(console + "Version : "+this.getDescription().getVersion());
+            log(" ");
+            new UpdateChecker(pluginId).getVersion(version -> {
+                if(this.getDescription().getVersion().equals(version)) {
+                    this.upToDate = true;
+                    log(console + "Up to date !");
+                }else {
+                    this.upToDate = false;
+                    log(console + "New update is available : "+version);
+                }
+                log(" ");
+                log(console + "# ---------- --------------- ---------- #");
+            });
+        }
+
         this.serManager = new SerializationManager();
         this.redisEnable = config.getBoolean("redis.use");
         this.sqlEnable = config.getBoolean("mysql.use");
