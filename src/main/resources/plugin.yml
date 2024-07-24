@@ -24,7 +24,7 @@
 name: FriendsBungee
 version: '${project.version}'
 main: fr.patapom.friendsbg.fbg.FriendsBG
-api-version: 1.19
+api-version: 1.21
 author: PataPom
 depends:
   - TM-API

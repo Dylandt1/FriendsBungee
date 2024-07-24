@@ -264,6 +264,8 @@ updates:                                                                        
   adminMsg:
     # Turn to true to enable update warning :
     use: false
+    # Admin permission to resave update message :
+    permission: "fbg.update.admin"
     # Message design :
     prefix: "&f[&6UpdateChecker&f] "
     suffix: "&f&l->&f "
