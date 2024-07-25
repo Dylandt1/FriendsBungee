@@ -22,7 +22,7 @@
 # ---------------------------------------------------------------------------------------- #
 
 name: FriendsBungee
-version: '${project.version}'
+version: '${project.version}-${plugin.state}'
 main: fr.patapom.friendsbg.fbg.FriendsBG
 api-version: 1.21
 author: PataPom

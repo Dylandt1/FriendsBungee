@@ -22,7 +22,7 @@
 # ---------------------------------------------------------------------------------------- #
 
 name: FriendsBungee
-version: '2.0'
+version: '2.0-SNAPSHOT'
 main: fr.patapom.friendsbg.fbg.FriendsBG
 api-version: 1.21
 author: PataPom
