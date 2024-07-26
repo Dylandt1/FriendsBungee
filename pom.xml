@@ -8,14 +8,14 @@
 
     <groupId>fr.patapom.1_21</groupId>
     <artifactId>friendsbg</artifactId>
-    <version>2.0</version>
+    <version>2.1</version>
 
     <name>FriendsBungee</name>
 
     <!-- Maven variables properties -->
     <properties>
         <minecraft.version>1.21</minecraft.version>
-        <plugin.state>SNAPSHOT</plugin.state>
+        <plugin.state>RELEASE</plugin.state>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-compiler.version>3.8.1</maven-compiler.version>

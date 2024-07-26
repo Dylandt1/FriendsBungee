@@ -5,36 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4e907394-8967-498a-941e-4faca2837759" name="Changes" comment="Version 2.0-SNAPSHOT : Complete revision/File Reorganization/Optimization 2">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/groups/GroupManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/groups/GroupManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/groups/GroupProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/groups/GroupProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/players/ProfileProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/players/ProfileProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/FriendsBG.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/FriendsBG.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdGroup.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdMsg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdMsg.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdReport.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdReport.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdResend.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdResend.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/utils/Help.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/utils/Help.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/data/manager/DBManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/data/manager/DBManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/data/manager/RedisManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/data/manager/RedisManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/listeners/PlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/listeners/PlayerListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/msg.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/msg.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/FriendsBungee_2.0-SNAPSHOT_1.21.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/FriendsBungee_2.0-SNAPSHOT_1.21.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/groups/GroupManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/groups/GroupManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/groups/GroupProvider.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/groups/GroupProvider.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/players/ProfileProvider.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/players/ProfileProvider.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/FriendsBungee_2.0-SNAPSHOT_1.21.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/FriendsBG.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/FriendsBG.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdGroup.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdGroup.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdMsg.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdMsg.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdResend.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdResend.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/utils/Help.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/utils/Help.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/listeners/PlayerListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/listeners/PlayerListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/msg.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/msg.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/original-FriendsBungee_2.0-SNAPSHOT_1.21.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/original-FriendsBungee_2.0-SNAPSHOT_1.21.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/original-FriendsBungee_2.0-SNAPSHOT_1.21.jar" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

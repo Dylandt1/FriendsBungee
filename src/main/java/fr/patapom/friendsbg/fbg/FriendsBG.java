@@ -125,7 +125,9 @@ public class FriendsBG extends Plugin
         log(" ");
         log(console + "Loading plugin parts...");
         log(" ");
+
         INSTANCE = this;
+
         PluginManager pm = ProxyServer.getInstance().getPluginManager();
 
         pm.registerCommand(this, new CmdFriends());
@@ -142,12 +144,8 @@ public class FriendsBG extends Plugin
             getLogger().info(" ");
             getLogger().info(console + "Connecting to databases...");
             getLogger().info(" ");
+            this.sqlManager = new SqlManager();
             DBManager.initAllConnections();
-            try {
-                this.sqlManager = new SqlManager(DBManager.FBG_DATABASE.getDbAccess().getConnection());
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
             createTables();
         }
 
@@ -260,6 +258,10 @@ public class FriendsBG extends Plugin
         tables.put(profilesTable, listProfilesTable);
         tables.put(friendsTable, listFriendsTable);
 
-        sqlManager.createTables(prefixTables, tables);
+        try {
+            sqlManager.createTables(prefixTables, tables, DBManager.FBG_DATABASE.getDbAccess().getConnection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
