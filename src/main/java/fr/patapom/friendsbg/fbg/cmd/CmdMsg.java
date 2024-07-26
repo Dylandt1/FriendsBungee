@@ -102,11 +102,18 @@ public class CmdMsg extends Command implements TabExecutor
             {
                 list.add(pls.getName());
             }
+
+            return list;
         }else if(args.length == 2)
         {
-            list.add("<message>");
+            if(!args[0].equalsIgnoreCase("") && !args[0].equalsIgnoreCase("enable") ||
+                    !args[0].equalsIgnoreCase("") && !args[0].equalsIgnoreCase("enable"))
+            {
+                list.add("<message>");
+                return list;
+            }
         }
-        return list;
+        return new ArrayList<>();
     }
 
     @Override
@@ -148,7 +155,7 @@ public class CmdMsg extends Command implements TabExecutor
             }
         }else
         {
-            if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/mp enable"));return;}
+            if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/message enable"));return;}
 
             String targetName = args[0];
             if(ProxyServer.getInstance().getPlayer(targetName) == null) {sendMessage(p, playerNotFound.replace("%targetPlayer%", targetName));return;}
@@ -184,10 +191,10 @@ public class CmdMsg extends Command implements TabExecutor
                 sendMessage(p, part1+part2+msgColor+msg);
                 sendMessage(targetPl, tPrefix.replace("%player%", p.getName())+tSuffix+msgColor+msg);
 
-                FriendsBG.messages.remove(p);
-                FriendsBG.messages.remove(targetPl);
-                FriendsBG.messages.put(p, targetPl);
-                FriendsBG.messages.put(targetPl, p);
+                FriendsBG.getInstance().messages.remove(p);
+                FriendsBG.getInstance().messages.remove(targetPl);
+                FriendsBG.getInstance().messages.put(p, targetPl);
+                FriendsBG.getInstance().messages.put(targetPl, p);
             }
         }
     }

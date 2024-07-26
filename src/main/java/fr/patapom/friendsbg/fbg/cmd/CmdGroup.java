@@ -49,6 +49,7 @@ public class CmdGroup extends Command implements TabExecutor
     private final String alreadyInGroup;
     private final String groupCreated;
     private final String groupDeletedSender;
+    private final String groupDeletedTarget;
     private final String newGroupSender;
     private final String newGroupTarget;
     private final String refuseGroupSender;
@@ -74,7 +75,7 @@ public class CmdGroup extends Command implements TabExecutor
     private final String tpAlreadyEnabled;
     private final String tpAlreadyDisabled;
     private final String targetRequestsDeny;
-    private final String senderRequestsDeny;
+    private final String targetIsInGroup;
     private final String requestsAllow;
     private final String requestsAlreadyEnabled;
     private final String requestsDeny;
@@ -84,6 +85,10 @@ public class CmdGroup extends Command implements TabExecutor
     // Private chat constants
     private final String mpPrefix;
     private final String mpSuffix;
+    private final String sPrefix;
+    private final String sSuffix;
+    private final String tPrefix;
+    private final String tSuffix;
     private final String msgColor;
     private final String tooLong;
 
@@ -100,6 +105,7 @@ public class CmdGroup extends Command implements TabExecutor
         this.alreadyInGroup = msgConfig.getString("groups.alreadyInGroup").replace("&", "§");
         this.groupCreated = msgConfig.getString("groups.groupCreated").replace("&", "§");
         this.groupDeletedSender = msgConfig.getString("groups.groupDeletedSender").replace("&", "§");
+        this.groupDeletedTarget = msgConfig.getString("groups.groupDeletedTarget").replace("&", "§");
         this.newGroupSender = msgConfig.getString("groups.newGroupSender").replace("&", "§");
         this.newGroupTarget = msgConfig.getString("groups.newGroupTarget").replace("&", "§");
         this.refuseGroupSender = msgConfig.getString("groups.refuseGroupSender").replace("&", "§");
@@ -125,7 +131,7 @@ public class CmdGroup extends Command implements TabExecutor
         this.tpAlreadyEnabled = msgConfig.getString("groups.tpAlreadyEnabled").replace("&", "§");
         this.tpAlreadyDisabled = msgConfig.getString("groups.tpAlreadyDisabled").replace("&", "§");
         this.targetRequestsDeny = msgConfig.getString("groups.targetRequestsDeny").replace("&", "§");
-        this.senderRequestsDeny = msgConfig.getString("groups.senderRequestsDeny").replace("&", "§");
+        this.targetIsInGroup = msgConfig.getString("groups.targetIsInGroup").replace("&", "§");
         this.requestsAllow = msgConfig.getString("groups.requestsAllow").replace("&", "§");
         this.requestsAlreadyEnabled = msgConfig.getString("groups.requestsAlreadyEnabled").replace("&", "§");
         this.requestsDeny = msgConfig.getString("groups.requestsDeny").replace("&", "§");
@@ -133,8 +139,12 @@ public class CmdGroup extends Command implements TabExecutor
         this.msgGroupList = msgConfig.getString("groups.msgGroupList").replace("&", "§");
 
         // Set private chat constants
-        this.mpPrefix = msgConfig.getString("groups.msg.mpPrefix").replace("&", "§");
-        this.mpSuffix = msgConfig.getString("groups.msg.mpSuffix").replace("&", "§");
+        this.mpPrefix = msgConfig.getString("groups.msg.prefix").replace("&", "§");
+        this.mpSuffix = msgConfig.getString("groups.msg.suffix").replace("&", "§");
+        this.sPrefix = msgConfig.getString("groups.msg.sender.prefix").replace("&", "§");
+        this.sSuffix = msgConfig.getString("groups.msg.sender.suffix").replace("&", "§");
+        this.tPrefix = msgConfig.getString("groups.msg.target.prefix").replace("&", "§");
+        this.tSuffix = msgConfig.getString("groups.msg.target.suffix").replace("&", "§");
         this.msgColor = msgConfig.getString("groups.msg.messageColor").replace("&", "§");
         this.tooLong = msgConfig.getString("groups.msg.tooLong").replace("&", "§");
     }
@@ -151,90 +161,116 @@ public class CmdGroup extends Command implements TabExecutor
         } catch (ManagerNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+        GroupProvider groupProvider;
+
         if(args.length == 1)
         {
             List<String> list = new ArrayList<>();
             list.add("help");
             list.add("enable");
             list.add("disable");
+
+            if(profile.isInGroup())
+            {
+                groupProvider = new GroupProvider(profile.getGroupId());
+                if(groupProvider.gExist())
+                {
+                    list.add("mp");
+                    list.add("list");
+                    list.add("quit");
+
+                    GroupManager group;
+                    try {
+                        group = groupProvider.getGManager();
+                    } catch (ManagerNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if(group.isOwner(p.getUniqueId()))
+                    {
+                        list.add("delete");
+                        list.add("add");
+                        list.add("remove");
+                        list.add("tp");
+                        list.add("owner");
+                    }
+                }
+                return list;
+            }
+
             list.add("create");
-            list.add("delete");
             list.add("accept");
             list.add("refuse");
-            list.add("mp");
-            list.add("list");
-            list.add("quit");
-            list.add("add");
-            list.add("remove");
-            list.add("tp");
-            list.add("owner");
+
             return list;
         }else if(args.length == 2)
         {
-            List<String> list = new ArrayList<>();
-            if(args[0].equalsIgnoreCase("add"))
+            if(profile.isInGroup())
             {
-                for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
+                List<String> list = new ArrayList<>();
+                groupProvider = new GroupProvider(profile.getGroupId());
+
+                if(args[0].equalsIgnoreCase("mp"))
                 {
-                    list.add(pls.getName());
+                    list.add("<message>");
                 }
-            }else if(args[0].equalsIgnoreCase("remove"))
-            {
-                if (profile.isInGroup())
+
+                if(!groupProvider.gExist())
                 {
-                    GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
+                    profile.setGroupId(null);
+                    profileProvider.save(profile);
+                    return list;
+                }
 
-                    if(!groupProvider.gExist())
-                    {
-                        profile.setGroupId(null);
-                        profileProvider.save(profile);
-                        return null;
-                    }
-
+                if(groupProvider.gExist())
+                {
                     GroupManager group;
                     try {
                         group = groupProvider.getGManager();
                     } catch (ManagerNotFoundException e) {
                         throw new RuntimeException(e);
                     }
-                    for (ProxiedPlayer pls : group.getPlayersInGroup())
+
+                    if(group.isOwner(p.getUniqueId()))
                     {
-                        list.add(pls.getName());
+                        if(args[0].equalsIgnoreCase("add"))
+                        {
+                            for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
+                            {
+                                list.add(pls.getName());
+                            }
+                            return list;
+                        }else if(args[0].equalsIgnoreCase("remove"))
+                        {
+                            if (profile.isInGroup())
+                            {
+                                for (ProxiedPlayer pls : group.getPlayersInGroup())
+                                {
+                                    list.add(pls.getName());
+                                }
+                                return list;
+                            }
+                        }else if(args[0].equalsIgnoreCase("tp"))
+                        {
+                            list.add("enable");
+                            list.add("disable");
+                            return list;
+                        }else if(args[0].equalsIgnoreCase("owner"))
+                        {
+                            if (profile.isInGroup())
+                            {
+                                for (ProxiedPlayer pls : group.getPlayersInGroup())
+                                {
+                                    list.add(pls.getName());
+                                }
+                                return list;
+                            }
+                        }
                     }
                 }
-            }else if(args[0].equalsIgnoreCase("tp"))
-            {
-                list.add("enable");
-                list.add("disable");
-            }else if(args[0].equalsIgnoreCase("owner"))
-            {
-                if (profile.isInGroup())
-                {
-                    GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
-
-                    if(!groupProvider.gExist())
-                    {
-                        profile.setGroupId(null);
-                        profileProvider.save(profile);
-                        return null;
-                    }
-
-                    GroupManager group;
-                    try {
-                        group = groupProvider.getGManager();
-                    } catch (ManagerNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    for (ProxiedPlayer pls : group.getPlayersInGroup())
-                    {
-                        list.add(pls.getName());
-                    }
-                }
-            }else if(args[0].equalsIgnoreCase("mp"))
-            {
-                list.add("<message>");
             }
-            return list;
+            return new ArrayList<>();
         }
         return new ArrayList<>();
     }
@@ -468,6 +504,13 @@ public class CmdGroup extends Command implements TabExecutor
                         {
                             sendMessage(p, prefix+suffix+groupDeletedSender);
                             group.removePlayerInGroup(p);
+
+                            for(ProxiedPlayer pls : group.getPlayersInGroup())
+                            {
+                                sendMessage(pls, prefix+suffix+groupDeletedTarget);
+                                group.removePlayerInGroup(pls);
+                            }
+
                             group.delete();
                         }else {
                             sendMessage(p, prefix+suffix+ownerGroup);
@@ -484,7 +527,6 @@ public class CmdGroup extends Command implements TabExecutor
         }else if (args.length >= 2)
         {
             if(!profile.isInGroup()) {sendMessage(p, prefix+suffix+notInGroup);return;}
-            if(!profile.gpAllow()) {sendMessage(p, prefix+suffix+senderRequestsDeny);return;}
 
             GroupProvider groupProvider = new GroupProvider(profile.getGroupId());
 
@@ -533,6 +575,7 @@ public class CmdGroup extends Command implements TabExecutor
                 }
 
                 if(!targetProfile.gpAllow()) {sendMessage(p, prefix+suffix+targetRequestsDeny.replace("%targetPlayer%", targetName));return;}
+                if(targetProfile.isInGroup()) {sendMessage(p, prefix+suffix+targetIsInGroup.replace("%targetPlayer%", targetName));return;}
 
                 TextComponent targetTxt = new TextComponent(prefix+suffix+requestTarget.replace("%player%", p.getName()));
                 targetTxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(scrollTargetRequest).create()));
@@ -631,15 +674,16 @@ public class CmdGroup extends Command implements TabExecutor
                         msg.append(args[i].replace("&", "§")).append(" ");
                     }
 
-                    final String part1 = prefix+"| ";
-                    final String part2 = mpPrefix.replace("%player%", p.getName())+mpSuffix;
+                    final String part1 = mpPrefix+mpSuffix;
+                    final String part2 = sPrefix+sSuffix;
+
+                    sendMessage(p, part1+part2+msgColor+msg);
 
                     for(ProxiedPlayer pl : group.getPlayersInGroup())
                     {
-                        if(!pl.equals(p)) sendMessage(pl, part1+part2+msgColor+msg);
+                        if(!pl.equals(p)) {sendMessage(pl, part1+tPrefix.replace("%player%", p.getName())+tSuffix+msgColor+msg);}
                     }
                 }else {
-                    profile.setGroupId(null);
                     profileProvider.save(profile);
                     sendMessage(p, prefix+suffix+notInGroup);
                 }

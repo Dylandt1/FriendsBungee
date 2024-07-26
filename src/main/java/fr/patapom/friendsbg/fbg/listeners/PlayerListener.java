@@ -74,12 +74,26 @@ public class PlayerListener implements Listener
 
                         if (targetProfile.getFriendsMap().containsValue(p.getUniqueId()))
                         {
-                            targetProfile.removeFriend(profile.getLastName());
-                            targetProfile.addFriend(p.getName(), p.getUniqueId());
+                            if(!targetProfile.getFriendsMap().containsKey(p.getName()))
+                            {
+                                targetProfile.removeFriend(profile.getLastName());
+                                targetProfile.addFriend(p.getName(), p.getUniqueId());
+                            }
                         } else {
                             profile.removeFriend(targetProfile.getName());
                         }
                     }
+                }
+            }
+
+            if(profile.isInGroup())
+            {
+                GroupProvider gpProvider = new GroupProvider(profile.getGroupId());
+
+                if(!gpProvider.gExist())
+                {
+                    profile.setGroupId(null);
+                    profileProvider.save(profile);
                 }
             }
 
@@ -131,25 +145,23 @@ public class PlayerListener implements Listener
                 {
                     profile.setGroupId(null);
                     profileProvider.save(profile);
-                    return;
-                }
-
-                GroupManager group;
-                try {
-                    group = groupProvider.getGManager();
-                } catch (ManagerNotFoundException ex2) {
-                    throw new RuntimeException(ex2);
-                }
-
-                if(group.isOwner(p.getUniqueId()))
-                {
-                    // Eject all group members and send message
-                    group.removePlayerInGroup(e.getPlayer());
-                    ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), group::onQuit);
                 }else {
-                    // Eject player from group and send message
-                    group.removePlayerInGroup(e.getPlayer());
-                    groupProvider.save(group);
+                    GroupManager group;
+                    try {
+                        group = groupProvider.getGManager();
+                    } catch (ManagerNotFoundException ex2) {
+                        throw new RuntimeException(ex2);
+                    }
+
+                    if(group.isOwner(p.getUniqueId()))
+                    {
+                        // Eject all group members and send message
+                        group.removePlayerInGroup(e.getPlayer());
+                        ProxyServer.getInstance().getScheduler().runAsync(FriendsBG.getInstance(), group::onQuit);
+                    }else {
+                        profile.setGroupId(null);
+                        profileProvider.save(profile);
+                    }
                 }
             }
 

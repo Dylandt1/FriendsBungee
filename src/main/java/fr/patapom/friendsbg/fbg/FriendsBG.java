@@ -47,7 +47,6 @@ public class FriendsBG extends Plugin
     private boolean upToDate;
 
     private static FriendsBG INSTANCE;
-    private static PluginManager pm;
     private final String console = "[FriendsBungee] -> ";
     private SqlManager sqlManager;
 
@@ -63,10 +62,10 @@ public class FriendsBG extends Plugin
     public String profilesTable;
     public String friendsTable;
 
-    public static Map<UUID, ProfileManager> profiles = new HashMap<>();
-    public static Map<UUID, GroupManager> groups = new HashMap<>();
-    public static Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
-    public static Map<Integer, String> reports = new HashMap<>();
+    public Map<UUID, ProfileManager> profiles = new HashMap<>();
+    public Map<UUID, GroupManager> groups = new HashMap<>();
+    public Map<ProxiedPlayer, ProxiedPlayer> messages = new HashMap<>();
+    public Map<Integer, String> reports = new HashMap<>();
 
     public HashMap<UUID, Long> cooldown = new HashMap<>();
 
@@ -127,10 +126,11 @@ public class FriendsBG extends Plugin
         log(console + "Loading plugin parts...");
         log(" ");
         INSTANCE = this;
-        pm = ProxyServer.getInstance().getPluginManager();
+        PluginManager pm = ProxyServer.getInstance().getPluginManager();
 
         pm.registerCommand(this, new CmdFriends());
         pm.registerCommand(this, new CmdGroup());
+        pm.registerCommand(this, new CmdGroupMP());
         pm.registerCommand(this, new CmdMsg());
         pm.registerCommand(this, new CmdResend());
         pm.registerCommand(this, new CmdReport());

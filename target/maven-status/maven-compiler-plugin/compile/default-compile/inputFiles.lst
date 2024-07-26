@@ -4,6 +4,7 @@
 /media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/FriendsBungee/FriendsBungee_1.21/src/main/java/fr/patapom/friendsbg/fbg/listeners/ChatListener.java
 /media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/FriendsBungee/FriendsBungee_1.21/src/main/java/fr/patapom/friendsbg/common/players/ProfileProvider.java
 /media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/FriendsBungee/FriendsBungee_1.21/src/main/java/fr/patapom/friendsbg/fbg/cmd/utils/Help.java
+/media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/FriendsBungee/FriendsBungee_1.21/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdGroupMP.java
 /media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/FriendsBungee/FriendsBungee_1.21/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdMsg.java
 /media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/FriendsBungee/FriendsBungee_1.21/src/main/java/fr/patapom/friendsbg/fbg/data/manager/RedisManager.java
 /media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/FriendsBungee/FriendsBungee_1.21/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdFriends.java

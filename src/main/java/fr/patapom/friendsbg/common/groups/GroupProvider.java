@@ -72,7 +72,7 @@ public class GroupProvider
 
         if(redisEnable)
         {
-            group = getPManagerOnRedis();
+            group = getGManagerOnRedis();
             if(group == null)
             {
                 for(String s : config.getStringList("groups.lengths"))
@@ -80,16 +80,16 @@ public class GroupProvider
                     if(player.hasPermission("fgb.group."+s)) {groupLength = config.getInt("groups.lengths."+s);}
                 }
                 group = new GroupManager(player , groupId, groupLength);
-                setPManagerOnRedis(group);
+                setGManagerOnRedis(group);
             }
         }else
         {
-            if(FriendsBG.groups.containsKey(groupId))
+            if(FriendsBG.getInstance().groups.containsKey(groupId))
             {
-                group = FriendsBG.groups.get(groupId);
+                group = FriendsBG.getInstance().groups.get(groupId);
             }else {
                 group = new GroupManager(player , groupId, groupLength);
-                FriendsBG.groups.put(groupId, group);
+                FriendsBG.getInstance().groups.put(groupId, group);
             }
         }
         return group;
@@ -97,9 +97,9 @@ public class GroupProvider
 
     public void save(GroupManager groupManager)
     {
-        if(redisEnable) {setPManagerOnRedis(groupManager);return;}
-        FriendsBG.groups.remove(groupId);
-        FriendsBG.groups.put(groupId, groupManager);
+        if(redisEnable) {setGManagerOnRedis(groupManager);return;}
+        FriendsBG.getInstance().groups.remove(groupId);
+        FriendsBG.getInstance().groups.put(groupId, groupManager);
     }
 
     public void delete()
@@ -110,28 +110,28 @@ public class GroupProvider
             final RBucket<GroupManager> gBucket = redisCli.getBucket(REDIS_KEY);
             gBucket.delete();
         }else {
-            FriendsBG.groups.remove(groupId);
+            FriendsBG.getInstance().groups.remove(groupId);
         }
     }
 
     public boolean gExist()
     {
-        if(redisEnable) {return getPManagerOnRedis() != null;}
-        return FriendsBG.groups.containsKey(groupId);
+        if(redisEnable) {return getGManagerOnRedis() != null;}
+        return FriendsBG.getInstance().groups.containsKey(groupId);
     }
 
     /**
      * Privates methods :
      */
 
-    private void setPManagerOnRedis(GroupManager groupManager)
+    private void setGManagerOnRedis(GroupManager groupManager)
     {
         final RedissonClient redisCli = redisAccess.getRedisCli();
         final RBucket<GroupManager> gBucket = redisCli.getBucket(REDIS_KEY);
         gBucket.set(groupManager);
     }
 
-    private GroupManager getPManagerOnRedis()
+    private GroupManager getGManagerOnRedis()
     {
         final RedissonClient redisCli = redisAccess.getRedisCli();
         final RBucket<GroupManager> gBucket = redisCli.getBucket(REDIS_KEY);

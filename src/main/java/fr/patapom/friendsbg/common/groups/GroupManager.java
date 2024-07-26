@@ -126,25 +126,29 @@ public class GroupManager
         final String prefix = config.getString("groups.prefix").replace("&", "§");
         final String suffix = config.getString("groups.suffix").replace("&", "§");
         final String ownerOffline = config.getString("groups.ownerOffline").replace("&", "§");
+
         for(ProxiedPlayer pls : getPlayersInGroup())
         {
-            ProfileProvider profileProvider = new ProfileProvider(pls.getUniqueId());
-            try {
-                ProfileManager profile = profileProvider.getPManager();
-                profile.setGroupId(null);
-                profileProvider.save(profile);
-            } catch (ManagerNotFoundException e) {
-                e.printStackTrace();
+            if(pls != null)
+            {
+                ProfileProvider profileProvider = new ProfileProvider(pls.getUniqueId());
+                try {
+                    ProfileManager profile = profileProvider.getPManager();
+                    profile.setGroupId(null);
+                    profileProvider.save(profile);
+                } catch (ManagerNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                if(pls.isConnected())
+                {
+                    pls.sendMessage(new TextComponent(prefix+" "+suffix+" "+ownerOffline));
+                }
             }
-            pls.sendMessage(new TextComponent(prefix+" "+suffix+" "+ownerOffline));
         }
-        if(FriendsBG.getInstance().redisEnable)
-        {
-            GroupProvider provider = new GroupProvider(groupId);
-            provider.delete();
-            return;
-        }
-        FriendsBG.groups.remove(groupId);
+
+        GroupProvider provider = new GroupProvider(groupId);
+        provider.delete();
     }
 
     public void delete()
@@ -171,7 +175,7 @@ public class GroupManager
             provider.delete();
             return;
         }
-        FriendsBG.groups.remove(groupId);
+        FriendsBG.getInstance().groups.remove(groupId);
     }
 
     private void sendMessage(ProxiedPlayer p, String s) {

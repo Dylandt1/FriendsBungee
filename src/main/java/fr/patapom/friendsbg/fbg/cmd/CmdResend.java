@@ -79,18 +79,11 @@ public class CmdResend extends Command implements TabExecutor
     {
         if(!(sender instanceof ProxiedPlayer)) {return null;}
 
-        ProxiedPlayer p = (ProxiedPlayer) sender;
         List<String> list = new ArrayList<>();
         if(args.length == 1)
         {
-            for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
-            {
-                list.add(player.getName());
-            }
-            return list;
-        }else if(args.length == 2)
-        {
             list.add("<message>");
+            return list;
         }
         return new ArrayList<>();
     }
@@ -114,15 +107,15 @@ public class CmdResend extends Command implements TabExecutor
         {
             H.helpMsg(p);
         }else {
-            if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/msg enable"));return;}
-            if(!FriendsBG.messages.containsKey(p)) {sendMessage(p, noMessage);return;}
-            if(!FriendsBG.messages.get(p).isConnected())
+            if(!profile.msgAllow()) {sendMessage(p, msgSenderDisabled.replace("%cmd%", "/message enable"));return;}
+            if(!FriendsBG.getInstance().messages.containsKey(p)) {sendMessage(p, noMessage);return;}
+            if(!FriendsBG.getInstance().messages.get(p).isConnected())
             {
-                sendMessage(p, playerOffline.replace("targetPlayer", FriendsBG.messages.get(p).getName()));
+                sendMessage(p, playerOffline.replace("%targetPlayer%", FriendsBG.getInstance().messages.get(p).getName()));
                 return;
             }
 
-            ProxiedPlayer targetPl = FriendsBG.messages.get(p);
+            ProxiedPlayer targetPl = FriendsBG.getInstance().messages.get(p);
             ProfileProvider targetProvider = new ProfileProvider(targetPl.getUniqueId());
             ProfileManager targetProfile;
             try {
@@ -148,10 +141,10 @@ public class CmdResend extends Command implements TabExecutor
             p.sendMessage(new TextComponent(part1+part2+msgColor+msg));
             targetPl.sendMessage(new TextComponent(tPrefix.replace("%player%", p.getName())+tSuffix+msgColor+msg));
 
-            FriendsBG.messages.remove(p);
-            FriendsBG.messages.remove(targetPl);
-            FriendsBG.messages.put(p, targetPl);
-            FriendsBG.messages.put(targetPl, p);
+            FriendsBG.getInstance().messages.remove(p);
+            FriendsBG.getInstance().messages.remove(targetPl);
+            FriendsBG.getInstance().messages.put(p, targetPl);
+            FriendsBG.getInstance().messages.put(targetPl, p);
         }
     }
 

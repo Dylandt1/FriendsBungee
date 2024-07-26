@@ -102,29 +102,45 @@ public class ProfileProvider
 
         if(redisEnable && sqlEnable)
         {
-            // Get FriendsManager on Redis or Mysql server
-            profile = getPManagerOnRedis();
-            if(profile == null)
+            if (file.exists())
             {
-                profile = getPManagerOnMySQL();
+                final String json = Files.loadFile(file);
+                profile = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
                 setPManagerOnRedis(profile);
+                file.delete();
+            }else {
+                // Get FriendsManager on Redis or Mysql server
+                profile = getPManagerOnRedis();
+                if(profile == null)
+                {
+                    profile = getPManagerOnMySQL();
+                    setPManagerOnRedis(profile);
+                }
             }
         }else if(sqlEnable)
         {
-            if(FriendsBG.profiles.containsKey(uuid))
+            if(file.exists())
             {
-                // Get FriendsManager on plugin cache
-                profile = FriendsBG.profiles.get(uuid);
+                final String json = Files.loadFile(file);
+                profile = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
+                FriendsBG.getInstance().profiles.put(uuid, profile);
+                file.delete();
             }else {
-                // Get FriendsManager on Mysql server
-                profile = getPManagerOnMySQL();
-                FriendsBG.profiles.put(uuid, profile);
-            }
+                if(FriendsBG.getInstance().profiles.containsKey(uuid))
+                {
+                    // Get FriendsManager on plugin cache
+                    profile = FriendsBG.getInstance().profiles.get(uuid);
+                }else {
+                    // Get FriendsManager on Mysql server/media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/TM-Hub
+                    profile = getPManagerOnMySQL();
+                    FriendsBG.getInstance().profiles.put(uuid, profile);
+                }
 
-            if(profile == null)
-            {
-                profile = createPManager();
-                FriendsBG.profiles.put(uuid, profile);
+                if(profile == null)
+                {
+                    profile = createPManager();
+                    FriendsBG.getInstance().profiles.put(uuid, profile);
+                }
             }
         }else if(redisEnable)
         {
@@ -138,7 +154,7 @@ public class ProfileProvider
                 {
                     final String json = Files.loadFile(file);
                     profile = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
-                    FriendsBG.profiles.put(uuid, profile);
+                    FriendsBG.getInstance().profiles.put(uuid, profile);
                 }else {
                     profile = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
                     final String json = serManager.serialize(profile);
@@ -148,17 +164,17 @@ public class ProfileProvider
             }
         }else
         {
-            if(FriendsBG.profiles.containsKey(uuid))
+            if(FriendsBG.getInstance().profiles.containsKey(uuid))
             {
                 // Get FriendsManager on plugin cache
-                profile = FriendsBG.profiles.get(uuid);
+                profile = FriendsBG.getInstance().profiles.get(uuid);
             }else {
                 // Get FriendsManager on Json files or create new profile by default values
                 if(file.exists())
                 {
                     final String json = Files.loadFile(file);
                     profile = (ProfileManager) serManager.deserialize(json, ProfileManager.class);
-                    FriendsBG.profiles.put(uuid, profile);
+                    FriendsBG.getInstance().profiles.put(uuid, profile);
                 }else {
                     profile = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
                     final String json = serManager.serialize(profile);
@@ -178,12 +194,12 @@ public class ProfileProvider
         {
             setPManagerOnRedis(profile);
         }else {
-            if(FriendsBG.profiles.containsKey(uuid))
+            if(FriendsBG.getInstance().profiles.containsKey(uuid))
             {
-                FriendsBG.profiles.remove(uuid);
-                FriendsBG.profiles.put(uuid, profile);
+                FriendsBG.getInstance().profiles.remove(uuid);
+                FriendsBG.getInstance().profiles.put(uuid, profile);
             }else {
-                FriendsBG.profiles.put(uuid, profile);
+                FriendsBG.getInstance().profiles.put(uuid, profile);
             }
         }
     }

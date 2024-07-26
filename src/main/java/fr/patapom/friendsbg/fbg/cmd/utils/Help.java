@@ -31,6 +31,7 @@ public class Help
      * Vars :
      */
     private final String helpMsg;
+    private final String helpEntry;
 
     // Help /friends
     private final String friendsTop;
@@ -43,7 +44,7 @@ public class Help
     private final String removeHF;
     private final String listHF;
 
-    // Help /party
+    // Help /group
     private final String groupTop;
     private final String groupBottom;
     private final String createHG;
@@ -57,6 +58,11 @@ public class Help
     private final String ownerHG;
     private final String enableHG;
     private final String disableHG;
+
+    // Help /groupmp
+    private final String groupMpTop;
+    private final String groupMpBottom;
+    private final String groupMpMessage;
 
     // Help /msg | /r
     private final String msgTop;
@@ -76,8 +82,10 @@ public class Help
 
     public Help()
     {
-        this.helpMsg = "helpMsg.";
         Configuration msgConfig = FriendsBG.getInstance().getMsgConfig();
+
+        this.helpMsg = "helpMsg.";
+        this.helpEntry = msgConfig.getString(helpMsg+"helpEntry");
 
         // Help /friends
         this.friendsTop = msgConfig.getString(helpMsg+"helpFriends.top").replace("&", "§");
@@ -105,6 +113,11 @@ public class Help
         this.enableHG = msgConfig.getString(helpMsg+"helpGroup.enable").replace("&", "§");
         this.disableHG = msgConfig.getString(helpMsg+"helpGroup.disable").replace("&", "§");
 
+        // Help /groupmp
+        this.groupMpTop = msgConfig.getString(helpMsg+"helpGroupMp.top").replace("&", "§");
+        this.groupMpBottom = msgConfig.getString(helpMsg+"helpGroupMp.bottom").replace("&", "§");
+        this.groupMpMessage = msgConfig.getString(helpMsg+"helpGroupMp.message").replace("&", "§");
+
         // Help /msg | /r
         this.msgTop = msgConfig.getString(helpMsg+"helpPvMsg.top").replace("&", "§");
         this.msgBottom = msgConfig.getString(helpMsg+"helpPvMsg.bottom").replace("&", "§");
@@ -126,8 +139,7 @@ public class Help
     {
         sendMessage(p, " ");
         sendMessage(p, friendsTop);
-        sendMessage(p, " §6§l? §7§nHelp§f : ");
-        sendMessage(p, " ");
+        sendMessage(p, helpEntry);
         sendMessage(p, enableHF);
         sendMessage(p, disableHF);
         sendMessage(p, acceptHF);
@@ -142,8 +154,7 @@ public class Help
     {
         sendMessage(p, " ");
         sendMessage(p, groupTop);
-        sendMessage(p, "§6§l? §7§nHelp§f : ");
-        sendMessage(p, " ");
+        sendMessage(p, helpEntry);
         sendMessage(p, enableHG);
         sendMessage(p, disableHG);
         sendMessage(p, createHG);
@@ -158,12 +169,20 @@ public class Help
         sendMessage(p, groupBottom);
     }
 
+    public void helpGroupMp(ProxiedPlayer p)
+    {
+        sendMessage(p, " ");
+        sendMessage(p, groupMpTop);
+        sendMessage(p, helpEntry);
+        sendMessage(p, groupMpMessage);
+        sendMessage(p, groupMpBottom);
+    }
+
     public void helpMsg(ProxiedPlayer p)
     {
         sendMessage(p, " ");
         sendMessage(p, msgTop);
-        sendMessage(p, " §6§l? §7§nHelp§f : ");
-        sendMessage(p, " ");
+        sendMessage(p, helpEntry);
         sendMessage(p, mpHMSG);
         sendMessage(p, rHMSG);
         sendMessage(p, enableHMSG);
@@ -175,8 +194,7 @@ public class Help
     {
         sendMessage(p, " ");
         sendMessage(p, reportTop);
-        sendMessage(p, " §6§l? §7§nHelp§f : ");
-        sendMessage(p, " ");
+        sendMessage(p, helpEntry);
         sendMessage(p, reportHRPT);
         if(p.hasPermission(reportAdm))
         {

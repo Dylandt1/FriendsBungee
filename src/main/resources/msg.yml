@@ -161,7 +161,7 @@ groups:                                                                         
 # ------------------------------------------------------------------------------------- #
 
   # Prefix and suffix for plugin messages :
-  prefix: "&f[&2Groups&f] "
+  prefix: "&f[&2Group&f] "
   suffix: "&f&l->&f "
 
   # Message for using commands in the console :
@@ -264,7 +264,7 @@ groups:                                                                         
   tpAlreadyDisabled: "&6Auto-tp is already disabled &c!"
 
   # Message if sender deny group requests :
-  senderRequestsDeny: "&cYou do not accept group requests ! &f/&bgp §aenable§c, &fto enable group requests &c!"
+  targetIsInGroup: "&b%targetPlayer% &cis already in group !"
 
   # Message if target deny group requests :
   targetRequestsDeny: "&b%targetPlayer% &cdoes not accept group requests !"
@@ -286,11 +286,29 @@ groups:                                                                         
 
   # Private groups messages configuration :
   msg:
-    # Group messages prefix/suffix
-    mpPrefix: "&7(&b%player%&7) "
-    mpSuffix: "&f&l-> "
 
-    # Group messages color :
+    # Prefix and suffix for private group messages :
+    prefix: "&f[&2Group&f] "
+    suffix: "&f&l->&f "
+
+    # Sender part :
+    sender:
+
+      # Group private message prefix and suffix for sender :
+      prefix: "&7[&cme&7] "
+      suffix: "&f&l:&f "
+
+    # Target part :
+    target:
+
+      # Group private message prefix and suffix for targets :
+      prefix: "&7[&c%player%&7] "
+      suffix: "&f&l:&f "
+
+    # Message for using commands in the console :
+    cmdNotUsable: "&cThis command is only available in game !"
+
+    # Private messages color :
     messageColor: "&a"
 
     # Message if player message is too long :
@@ -313,6 +331,30 @@ groups:                                                                         
 #                                                                                       #
 msg:                                                                                    #
 # ------------------------------------------------------------------------------------- #
+
+  # Sender part :
+  sender:
+
+    # Message prefix. If 2ndPrefix = "", is not used and you can make 2ndSuffix = "" :
+    prefix: "&7[&cme&7] "
+    2ndPrefix: "&7[&c%targetPlayer%&7] "
+
+    # Message suffix. suffix is after prefix and 2ndSuffix is after 2ndPrefix.
+    # If 2ndPrefix = "", for good rendering, you can make 2ndSuffix = "" :
+    suffix: "&f&l->&f "
+    2ndSuffix: "&f: "
+
+  # Target part :
+  target:
+
+    # Message prefix :
+    prefix: "&7[&c%player%&7] "
+
+    # Message suffix :
+    suffix: "&f&l->&f "
+
+  # Private messages color :
+  messageColor: "&a"
 
   # Anti spam :
   antiSpam:
@@ -387,11 +429,14 @@ msg:                                                                            
 helpMsg:                                                                                #
 # ------------------------------------------------------------------------------------- #
 
+  # Help entry after top framing (leave blanc to disable) :
+  helpEntry: " §6§l? §7§nHelp§f : \n"
+
   # /friends help message config :
   helpFriends:
 
     # Top framing of help message :
-    top: "§6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#"
+    top: "§6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#\n"
 
     # Command arguments :
     enable: "&c- &f/&bf &fenable &f&l-> &fTo enable friend requests&c;\n"
@@ -423,6 +468,16 @@ helpMsg:                                                                        
     owner: "&c- &f/&bgroup &fowner &7<&fnewOwner&7> &f&l-> &fTo change the group leader&c;\n"
     list: "&c- &f/&bgroup &flist &f&l-> &fTo see the list of players in the group&c.\n"
     mp: "&c- &f/&bgroup &fmp &7<&fmessage&7> &f&l-> &fTo send group message&c.\n"
+
+    # Bottom framing of help message :
+    bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"
+
+  helpGroupMp:
+    # Top framing of help message :
+    top: "&6#&f----------------- [&3Friends&f-&6Bungee&f] -----------------&6#\n"
+
+    # Command arguments :
+    message: "&c- &f/&bgroupmp &7<&fmessage&7> &f&l-> &fTo send group message&c;\n"
 
     # Bottom framing of help message :
     bottom: "&6#&f-------------------- &6By PataPom &f--------------------&6#"

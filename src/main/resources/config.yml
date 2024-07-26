@@ -74,6 +74,14 @@ groups:                                                                         
     custom1: 15
     test: 20
 
+  # Group messages command aliases
+  msg:
+    # Alias of group private messages commands
+    cmdAlias:
+      - gpm
+      - gpmp
+
+
 
 # ##################################################################################### #
 #                     ╔═╗╦═╗╦╦  ╦╔═╗╔╦╗╔═╗  ╔╦╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗                    #
@@ -140,30 +148,6 @@ msg:                                                                            
       - complaints
       - claim
 
-  # Sender part :
-  sender:
-
-    # Message prefix. If 2ndPrefix = "", is not used and you can make 2ndSuffix = "" :
-    prefix: "&7[&cme&7] "
-    2ndPrefix: "&7[&c%targetPlayer%&7] "
-
-    # Message suffix. suffix is after prefix and 2ndSuffix is after 2ndPrefix.
-    # If 2ndPrefix = "", for good rendering, you can make 2ndSuffix = "" :
-    suffix: "&f&l->&f "
-    2ndSuffix: "&f: "
-
-  # Target part :
-  target:
-
-    # Message prefix :
-    prefix: "&7[&c%player%&7] "
-
-    # Message suffix :
-    suffix: "&f&l->&f "
-
-  # Private messages color :
-  messageColor: "&a"
-
 
 # ##################################################################################### #
 #                                    ╔╦╗╦ ╦╔═╗╔═╗ ╦                                     #
@@ -199,10 +183,10 @@ mysql:                                                                          
   user: "user"
   password: "password"
 
-  # This is number of pool connexions established by the plugin (Default : 10)
-  maxPoolSize: 16 # Default Redis-server config
+  # This is number of pool connexions established by the plugin :
+  maxPoolSize: 10 # Default = 10 database connexions
 
-  # This is max life time of pools in ms :
+  # This is max lifetime of pools in ms :
   maxLifeTime: 600000 # Default = 10 minutes -> 600 000 ms
 
   # This is time out for pools not used :

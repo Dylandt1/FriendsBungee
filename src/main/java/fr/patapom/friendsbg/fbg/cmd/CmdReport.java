@@ -70,11 +70,9 @@ public class CmdReport extends Command implements TabExecutor
     {
         if(!(sender instanceof ProxiedPlayer p)) {return null;}
 
-        List<String> list = new ArrayList<>();
-
         if(args.length == 1)
         {
-            list.addAll(config.getStringList("msg.report.reasons"));
+            List<String> list = new ArrayList<>(config.getStringList("msg.report.reasons"));
 
             for(ProxiedPlayer pls : ProxyServer.getInstance().getPlayers())
             {
@@ -87,23 +85,31 @@ public class CmdReport extends Command implements TabExecutor
                 list.add("remove");
             }
 
+            return list;
+
         }else if(args.length == 2)
         {
-            list.add("<message>");
+            List<String> list = new ArrayList<>();
+
+            if(!args[0].equalsIgnoreCase(""))
+            {
+                list.add("<message>");
+            }
 
             if(p.hasPermission(admPerm))
             {
                 if(args[0].equalsIgnoreCase("remove"))
                 {
                     list.add("all");
-                    for(int key : FriendsBG.reports.keySet())
+                    for(int key : FriendsBG.getInstance().reports.keySet())
                     {
                         list.add(String.valueOf(key));
                     }
                 }
             }
+            return list;
         }
-        return list;
+        return new ArrayList<>();
     }
 
     @Override
@@ -117,10 +123,10 @@ public class CmdReport extends Command implements TabExecutor
             {
                 if(p.hasPermission(admPerm))
                 {
-                    for(int key : FriendsBG.reports.keySet())
+                    for(int key : FriendsBG.getInstance().reports.keySet())
                     {
                         sendMessage(p, " ");
-                        sendMessage(p, keyForm.replace("%key%", String.valueOf(key))+FriendsBG.reports.get(key));
+                        sendMessage(p, keyForm.replace("%key%", String.valueOf(key))+FriendsBG.getInstance().reports.get(key));
                     }
                 }else {
 
@@ -135,13 +141,13 @@ public class CmdReport extends Command implements TabExecutor
             {
                 if(p.hasPermission(admPerm))
                 {
-                    if(FriendsBG.reports.containsKey(Integer.parseInt(args[1])))
+                    if(FriendsBG.getInstance().reports.containsKey(Integer.parseInt(args[1])))
                     {
-                        FriendsBG.reports.remove(Integer.parseInt(args[1]));
+                        FriendsBG.getInstance().reports.remove(Integer.parseInt(args[1]));
                         sendMessage(p, prefix+suffix+reportDeleted.replace("%report%", args[1].toString()));
                     }else if(args[1].equalsIgnoreCase("all"))
                     {
-                        FriendsBG.reports.clear();
+                        FriendsBG.getInstance().reports.clear();
                         sendMessage(p, prefix+suffix+allReportsDeleted);
                     }
                 }else {
@@ -152,7 +158,7 @@ public class CmdReport extends Command implements TabExecutor
             }else if(config.getStringList("msg.report.reasons").contains(args[0])
                     || ProxyServer.getInstance().getPlayer(args[0]) != null)
             {
-                int id = FriendsBG.reports.size()+1;
+                int id = FriendsBG.getInstance().reports.size()+1;
 
                 String reason = args[0];
                 StringBuilder report = new StringBuilder();
@@ -167,7 +173,7 @@ public class CmdReport extends Command implements TabExecutor
                     report.append(args[i].replace("&", "§")).append(" ");
                 }
 
-                FriendsBG.reports.put(id, report.toString());
+                FriendsBG.getInstance().reports.put(id, report.toString());
                 sendMessage(p, prefix+suffix+reportConfirmation);
 
                 for(ProxiedPlayer pl : ProxyServer.getInstance().getPlayers())

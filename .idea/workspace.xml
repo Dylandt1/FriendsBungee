@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4e907394-8967-498a-941e-4faca2837759" name="Changes" comment="Version 2.0-SNAPSHOT : Complete revision/File Reorganization/Optimization 2">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/groups/GroupManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/groups/GroupManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/groups/GroupProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/groups/GroupProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/players/ProfileProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/common/players/ProfileProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/FriendsBG.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/FriendsBG.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdGroup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdMsg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdMsg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdReport.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdReport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdResend.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/CmdResend.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/utils/Help.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/cmd/utils/Help.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/data/manager/DBManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/data/manager/DBManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/data/manager/RedisManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/data/manager/RedisManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/listeners/PlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/patapom/friendsbg/fbg/listeners/PlayerListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/msg.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/msg.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/FriendsBungee_2.0-SNAPSHOT_1.21.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/FriendsBungee_2.0-SNAPSHOT_1.21.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/groups/GroupManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/groups/GroupManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/groups/GroupProvider.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/groups/GroupProvider.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/players/ProfileProvider.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/common/players/ProfileProvider.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/FriendsBG.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/FriendsBG.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdGroup.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdGroup.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdMsg.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdMsg.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdResend.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/CmdResend.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/utils/Help.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/cmd/utils/Help.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/listeners/PlayerListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fr/patapom/friendsbg/fbg/listeners/PlayerListener.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/msg.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/msg.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/original-FriendsBungee_2.0-SNAPSHOT_1.21.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/original-FriendsBungee_2.0-SNAPSHOT_1.21.jar" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="SOFT" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Dylandt1&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Dylandt1/FriendsBungee.git&quot;,
+    &quot;accountId&quot;: &quot;694c772e-9627-42bc-89f6-09b712ef7c08&quot;
+  }
+}</component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2MraHznj0IZ1zaMQz0W6SJ1d3s6" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.FriendsBG build.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/media/dylan/Dylan_1To/Dev/Java/Minecraft/Plugins/TM-API/TM-API_1.21",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.35977012",
+    "settings.editor.selected.configurable": "configurable.group.appearance"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\src\main\java\fr\patapom\friendsbg\fbg\data\manager" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="F:\Documents\Mes Fichiers\Dev\Java\IdeaProjects\FriendsBungee\FriendsBungee_1.19" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="fr.patapom.friendsbg.fbg.cmd" />
+      <recent name="fr.patapom.friendsbg.common.teams" />
+      <recent name="fr.patapom.api.exceptions" />
+      <recent name="fr.patapom.api" />
+      <recent name="fr.patapom.api.sql" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="FriendsBG build" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="cmdOptions" />
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="package" />
+              </list>
+            </option>
+            <option name="multimoduleDir" />
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="projectsCmdOptionValues">
+              <list />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4e907394-8967-498a-941e-4faca2837759" name="Changes" comment="" />
+      <created>1678528078794</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1678528078794</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="2.0-SNAPSHOT_1.18" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Version 2.0-SNAPSHOT : Complete revision/File Reorganization/Optimization" />
+    <option name="LAST_COMMIT_MESSAGE" value="Version 2.0-SNAPSHOT : Complete revision/File Reorganization/Optimization" />
+  </component>
+</project>
