@@ -45,9 +45,9 @@ public class FriendsBG extends Plugin
 {
     private final int pluginId = 103013;
     private boolean upToDate;
+    private String newVersion;
 
     private static FriendsBG INSTANCE;
-    private final String console = "[FriendsBungee] -> ";
     private SqlManager sqlManager;
 
     private Configuration config;
@@ -75,11 +75,11 @@ public class FriendsBG extends Plugin
     public void onLoad()
     {
         log(" ");
-        log(console + "Loading in progress...");
+        log("Loading in progress...");
         log(" ");
 
         //Config Files
-        log(console + "Loading config files...");
+        log("Loading config files...");
         log(" ");
         this.config = ConfigsManager.getConfig("config", this);
         this.msgConfig = ConfigsManager.getConfig("msg", this);
@@ -87,20 +87,21 @@ public class FriendsBG extends Plugin
         if(config.getBoolean("updates.checker"))
         {
             // UpdateChecker added by TM-API free software
-            log(console + "# ----------{ UpdateChecker }---------- #");
+            log("# ----------{ UpdateChecker }---------- #");
             log(" ");
-            log(console + "Version : "+this.getDescription().getVersion());
+            log("Version : "+this.getDescription().getVersion());
             log(" ");
             new UpdateChecker(pluginId).getVersion(version -> {
                 if(this.getDescription().getVersion().equals(version)) {
                     this.upToDate = true;
-                    log(console + "Up to date !");
+                    log("Up to date !");
                 }else {
                     this.upToDate = false;
-                    log(console + "New update is available : "+version);
+                    this.newVersion = version;
+                    log("New update is available : "+version);
                 }
                 log(" ");
-                log(console + "# ---------- --------------- ---------- #");
+                log("# ---------- --------------- ---------- #");
             });
         }
 
@@ -123,7 +124,7 @@ public class FriendsBG extends Plugin
     public void onEnable()
     {
         log(" ");
-        log(console + "Loading plugin parts...");
+        log("Loading plugin parts...");
         log(" ");
 
         INSTANCE = this;
@@ -142,7 +143,7 @@ public class FriendsBG extends Plugin
         if(sqlEnable)
         {
             getLogger().info(" ");
-            getLogger().info(console + "Connecting to databases...");
+            getLogger().info("Connecting to databases...");
             getLogger().info(" ");
             this.sqlManager = new SqlManager();
             DBManager.initAllConnections();
@@ -152,7 +153,7 @@ public class FriendsBG extends Plugin
         if(redisEnable)
         {
             getLogger().info(" ");
-            getLogger().info(console + "Connecting to redis servers...");
+            getLogger().info("Connecting to redis servers...");
             getLogger().info(" ");
             RedisManager.initAllConnections();
         }
@@ -166,12 +167,13 @@ public class FriendsBG extends Plugin
             reports = (Map<Integer, String>) serManager.deserializeByType(json.replace("?", "§"), type);
         }
 
-        log(console + "Ready to use !");
+        log("Ready to use !");
     }
 
     public static FriendsBG getInstance() {return INSTANCE;}
     public int getPluginId() {return pluginId;}
     public boolean isUpToDate() {return upToDate;}
+    public String getNewVersion() {return newVersion;}
     public Configuration getConfig() {return config;}
     public Configuration getMsgConfig() {return msgConfig;}
     public SerializationManager getSerializationManager() {return serManager;}
@@ -181,18 +183,18 @@ public class FriendsBG extends Plugin
     public void onDisable()
     {
         log(" ");
-        log(console + "Disabling in progress...");
+        log("Disabling in progress...");
         log(" ");
         if(sqlEnable)
         {
             DBManager.closeAllConnections();
-            log(console + "Database connections closed !");
+            log("Database connections closed !");
             log(" ");
         }
         if(redisEnable)
         {
             RedisManager.closeAllConnections();
-            log(console + "Redis connections closed !");
+            log("Redis connections closed !");
             log(" ");
         }
 
@@ -204,11 +206,11 @@ public class FriendsBG extends Plugin
             final File file = new File("./", "reports.json");
             final String json = serManager.serialize(reports);
             Files.save(file, json);
-            log(console + "Reports saved !");
+            log("Reports saved !");
             log(" ");
         }
 
-        log(console + "Goodbye !");
+        log("Goodbye !");
     }
 
     private void createTables()

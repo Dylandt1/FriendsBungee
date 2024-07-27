@@ -102,7 +102,7 @@ public class ProfileProvider
 
         if(redisEnable && sqlEnable)
         {
-            if (file.exists())
+            if(file.exists())
             {
                 final String json = Files.loadFile(file);
                 profile = (ProfileManager) serManager.deserialize(json, ProfileManager.class);

@@ -42,6 +42,8 @@ public class PlayerListener implements Listener
     private final Configuration msgConfig = FriendsBG.getInstance().getMsgConfig();
     private final int timing = FriendsBG.getInstance().getConfig().getInt("groups.timingTP");
 
+    private final String prefix = msgConfig.getString("prefix").replace("&", "§");
+    private final String suffix = msgConfig.getString("suffix").replace("&", "§");
     private final String fPrefix = msgConfig.getString("friends.prefix").replace("&", "§");
     private final String fSuffix = msgConfig.getString("friends.suffix").replace("&", "§");
     private final String friendConnected = msgConfig.getString("friends.friendConnected").replace("&", "§");
@@ -51,6 +53,17 @@ public class PlayerListener implements Listener
     public void onJoin(PostLoginEvent e)
     {
         final ProxiedPlayer p = e.getPlayer();
+
+        if(FriendsBG.getInstance().getMsgConfig().getBoolean("updates.adminMsg.use"))
+        {
+            if(!FriendsBG.getInstance().isUpToDate())
+            {
+                if(p.hasPermission(FriendsBG.getInstance().getMsgConfig().getString("updates.adminMsg.permission")))
+                {
+                    sendMessage(p, prefix+suffix+"§fNew version available : "+FriendsBG.getInstance().getNewVersion());
+                }
+            }
+        }
 
         try {
             ProfileProvider profileProvider = new ProfileProvider(p);

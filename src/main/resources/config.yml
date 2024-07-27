@@ -250,10 +250,6 @@ updates:                                                                        
     use: false
     # Admin permission to resave update message :
     permission: "fbg.update.admin"
-    # Message design :
-    prefix: "&f[&6UpdateChecker&f] "
-    suffix: "&f&l->&f "
-    message: "&6New update is available !"
 
 
 # #################### Plugin made by PataPom - Licensed under GPL3 License. #################### #
