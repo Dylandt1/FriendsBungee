@@ -59,7 +59,7 @@ public class PlayerListener implements Listener
         {
             if(!FriendsBG.getInstance().isUpToDate())
             {
-                if(p.hasPermission(FriendsBG.getInstance().getMsgConfig().getString("updates.adminMsg.permission")))
+                if(p.hasPermission(FriendsBG.getInstance().getConfig().getString("updates.adminMsg.permission")))
                 {
                     sendMessage(p, prefix+suffix+"§fNew version available : "+FriendsBG.getInstance().getNewVersion());
                 }
