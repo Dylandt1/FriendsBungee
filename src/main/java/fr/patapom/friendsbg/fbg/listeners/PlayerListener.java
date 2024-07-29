@@ -5,6 +5,7 @@ import fr.patapom.friendsbg.common.players.ProfileManager;
 import fr.patapom.friendsbg.common.players.ProfileProvider;
 import fr.patapom.friendsbg.common.groups.GroupManager;
 import fr.patapom.friendsbg.common.groups.GroupProvider;
+import fr.tmmods.tmapi.bungee.players.OfflinePlayer;
 import fr.tmmods.tmapi.exceptions.ManagerNotFoundException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -54,7 +55,7 @@ public class PlayerListener implements Listener
     {
         final ProxiedPlayer p = e.getPlayer();
 
-        if(FriendsBG.getInstance().getMsgConfig().getBoolean("updates.adminMsg.use"))
+        if(FriendsBG.getInstance().getConfig().getBoolean("updates.adminMsg.use"))
         {
             if(!FriendsBG.getInstance().isUpToDate())
             {
@@ -114,7 +115,17 @@ public class PlayerListener implements Listener
             {
                 for(UUID plsUUID : profile.getFriendsMap().values())
                 {
-                    if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
+                    ProfileProvider friendProvider = new ProfileProvider(plsUUID);
+
+                    ProfileManager friendProfile = friendProvider.getPManager();
+
+                    if(!friendProfile.isFriends(p.getName()))
+                    {
+                        profile.removeFriend(friendProfile.getLastName());
+                        profileProvider.save(profile);
+                    }
+
+                    if(ProxyServer.getInstance().getPlayer(plsUUID) !=null && friendProfile.isFriends(p.getName()))
                     {
                         ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(plsUUID);
                         sendMessage(onlineFriend, fPrefix+fSuffix+friendConnected.replace("%player%", p.getDisplayName()));
