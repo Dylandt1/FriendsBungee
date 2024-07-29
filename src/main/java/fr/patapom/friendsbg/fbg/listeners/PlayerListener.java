@@ -121,7 +121,7 @@ public class PlayerListener implements Listener
 
                     if(!friendProfile.isFriends(p.getName()))
                     {
-                        profile.removeFriend(friendProfile.getLastName());
+                        profile.removeFriend(friendProfile.getName());
                         profileProvider.save(profile);
                     }
 
@@ -153,7 +153,11 @@ public class PlayerListener implements Listener
             {
                 for(UUID plsUUID : profile.getFriendsMap().values())
                 {
-                    if(ProxyServer.getInstance().getPlayer(plsUUID) !=null)
+                    ProfileProvider friendProvider = new ProfileProvider(plsUUID);
+
+                    ProfileManager friendProfile = friendProvider.getPManager();
+
+                    if(ProxyServer.getInstance().getPlayer(plsUUID) !=null && friendProfile.isFriends(p.getName()))
                     {
                         ProxiedPlayer onlineFriend = ProxyServer.getInstance().getPlayer(plsUUID);
                         sendMessage(onlineFriend, fPrefix+fSuffix+friendDisconnected.replace("%player%", p.getDisplayName()));
