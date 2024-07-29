@@ -218,11 +218,6 @@ public class ProfileProvider
      */
     public void updateDB()
     {
-        // Init null PreparedStatements n°1
-        PreparedStatement ps1;
-        // Init null PreparedStatements n°2 and associated ResulSet
-        PreparedStatement ps2;
-        ResultSet rs2;
         try
         {
             // Get FriendsManager and create if not exist
@@ -234,10 +229,16 @@ public class ProfileProvider
             PreparedStatement pst = connection.prepareStatement("SELECT * FROM "+prefixTables+profilesTable+" WHERE uuid = ?");
             pst.setString(1, uuid.toString());
             ResultSet rst = pst.executeQuery();
-            if(!rst.next()) {insertPManager(profile);return;}
+            if(!rst.next())
+            {
+                insertPManager(profile);
+                pst.close();
+                connection.close();
+                return;
+            }
 
             // Init PreparedStatement n°1 and set values
-            ps1 = connection.prepareStatement("UPDATE " + prefixTables+profilesTable + " SET name = ?, displayName = ?, fAllow = ?, msgAllow = ?, gpAllow = ?, teamsAllow = ?, teamId = ?, groupId = ?, rankInTeam = ?, lastJoin = ? WHERE uuid = ?");
+            PreparedStatement ps1 = connection.prepareStatement("UPDATE " + prefixTables+profilesTable + " SET name = ?, displayName = ?, fAllow = ?, msgAllow = ?, gpAllow = ?, teamsAllow = ?, teamId = ?, groupId = ?, rankInTeam = ?, lastJoin = ? WHERE uuid = ?");
             ps1.setString(1, name);
             ps1.setString(2, displayName);
             ps1.setInt(3, profile.fAllow()?1:0);
@@ -268,10 +269,10 @@ public class ProfileProvider
             ps1.close();
 
             // Init PreparedStatement n°2 and set values
-            ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+friendsTable+" WHERE uuid = ?");
+            PreparedStatement ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+friendsTable+" WHERE uuid = ?");
             ps2.setString(1, uuid.toString());
             // Execute PreparedStatement and init ResultSet
-            rs2 = ps2.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
 
             List<UUID> fUUIDList = new ArrayList<>();
 
@@ -308,7 +309,7 @@ public class ProfileProvider
             ps2.close();
             connection.close();
         }catch (SQLException | ManagerNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -332,16 +333,12 @@ public class ProfileProvider
 
     private ProfileManager getPManagerOnMySQL()
     {
-        PreparedStatement ps1;
-        PreparedStatement ps2;
-        ResultSet rs1;
-        ResultSet rs2;
-        ProfileManager profile = null;
+        ProfileManager profile;
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            ps1 = connection.prepareStatement("SELECT * FROM "+prefixTables+profilesTable+" WHERE uuid = ?");
+            PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM "+prefixTables+profilesTable+" WHERE uuid = ?");
             ps1.setString(1, uuid.toString());
-            rs1 = ps1.executeQuery();
+            ResultSet rs1 = ps1.executeQuery();
 
             if(rs1.next())
             {
@@ -349,9 +346,9 @@ public class ProfileProvider
                 UUID groupId = null;
                 Map<String, UUID> fList = new HashMap<>();
 
-                ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+friendsTable+" WHERE uuid = ?");
+                PreparedStatement ps2 = connection.prepareStatement("SELECT * FROM "+prefixTables+friendsTable+" WHERE uuid = ?");
                 ps2.setString(1, uuid.toString());
-                rs2 = ps2.executeQuery();
+                ResultSet rs2 = ps2.executeQuery();
 
                 while (rs2.next())
                 {
@@ -384,17 +381,16 @@ public class ProfileProvider
             ps1.close();
             connection.close();
         }catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return profile;
     }
 
     private ProfileManager createPManager()
     {
-        PreparedStatement ps;
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+profilesTable+" (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, groupId, rankInTeam, lastJoin, firstJoin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+profilesTable+" (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, groupId, rankInTeam, lastJoin, firstJoin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             ProfileManager profile = new ProfileManager(uuid, name, displayName, true, true, true, true, null, null, null, new HashMap<>(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
@@ -413,17 +409,15 @@ public class ProfileProvider
             connection.close();
             return profile;
         }catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     private void insertPManager(ProfileManager profile)
     {
-        PreparedStatement ps;
         try {
             Connection connection = DBManager.FBG_DATABASE.getDbAccess().getConnection();
-            ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+profilesTable+" (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, groupId, rankInTeam, lastJoin, firstJoin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement ps = DBManager.FBG_DATABASE.getDbAccess().getConnection().prepareStatement("INSERT INTO "+prefixTables+profilesTable+" (uuid, name, displayName, fAllow, msgAllow, gpAllow, teamsAllow, teamId, groupId, rankInTeam, lastJoin, firstJoin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
             ps.setString(3, profile.getDisplayName());
@@ -454,7 +448,7 @@ public class ProfileProvider
             ps.close();
             connection.close();
         }catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

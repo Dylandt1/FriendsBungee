@@ -185,6 +185,7 @@ public class FriendsBG extends Plugin
         log(" ");
         log("Disabling in progress...");
         log(" ");
+
         if(sqlEnable)
         {
             DBManager.closeAllConnections();
@@ -198,18 +199,18 @@ public class FriendsBG extends Plugin
             log(" ");
         }
 
-        log("Saving data in progress...");
-        log(" ");
         if(!reports.isEmpty())
         {
+            log("Saving data in progress...");
+            log(" ");
             // Save reports on Json file
             final File file = new File("./", "reports.json");
             final String json = serManager.serialize(reports);
             Files.save(file, json);
             log("Reports saved !");
-            log(" ");
         }
 
+        log(" ");
         log("Goodbye !");
     }
 
